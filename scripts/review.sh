@@ -414,13 +414,13 @@ L2_OUTPUTS=()
 
 for i in "${!L2_NAMES[@]}"; do
     slug=$(echo "${L2_FILES[$i]}" | sed 's/.*l2_//;s/\.txt//')
-    tmpfile=$(mktemp /tmp/review_l2_${slug}_XXXX.json)
+    tmpfile=$(mktemp /tmp/afconst_l2_${slug}_XXXX.json)
     L2_OUTPUTS+=("$tmpfile")
 
     if command -v claude &>/dev/null; then
-        (timeout 180 claude -p \
+        (timeout 300 claude -p \
             --output-format json \
-            --model haiku \
+            --model sonnet \
             --max-turns 15 \
             --allowedTools "Read,Glob,Grep" \
             --no-session-persistence \
@@ -461,7 +461,7 @@ L3_OUTPUTS=()
 
 for i in "${!L3_NAMES[@]}"; do
     slug=$(echo "${L3_FILES[$i]}" | sed 's/.*l3_//;s/\.txt//')
-    tmpfile=$(mktemp /tmp/review_l3_${slug}_XXXX.json)
+    tmpfile=$(mktemp /tmp/afconst_l3_${slug}_XXXX.json)
     L3_OUTPUTS+=("$tmpfile")
 done
 
@@ -509,7 +509,7 @@ import json, re, sys, os, glob
 
 findings = []
 
-for tmpfile in sorted(glob.glob('/tmp/review_l[23]_*.json')):
+for tmpfile in sorted(glob.glob('/tmp/afconst_l[23]_*.json')):
     try:
         with open(tmpfile) as f:
             text = f.read().strip()
