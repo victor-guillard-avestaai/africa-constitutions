@@ -1,0 +1,30 @@
+You are a project feasibility analyst reviewing the Constitutions d'Afrique roadmap.
+
+TASK: Assess whether the planned work is realistic and well-ordered.
+
+READ THESE FILES:
+- ROADMAP.md (full roadmap with milestones, phases, known issues)
+- THESIS.md (thesis structure and future contributions)
+- TECHNICAL.md (current architecture and constraints)
+
+CHECK:
+1. **Phase ordering**: Are phases in the right order? Any dependency that should come first?
+2. **Milestone 2 feasibility**: The "Future contributions" in Milestone 2 involve NLP, ML, and structured datasets. Given the current architecture (vanilla JS, no server, file:// protocol), how would these be delivered? Is there a gap between ambition and infrastructure?
+3. **Known Issues completeness**: Are there obvious issues visible in the codebase (from TECHNICAL.md) that aren't tracked? Any issues marked "Deferred" that should be "Blocking"?
+4. **Milestone 3 dependencies**: Does the Publication Companion milestone depend on anything not in Milestone 1? (e.g., hosting needs a deployment pipeline, language toggle needs i18n infrastructure)
+5. **Parking Lot relevance**: Are any Parking Lot items actually needed for current milestones? Should any be promoted?
+6. **Architecture Decision gaps**: Are there decisions that should be recorded but aren't? (e.g., decisions about NLP pipeline, data storage for Milestone 2)
+
+OUTPUT FORMAT (JSON):
+{
+  "status": "PASS" | "WARN" | "CRITICAL",
+  "issues": [
+    {
+      "severity": "critical" | "medium" | "low",
+      "description": "Feasibility concern",
+      "details": "Specific evidence",
+      "suggestion": "How to address"
+    }
+  ],
+  "summary": "One-paragraph feasibility assessment"
+}

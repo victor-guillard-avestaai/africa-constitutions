@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Constitutions d'Afrique — Reconnaissance identitaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+
+<div class="tt" id="tooltip"></div>
+<div class="div-tt" id="div-tooltip"></div>
+<div class="tt" id="scatter-tooltip" style="max-width:300px"></div>
+
+<header>
+  <h1>Constitutions d'Afrique</h1>
+  <p class="lead">De la construction nationale au pluralisme identitaire — comment 54 pays africains reconnaissent ou effacent la diversité ethnoculturelle dans leurs constitutions</p>
+</header>
+
+<!-- ═══════ MAP ═══════ -->
+<div class="section">
+  <div class="card">
+    <h2>Carte de la reconnaissance constitutionnelle</h2>
+    <div class="sub">Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.</div>
+
+    <div class="map-row">
+      <div class="map-sidebar">
+        <div>
+          <div class="ctrl-label">Année</div>
+          <div class="year-row">
+            <button id="play-btn" title="Animer">&#9654;</button>
+            <input type="range" id="year-slider" min="1930" max="2026" value="2026" step="1">
+          </div>
+          <div style="text-align:center"><span id="year-display">2026</span></div>
+        </div>
+
+        <div>
+          <div class="ctrl-label">Dimensions (multi-sélection)</div>
+          <div class="grp-row" id="grp-buttons"></div>
+          <div class="dim-buttons" id="dim-buttons"></div>
+        </div>
+
+        <div>
+          <div class="ctrl-label">Mode d'affichage</div>
+          <div class="mode-switch" id="mode-switch">
+            <button class="mode-btn" data-mode="score">Score seul</button>
+            <button class="mode-btn active" data-mode="combined">Combiné</button>
+            <button class="mode-btn" data-mode="heritage">Héritage seul</button>
+          </div>
+          <div id="legend-2d"></div>
+        </div>
+      </div>
+
+      <div>
+        <div id="map-container">
+          <div id="loading"><span>Chargement de la carte...</span></div>
+          <svg id="map-svg" style="display:none"></svg>
+        </div>
+        <div class="scale-bar" style="justify-content:center;gap:1rem;">
+          <span style="display:inline-flex;align-items:center;gap:0.3rem">
+            <svg width="14" height="14" style="border:1px solid var(--border);border-radius:2px"><defs><pattern id="hatch-leg" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="#e8e4dd"/><line x1="0" y1="0" x2="0" y2="4" stroke="#b0a898" stroke-width="1.2"/></pattern></defs><rect width="14" height="14" fill="url(#hatch-leg)"/></svg>
+            <span style="font-size:0.7rem;color:var(--dim)">Territoire colonial</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio Panel -->
+    <div id="bio-panel">
+      <div class="bio-head">
+        <div>
+          <h3 id="bio-country-name"></h3>
+          <div class="bio-meta" id="bio-meta"></div>
+        </div>
+        <button class="bio-close" onclick="closeBio()">Fermer</button>
+      </div>
+      <div id="bio-timeline-container">
+        <svg id="bio-timeline-svg"></svg>
+      </div>
+      <div id="commentary-pane"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ HEATMAP TABLE ═══════ -->
+<div class="section">
+  <div class="card">
+    <h2>Matrice comparative — 54 pays × 10 dimensions</h2>
+    <div class="sub">Dernière constitution en vigueur par pays. Cliquez sur un en-tête de colonne pour trier. Cliquez sur un nom de pays pour ouvrir sa fiche.</div>
+    <div class="explainer">
+      <strong>X</strong> = absent de la constitution &nbsp;|&nbsp;
+      <strong>P</strong> = reconnaissance partielle (mentionné mais sans garanties effectives) &nbsp;|&nbsp;
+      <strong>V</strong> = pleinement reconnu (droits opposables, institutions dédiées)
+    </div>
+    <div class="heatmap-controls">
+      <span class="hm-filter-label">Filtrer :</span>
+      <button class="hm-sort-btn active" data-hf="all">Tous</button>
+      <button class="hm-sort-btn" data-hf="francophone">Francophone</button>
+      <button class="hm-sort-btn" data-hf="anglophone">Anglophone</button>
+      <button class="hm-sort-btn" data-hf="lusophone">Lusophone</button>
+      <button class="hm-sort-btn" data-hf="other">Autre</button>
+    </div>
+    <div id="heatmap-container">
+      <table id="heatmap-table"></table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ DIVERGENCE ═══════ -->
+<div class="section">
+  <div class="card">
+    <h2>Divergence par héritage colonial</h2>
+    <div class="sub">Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes et la liste des pays de chaque groupe.</div>
+    <div class="explainer">
+      L'héritage colonial détermine la tradition juridique constitutionnelle. Les pays <strong>francophones</strong> ont hérité du modèle jacobin français (État unitaire, silence sur la diversité). Les pays <strong>anglophones</strong> ont hérité du pluralisme de la common law britannique (chefferie traditionnelle, tribunaux coutumiers). Les pays <strong>lusophones</strong> suivent une troisième voie, souvent marquée par le socialisme post-indépendance.
+    </div>
+    <div class="hl-bar">
+      <div class="hl-item"><div class="hl-line" style="background:var(--francophone)"></div>Francophone (23 pays)</div>
+      <div class="hl-item"><div class="hl-line" style="background:var(--anglophone)"></div>Anglophone (19 pays)</div>
+      <div class="hl-item"><div class="hl-line" style="background:var(--lusophone)"></div>Lusophone (5 pays)</div>
+    </div>
+    <div class="div-grid" id="div-grid"></div>
+  </div>
+</div>
+
+<!-- ═══════ SCATTER ═══════ -->
+<div class="section">
+  <div class="card">
+    <h2>L'écart de reconnaissance</h2>
+    <div class="sub">Ce graphique confronte deux mesures pour chaque pays : ses engagements internationaux (nombre de traités ratifiés sur 6) et la réalité de sa constitution (score moyen des 10 dimensions).</div>
+    <div class="explainer">
+      <strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP), normalisé sur une échelle de 0 à 2.<br>
+      <strong>Axe vertical</strong> = score constitutionnel moyen (moyenne des 10 dimensions, 0 = tout absent, 2 = tout reconnu).<br>
+      <strong>La diagonale</strong> représente la parité parfaite entre engagements et constitution. Un pays <em>au-dessus</em> de la ligne concrétise ses engagements ; un pays <em>en dessous</em> signe des traités sans les transcrire dans sa loi fondamentale.<br>
+      <strong>Constat frappant</strong> : presque tous les pays africains ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais <em>aucun</em> n'a ratifié la Convention 169 de l'OIT sur les peuples autochtones — le fossé entre le droit international et le droit constitutionnel domestique est structurel.
+    </div>
+    <div id="scatter-container"></div>
+    <div class="scatter-legend">
+      <div class="sl-item"><div class="sl-dot" style="background:var(--francophone)"></div>Francophone</div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div>Anglophone</div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div>Lusophone</div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div>Autre</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Source : tableau_constit_pays_af_complet_copie.xlsx — 54 pays, 439 textes constitutionnels (1847–2026)<br>
+  Codage : X = absent, P = partiel, V = reconnu | Dimensions : fédéralisme, décentralisation, droits des minorités, langues, droits culturels, peuples autochtones, anti-discrimination, identité, autonomie, pluralisme juridique
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

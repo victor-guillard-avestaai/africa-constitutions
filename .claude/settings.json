@@ -1,0 +1,53 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git rev-parse HEAD > .claude/ops/.session_base_commit 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if echo \"$CLAUDE_FILE_PATH\" | grep -qE '\\.py$'; then uv run ruff check --fix \"$CLAUDE_FILE_PATH\" 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILES=$(ls tmp/ 2>/dev/null | grep -v '.gitkeep'); if [ -n \"$FILES\" ]; then echo \"BLOCKED: tmp/ not empty — process and clean up: $FILES\" >&2; exit 2; fi"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/dod_check.sh",
+            "timeout": 300
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f scripts/last_review.json ]; then NEW=$(python3 -c \"import json; print(json.load(open('scripts/last_review.json')).get('new_findings',0))\" 2>/dev/null); if [ \"$NEW\" -gt 0 ]; then echo \"BLOCKED: $NEW review finding(s) pending. Read scripts/last_review.json, integrate into ROADMAP.md Known Issues, then run: python3 scripts/recheck_findings.py\" >&2; exit 2; fi; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

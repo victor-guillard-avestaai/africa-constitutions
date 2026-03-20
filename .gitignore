@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual env
+.venv/
+
+# Secrets & env
+.env
+*.log
+
+# Temp (clipboard)
+tmp/*
+!tmp/.gitkeep
+
+# Regenerable outputs
+data/constitution_corpus/
+data/preamble_corpus/
+
+# Review ephemeral
+scripts/last_review.json
+
+# Ops state
+.claude/ops/.session_base_commit
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# uv lock (regenerable from pyproject.toml)
+uv.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/

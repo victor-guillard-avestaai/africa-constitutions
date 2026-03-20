@@ -1,0 +1,353 @@
+# Constitutions d'Afrique — Roadmap
+
+## Vision
+
+Data science, NLP, and visualization contributions to a PhD thesis on sub-state peoples in African human rights law. The thesis has 8 chapters across 2 parts; this project provides quantitative evidence for each. See THESIS.md for the full thesis structure.
+
+**Current state:** 3 of 8 chapters have delivered contributions (Ch.1 S2, Ch.2 S2, Ch.6). The interactive dashboard is functional but needs polish. The remaining chapters need new data pipelines (PDF text extraction, case law coding, clustering).
+
+---
+
+## This Week (2026-03-20)
+
+DONE: KB overhaul — thesis-aligned structure, root-level KB files, review system upgrade
+DONE: Thesis-aligned roadmap with 8 milestones + 2 EDA milestones
+DONE: M1a — EDA on constitutional dataset (key findings in THESIS.md "Key Insights")
+DONE: M1b — PDF extraction + corpus EDA (54 texts, 1.4M words, 49 preambles)
+NEXT: M0 Phase 4 — Scatter plot redesign (informed by EDA treaty findings)
+NEXT: M1b — PDF extraction + corpus EDA
+
+---
+
+## Milestone 0: Dashboard Completion — IN PROGRESS
+
+**Done when:** The 5 existing visualizations are polished, thesis-grounded, and presentation-ready.
+
+### Phase 1-3: Foundation — DONE
+- [x] Interactive map + bio panel + heatmap + divergence + scatter
+- [x] Heritage-keyed color gradients + light academic theme + responsiveness
+- [x] File separation + color centralization + review system + KB overhaul
+
+### Phase 4: Scatter Plot Redesign
+Reframe the scatter to serve the Ch.2 S1 argument: no single international regime covers the full range of sub-state peoples situations. Treaty ratification does not predict constitutional recognition.
+- [ ] Rethink axes: constitutional score vs. treaty ratification count → show the "coverage gap"
+- [ ] Improve label placement (overlapping country names)
+- [ ] Add interactivity (click to open bio panel)
+- [ ] Add thesis-grounded explainer text
+
+### Phase 5: Final Polish
+- [ ] Accessibility audit (ARIA labels, keyboard navigation, colorblind patterns)
+- [ ] Year slider range review (1847 vs 1930 start)
+- [ ] Dimension constraint feedback (visual cue when minimum enforced)
+- [ ] Print stylesheet for PDF export
+
+---
+
+## Milestone 1a: EDA — Constitutional Dataset — DONE
+
+**Output:** `notebooks/eda_constitutional_dataset.ipynb`
+
+### Distributions and structure
+- [x] Score distributions per dimension: two tiers — universal (Dis 100%, Dc 93%) vs rare (F 11%, Dpa 15%)
+- [x] Score distributions per heritage group: Franco 7.3/20, Anglo 10.9/20, Luso 6.6/20 (Mann-Whitney p=0.004)
+- [x] Temporal evolution: gap WIDENED post-1990 (2.4→4.7). Convergence only in Dc and La, not identity dimensions
+- [x] Missing data: 209/440 rows uncoded (transitional periods, coups). 52% coverage rate
+
+### Correlations and clusters
+- [x] Correlation matrix: Drc↔Drm r=0.70, Drm↔Id r=0.66, Dpa↔Drm r=0.66 — identity recognition comes as a package
+- [x] Heritage group profiles: heatmap of 10-dimension means per heritage group
+- [x] Outliers: RDC (+7.7 above francophone mean), Tanzanie (-5.9 below anglophone mean)
+- [x] PCA: PC1 explains 39.6%, correlates r=0.428 with heritage — significant but not dominant
+
+### Treaty and ratification data
+- [x] Treaty ratification: CADHP 98%, DNUDPA 96%, C169 1.9% — only CAR ratified the indigenous peoples convention (2010)
+- [x] Constitutional score vs treaty ratification: r=-0.057, p=0.682 — zero correlation
+- [x] Heritage group × ratification: nearly identical across groups (~4.5 treaties each)
+
+### Commentary and qualitative signals
+- [x] COMMENTAIRE: 431/440 entries, mean 379 chars. "nation" (345), "ethni" (229), "coutum" (173) most frequent
+- [x] ARTICLES PERTINENTS: 423/440 entries. Art. 1 cited 177 times. Preamble referenced in 22%
+- [x] Naming paradox: francophone comments use "ethni" at 13.7/1000 words vs anglophone 7.2 — more discussion, less recognition
+
+### Hierarchical clustering
+- [x] k=4 clusters do NOT reproduce heritage groups. One "comprehensive recognizers" cluster mixes 6 anglophone + 2 francophone + 2 other + 1 mixed
+- [x] Tunisie is an outlier singleton (score 3)
+
+---
+
+## Milestone 1b: PDF Text Extraction + EDA — Constitution Texts — DONE
+
+**Output:** `notebooks/eda_constitution_texts.ipynb`, `data/constitution_corpus/`, `data/preamble_corpus/`, `scripts/extract_constitutions.py`, `scripts/country_mapping.json`
+
+### Extraction pipeline
+- [x] pdfplumber installed (in pyproject.toml)
+- [x] `scripts/extract_constitutions.py`: PDF → plain text, preamble extraction (skips TOC entries)
+- [x] 49/54 preambles extracted. Without: Botswana, Lesotho, Mauritius, Sierra Leone, Somalia
+- [x] `scripts/country_mapping.json`: English filename → French spreadsheet name mapping (54 entries)
+
+### Key findings
+- [x] Corpus: 54 constitutions, 1,431,765 words. Anglophone mean 44K words vs francophone 16K
+- [x] Keyword heatmap: francophone use "people/peoples" MORE (1.29/1k) than anglophone (0.61/1k) but "indigenous" LESS (0.008 vs 0.045). Anglophone use "federal" (0.38), "customary" (0.26), "traditional" (0.23) more
+- [x] Sovereignty rhetoric: francophone use "sovereignty" (0.41 vs 0.16) and "unity" (0.48 vs 0.13) far more
+- [x] Preamble analysis: francophone preambles are sovereignty-heavy (sov=12.2, id=13.5), anglophone are identity-heavy (sov=10.1, id=15.8)
+- [x] "Indivisible": 70% francophone vs 21% anglophone — strongest heritage marker
+- [x] Self-determination: only 8/54 mention it (2 franco, 2 anglo, 3 luso, 1 other). 60% of lusophone countries mention it
+- [x] Autonomy: 74% francophone vs 26% anglophone — francophone constitutions mention autonomy (to deny or limit it) more often
+
+---
+
+## Milestone 2: Constitutional Text Analysis
+
+**Done when:** Preamble rhetoric and self-determination analyses are complete, with thesis figures generated for Ch.1 S1 and Ch.5.
+
+### Ch.1 S1 — Sovereignty vs. identity rhetoric
+The thesis argues that sovereignty and identity are competing forces in African constitutional law. The preambles are where this tension is most visible.
+- [ ] Keyword co-occurrence analysis: "unite/un/indivisible" near "peuple(s)/ethnie/tribu/communauté/nation"
+- [ ] Sovereignty clause frequency by heritage group (bar chart)
+- [ ] Build `scripts/analyze_preambles.py`
+- [ ] Generate thesis figure: sovereignty-identity tension matrix (54 countries × indicators)
+
+### Ch.1 S2 — Enhancement: naming analysis
+The existing dashboard shows WHAT dimensions are recognized. This adds HOW constitutions name sub-state groups.
+- [ ] Extract group-naming terminology from `COMMENTAIRE` column in source spreadsheet
+- [ ] Produce a "lexical map": which terms each constitution uses (ethnie, tribu, communauté, peuple, autochtone, minorité)
+- [ ] Thesis figure or dashboard enhancement
+
+### Ch.5 — Self-determination language
+Art. 20(1) of the Charter guarantees peoples' right to self-determination. How do constitutions position themselves?
+- [ ] NLP on 54 PDFs: detect "self-determination", "autodetermination", "secession" provisions
+- [ ] Classify each constitution: (a) silent, (b) prohibits secession, (c) recognizes internal self-determination, (d) permits external self-determination (Ethiopia only)
+- [ ] Thesis figure: 54-country map of self-determination posture
+- [ ] Pre/post-Ogyek evolution (if case law dataset from M3 available)
+
+**Infrastructure:** Regex-based keyword analysis (no ML needed for this corpus size). Upgrade to spaCy only if keyword precision proves insufficient.
+
+**Serves:** Ch.1, Ch.5.
+
+---
+
+## Milestone 3: ACHPR Case Law Dataset
+
+**Done when:** A structured, coded dataset of ACHPR/African Court decisions on peoples' rights exists and supports timeline visualization.
+
+**Why this is critical:** The thesis's central argument is that the ACHPR *constructed* the sub-state peoples category through case law. Without a structured dataset, this claim rests on qualitative reading alone. A coded dataset makes the progressive emergence of the functional criterion visible and auditable.
+
+### Dataset design
+- [ ] Design coding schema: `case_number`, `date`, `session`, `parties`, `respondent_state`, `articles_invoked`, `articles_violated`, `peoples_qualification` (bool), `functional_criterion` (bool), `cross_system_citations`, `outcome`, `reparations`
+- [ ] Create `data/achpr_cases.xlsx` (or .json) with the schema
+- [ ] Build `scripts/process_caselaw.py` for validation and JSON export
+
+### Initial coding (from existing sources)
+The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-81.
+- [ ] Extract structured data from `Communication 298 copie.docx` (Lower Omo, Nuba — the two most important cases)
+- [ ] Extract from `Note RJCDI n°102.docx` (African Court, 77th session)
+- [ ] Extract from `RJDCI n°104.docx` (sessions 76-81)
+- [ ] Victor codes landmark cases not in the docx files: Endorois (2010), Ogyek (2017), earlier hesitations
+
+### Visualization
+- [ ] Interactive case law timeline: decisions over time, color-coded by functional criterion application
+- [ ] Article invocation frequency chart (art. 19, 20, 21, 22, 23, 24 over time)
+- [ ] Decision: integrate into dashboard as new section, or produce as standalone thesis figures?
+
+**Bottleneck:** Victor must do the substantive legal coding. The project provides infrastructure and visualization. Design a minimal schema — do not over-code.
+
+**Serves:** Ch.3 (primary), Ch.4, Ch.5, Ch.7, Ch.8 (all reference case law).
+
+---
+
+## Milestone 4: Constitutional Model Typology
+
+**Done when:** Clustering analysis produces an empirical typology of constitutional models, and the treaty coverage gap is visualized.
+
+### Ch.2 S1 — Treaty coverage gap
+The thesis argues that no single international regime covers the full range. The data already exists in `ratif_data`.
+- [ ] Upset plot or Venn diagram: treaty ratification combinations across 54 countries
+- [ ] Correlation analysis: does ratifying UNDRIP predict higher Dpa scores? (Hypothesis: no)
+- [ ] Integrate into redesigned scatter plot (M0 Phase 4)
+
+### Ch.2 S2 — Enhancement: empirical clustering
+Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals constitutional *output* patterns.
+- [ ] Hierarchical clustering on the feature matrix (scipy/sklearn)
+- [ ] Identify emergent constitutional model types (e.g., "comprehensive recognizers", "selective recognizers", "silent constitutions")
+- [ ] Do some francophone countries cluster with anglophone ones post-2000? (Key thesis test)
+- [ ] Thesis figure: dendrogram + cluster profiles
+
+### Ch.6 — Enhancement: institutional architecture typology
+Beyond the 4 binary dimensions (Dc/Dau/F/PJ), classify countries by institutional model.
+- [ ] Semi-automatic classification from `COMMENTAIRE` column: unitary centralized, unitary decentralized, quasi-federal, federal, special autonomy
+- [ ] Thesis figure or map overlay with 5-type classification
+
+**Infrastructure:** `pip install scikit-learn` (or numpy/scipy — clustering is ~10 lines of code).
+
+**Serves:** Ch.2, Ch.6.
+
+---
+
+## Milestone 5: Case Law Analysis
+
+**Done when:** Functional criterion emergence and cross-system citation patterns are visualized.
+
+**Depends on:** Milestone 3 (case law dataset must be substantially populated).
+
+### Ch.3 — Functional criterion emergence
+- [ ] Timeline visualization: when did key legal formulations first appear?
+- [ ] Track: "peoples as distinct from state people" (Lower Omo §177), "identity markers and specific status" (Nuba §236)
+- [ ] Pre-Ogyek hesitations vs. post-Ogyek stabilization — is the break visible in the data?
+
+### Ch.4 S1 — Doctrinal concept mapping
+- [ ] Extract references to: "identité complexe", "droits collectifs", "protection systémique", "lecture relationnelle" from case law notes
+- [ ] Frequency and first-appearance chart
+
+### Ch.4 S2 — Cross-system citation analysis
+The ACHPR cites other systems via articles 60-61. The case law notes document these citations.
+- [ ] Extract all cross-system citations from coded dataset
+- [ ] Citation network: which systems does the ACHPR draw from, for which rights?
+- [ ] Thesis figure: Sankey diagram or directed graph
+
+**Serves:** Ch.3, Ch.4.
+
+---
+
+## Milestone 6: Extended Constitutional Coding
+
+**Done when:** New dimensions for Ch.7 and Ch.8 are extracted from PDFs and visualized.
+
+**Depends on:** Milestone 1 (PDF extraction pipeline).
+
+### Ch.7 — Territorial and resource rights
+- [ ] NLP on 54 PDFs: land rights, natural resources, environmental protection, traditional land tenure provisions
+- [ ] New dimension(s) added to dataset
+- [ ] Thesis figure: map or heatmap overlay
+- [ ] **Deferred:** Extractive industries correlation (external data, methodological risk — only if time permits)
+
+### Ch.8 — Cultural rights depth
+The existing Drc dimension is binary (X/P/V). Constitutional cultural rights provisions vary enormously.
+- [ ] NLP to classify cultural rights type: linguistic rights, cultural practice protection, cultural institutions, heritage protection
+- [ ] Sub-dimension breakdown of Drc (3-4 sub-categories)
+- [ ] Language provisions depth: how many languages recognized, what status (official/national/regional)?
+- [ ] Thesis figure: language recognition count by heritage group
+
+**Serves:** Ch.7, Ch.8.
+
+---
+
+## Milestone 7: Thesis Integration & Publication
+
+**Done when:** All figures are thesis-ready, the dashboard is hosted, and the methodological appendix is generated.
+
+### Ch. préliminaire — Methodological appendix
+- [ ] Generate dataset documentation: coding scheme, dimension definitions, scoring rules
+- [ ] Summary statistics: distribution of X/P/V per dimension, coverage rates, inter-coder reliability proxy from COMMENTAIRE
+- [ ] Export as LaTeX-compatible tables
+
+### Publication
+- [ ] All thesis figures formatted for PDF (matplotlib/seaborn → LaTeX)
+- [ ] Dashboard hosted on GitHub Pages or university server
+- [ ] French/English language toggle
+- [ ] Citation metadata (BibTeX, DOI)
+- [ ] Data download (CSV export)
+- [ ] Guided tour for committee members
+
+---
+
+## Chapter Coverage Summary
+
+| Chapter | Status | Contribution | Milestone |
+|---------|--------|-------------|-----------|
+| Ch. prélim. | Planned | Methodological appendix, dataset documentation | M7 |
+| Ch.1 S1 | Planned | Preamble sovereignty rhetoric, naming analysis | M2 |
+| Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries × 439 texts (map, heatmap, bio) | M0 |
+| Ch.2 S1 | Partial | Treaty coverage gap, redesigned scatter | M0+M4 |
+| Ch.2 S2 | **Delivered** | Heritage determinism (divergence charts, heatmap) + clustering enhancement | M0+M4 |
+| Ch.3 | Planned | Case law timeline, functional criterion emergence | M3+M5 |
+| Ch.4 | Planned | Doctrinal concept mapping, cross-system citation network | M5 |
+| Ch.5 | Planned | Self-determination language in constitutions | M2 |
+| Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement | M0+M4 |
+| Ch.7 | Planned | Territorial/resource rights provisions | M6 |
+| Ch.8 | Planned | Cultural rights sub-dimensions, language depth | M6 |
+
+---
+
+## Priority Order
+
+**Recommended execution order**, balancing impact, dependencies, and the case law coding bottleneck:
+
+1. **M0** — Dashboard completion (finish what's started)
+2. **M1a** — EDA on constitutional dataset (understand the data before building on it)
+3. **M1b** — PDF extraction + corpus EDA (unlocks all NLP work)
+4. **M3** — Case law dataset schema + initial coding (start early — legal coding is slow, runs in background)
+5. **M2** — Preamble/self-determination NLP (high-impact, informed by M1b EDA)
+6. **M4** — Constitutional clustering + treaty gap (informed by M1a EDA)
+7. **M5** — Case law analysis (depends on M3 progress)
+8. **M6** — Extended constitutional coding (if time permits)
+9. **M7** — Thesis integration (final)
+
+**If time is limited:** Completing M0, M1a/b, M2–M4 covers 6 of 8 chapters (Ch.1, Ch.2, Ch.3 partially, Ch.5, Ch.6, and Ch. prélim.). M5–M7 are high-value but not essential for the defense.
+
+---
+
+## Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| **Case law coding bottleneck** | M3/M5 depend on Victor reading and coding each ACHPR decision | Minimal schema, start early, code 2-3 cases per session |
+| **PDF extraction quality** | OCR artifacts, non-English content, formatting issues in 54 PDFs | Spot-check 10 countries before building full pipeline |
+| **Dashboard architecture limits** | Vanilla JS / file:// cannot easily host case law timeline or citation networks | Static thesis figures (matplotlib) for complex new visualizations; dashboard for the core constitutional data |
+| **Scope creep** | 8 chapters × multiple analyses per chapter = unbounded work | Strict milestone ordering; M6 items are optional enhancements |
+| **Extractive industries correlation (Ch.7)** | External data + causality claims are methodologically risky in a legal thesis | Defer unless specifically needed; constitutional provisions analysis alone is sufficient |
+
+---
+
+## Known Issues
+
+*Deferred findings from the dashboard. Each has a target phase.*
+
+### Visual
+| Issue | Impact | Target | Status |
+|-------|--------|--------|--------|
+| **Scatter plot hard to read** | Overlapping labels, unclear thesis story | M0 Phase 4 | Deferred |
+| **No colorblind support** | Heritage distinction color-only (~8% male users) | M0 Phase 5 | Deferred |
+| **No keyboard navigation** | Inaccessible to keyboard users | M0 Phase 5 | Deferred |
+| **Dimension deselection silent** | Min-1 constraint re-adds Drm without feedback | M0 Phase 5 | Deferred |
+
+### Data
+| Issue | Impact | Target | Status |
+|-------|--------|--------|--------|
+| ~~**Source spreadsheet: CAR C169 = X**~~ | Was X, should be V (ratified 30 Aug 2010) | — | **Fixed** (spreadsheet + data.js) |
+| **Year slider starts at 1930** | Liberia has data from 1847 — gap undocumented | M0 Phase 5 | Deferred |
+| **Guinea/Mali in_force=false** | Constitutions may be suspended after coups | M0 Phase 5 | Verify with researcher |
+| **No NLP libraries installed** | M1/M2 require pdfplumber at minimum | M1 | Planned |
+
+### Code
+| Issue | Impact | Target | Status |
+|-------|--------|--------|--------|
+| **HERITAGE_COLORS not centralized** | 12 gradient intermediates in JS constants | — | By design |
+| **13 hardcoded colors in styles.css** | Should use CSS variables | M0 Phase 5 | Deferred |
+| **4 unused CSS reader properties** | CSS.bg, CSS.card, CSS.c0, CSS.c2 never used in JS | M0 Phase 5 | Deferred |
+| **8 undocumented DATA keys** | TECHNICAL.md doesn't list adoption, decade_counts, etc. | M0 Phase 5 | Deferred |
+
+### UX
+| Issue | Impact | Target | Status |
+|-------|--------|--------|--------|
+| **Mode switch scope not explained** | Users may expect all charts to change | M0 Phase 5 | Deferred |
+| **"mixed" vs "other" heritage undocumented** | Cameroun is "mixed" but looks identical to "other" | M0 Phase 5 | Deferred |
+
+---
+
+## Architecture Decisions
+
+| Date | Decision | Rationale |
+|------|----------|-----------|
+| 2026-03-20 | Single-page visualization (no server) | Must work via `file://` for portability |
+| 2026-03-20 | D3.js v7 (CDN) | Industry standard, no bundler needed |
+| 2026-03-20 | Inline data (data.js) | CORS blocks `fetch()` on `file://` |
+| 2026-03-20 | No ES modules | `closeBio()` called from HTML onclick, must be global |
+| 2026-03-20 | Heritage-keyed color gradients | Heritage PREDICTS score — encoding both makes correlation preattentive |
+| 2026-03-20 | Light academic theme | PhD committee audience |
+| 2026-03-20 | CSS custom properties + JS reader | Centralized theme |
+| 2026-03-20 | Feature order: rarest → most common | Rare features on the left draw attention |
+| 2026-03-20 | File separation (monolith → 4 files) | MLTPHP |
+| 2026-03-20 | Divergence annotations in tooltips | Contextual > static |
+| 2026-03-20 | KB overhaul — thesis-aligned structure | All KB at root, THESIS.md, review sub-agents, thesis-aligned roadmap |
+| 2026-03-20 | Static figures for complex new visualizations | Dashboard stays focused on constitutional data; case law timeline, citation networks → matplotlib for thesis PDF |
+| 2026-03-20 | Regex-first NLP, upgrade only if needed | 54 documents is a small corpus; keyword analysis sufficient before investing in spaCy/transformers |
