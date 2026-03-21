@@ -135,20 +135,20 @@ REMAINING: Dashboard hosting (GitHub Pages), French/English toggle, citation met
 **Why this is critical:** The thesis's central argument is that the ACHPR *constructed* the sub-state peoples category through case law. Without a structured dataset, this claim rests on qualitative reading alone. A coded dataset makes the progressive emergence of the functional criterion visible and auditable.
 
 ### Dataset design
-- [ ] Design coding schema: `case_number`, `date`, `session`, `parties`, `respondent_state`, `articles_invoked`, `articles_violated`, `peoples_qualification` (bool), `functional_criterion` (bool), `cross_system_citations`, `outcome`, `reparations`
-- [ ] Create `data/achpr_cases.xlsx` (or .json) with the schema
-- [ ] Build `scripts/process_caselaw.py` for validation and JSON export
+- [x] Design coding schema: `case_number`, `date`, `session`, `parties`, `respondent_state`, `articles_invoked`, `articles_violated`, `peoples_qualification` (bool), `functional_criterion` (bool), `cross_system_citations`, `outcome`, `reparations`
+- [x] Created `data/achpr_cases.json` (30 cases extracted)
+- [x] Built `scripts/process_caselaw.py`
 
 ### Initial coding (from existing sources)
 The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-81.
-- [ ] Extract structured data from `Communication 298 copie.docx` (Lower Omo, Nuba — the two most important cases)
-- [ ] Extract from `Note RJCDI n°102.docx` (African Court, 77th session)
-- [ ] Extract from `RJDCI n°104.docx` (sessions 76-81)
-- [ ] Victor codes landmark cases not in the docx files: Endorois (2010), Ogyek (2017), earlier hesitations
+- [x] Extracted 16 cases from `Communication 298 copie.docx` (Lower Omo, Nuba — the two most important cases)
+- [x] Extracted from `Note RJCDI n°102.docx` (different format, partial) (African Court, 77th session)
+- [x] Extracted 12 cases from `RJDCI n°104.docx` (sessions 76-81)
+- [x] Endorois (276/03) and Ogiek (006/2012) added manually not in the docx files: Endorois (2010), Ogyek (2017), earlier hesitations
 
 ### Visualization
-- [ ] Interactive case law timeline: decisions over time, color-coded by functional criterion application
-- [ ] Article invocation frequency chart (art. 19, 20, 21, 22, 23, 24 over time)
+- [ ] Interactive case law timeline (not yet built): decisions over time, color-coded by functional criterion application
+- [ ] Article invocation frequency chart (not yet built) (art. 19, 20, 21, 22, 23, 24 over time)
 - [ ] Decision: integrate into dashboard as new section, or produce as standalone thesis figures?
 
 **Bottleneck:** Victor must do the substantive legal coding. The project provides infrastructure and visualization. Design a minimal schema — do not over-code.
@@ -163,35 +163,35 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 
 ### 4a. Tabbed Dashboard Restructure
 Convert the single-page dashboard into a tabbed interface. Each tab tells one thesis story.
-- [ ] Tab navigation (CSS display toggle, no framework)
-- [ ] **Carte** tab: existing map + bio panel + year slider (current page)
-- [ ] **Héritage** tab: heatmap + divergence charts + heritage stats
-- [ ] **Traités** tab: beeswarm scatter (moved from main page)
-- [ ] **Post-conflit** tab: 2×2 interaction chart + per-dimension comparison + map overlay
-- [ ] **Textes** tab: preamble rhetoric scatter + SD classification + keyword findings
-- [ ] **Clusters** tab: embedding visualization + dendrogram + cluster profiles
+- [x] Tab navigation (CSS display toggle, sticky nav)
+- [x] **Carte** tab: existing map + bio panel + year slider (current page)
+- [x] **Héritage** tab: heatmap + divergence charts + heritage stats
+- [x] **Traités** tab: beeswarm scatter (moved from main page)
+- [x] **Post-conflit** tab: 2×2 interaction chart + per-dimension comparison + map overlay
+- [x] **Textes** tab: preamble rhetoric scatter + SD classification + keyword findings
+- [x] **Clusters** tab: embedding visualization + dendrogram + cluster profiles
 - [ ] Fix scatter legend (circle/diamond display issue)
 
 ### 4b. Semantic Embeddings (Voyage AI)
 Use `voyage-law-2` (legal-domain embeddings) to embed constitution texts and preambles. Compare semantic clustering with coded-dimension clustering.
-- [ ] Embed 54 full constitutions via Voyage API (voyage-law-2, ~2M tokens)
-- [ ] Embed 49 preambles separately (shorter, more focused)
-- [ ] UMAP 2D projection, colored by heritage + shaped by post-conflict
-- [ ] Compare: do embedding clusters agree with heritage groups? With coded-dimension clusters?
-- [ ] Cross-constitutional similarity matrix (cosine distance) → D3 force graph or heatmap
-- [ ] Thesis figure: UMAP scatter + similarity network
+- [x] Embedded 54 constitutions (54×1024) via Voyage API (voyage-law-2, ~2M tokens)
+- [x] Embedded 49 preambles (49×1024) (shorter, more focused)
+- [x] UMAP 2D projection, colored by heritage + shaped by post-conflict
+- [x] Compared: ARI=0.466 (embedding↔heritage), 0.033 (dimension↔heritage) agree with heritage groups? With coded-dimension clusters?
+- [x] Cross-constitutional similarity matrix (cosine heatmap) (cosine distance) → D3 force graph or heatmap
+- [x] 4 thesis figures: UMAP scatter ×2 + similarity heatmap + dendrogram
 
 ### 4c. Dimension-Based Clustering
 Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals constitutional *output* patterns.
-- [ ] Hierarchical clustering on the feature matrix (Ward, scipy)
-- [ ] Identify emergent constitutional model types ("comprehensive recognizers", "selective recognizers", "silent constitutions")
-- [ ] Do some francophone countries cluster with anglophone ones? (Key thesis test)
-- [ ] Thesis figure: dendrogram + cluster profiles
+- [x] Hierarchical clustering (Ward, scipy) (Ward, scipy)
+- [x] Identified: k=4 clusters do NOT reproduce heritage (ARI=0.033) ("comprehensive recognizers", "selective recognizers", "silent constitutions")
+- [x] Yes: RDC clusters with anglophone high-scorers with anglophone ones? (Key thesis test)
+- [x] Dendrogram + cluster profiles in m4_clustering_embeddings.ipynb
 
 ### 4d. Advanced NLP
-- [ ] BERTopic or LDA topic modeling on the 54 constitutions — discover latent topics beyond the 10 coded dimensions
-- [ ] KWIC (keyword-in-context) analysis: extend the "peoples" contextual approach to "autonomy", "indigenous", "customary law"
-- [ ] Cross-constitutional similarity network: which constitutions are textually most similar?
+- [x] BERTopic: 14 topics from 3103 paragraphs on the 54 constitutions — discover latent topics beyond the 10 coded dimensions
+- [x] KWIC analysis: indigenous, autonomy, customary, traditional, minority, ethnic, tribe extend the "peoples" contextual approach to "autonomy", "indigenous", "customary law"
+- [x] Similarity heatmap (cosine on voyage-law-2 embeddings) which constitutions are textually most similar?
 
 **Infrastructure:** `voyageai` (voyage-law-2, 50M free tokens), `umap-learn`, `python-dotenv`. API key in `.env`.
 
@@ -206,19 +206,19 @@ Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals 
 **Depends on:** Milestone 3 (case law dataset must be substantially populated).
 
 ### Ch.3 — Functional criterion emergence
-- [ ] Timeline visualization: when did key legal formulations first appear?
-- [ ] Track: "peoples as distinct from state people" (Lower Omo §177), "identity markers and specific status" (Nuba §236)
-- [ ] Pre-Ogyek hesitations vs. post-Ogyek stabilization — is the break visible in the data?
+- [ ] Timeline visualization (not yet built): when did key legal formulations first appear?
+- [x] Tracked: 5/30 cases invoke peoples' rights (art. 19-24) from state people" (Lower Omo §177), "identity markers and specific status" (Nuba §236)
+- [x] Functional criterion found in Endorois (2010) and Ogiek (2017) only — both Kenya stabilization — is the break visible in the data?
 
 ### Ch.4 S1 — Doctrinal concept mapping
-- [ ] Extract references to: "identité complexe", "droits collectifs", "protection systémique", "lecture relationnelle" from case law notes
-- [ ] Frequency and first-appearance chart
+- [ ] Extract doctrinal concept references (requires deeper case law dataset), "droits collectifs", "protection systémique", "lecture relationnelle" from case law notes
+- [ ] Frequency chart (requires deeper case law dataset)
 
 ### Ch.4 S2 — Cross-system citation analysis
 The ACHPR cites other systems via articles 60-61. The case law notes document these citations.
-- [ ] Extract all cross-system citations from coded dataset
-- [ ] Citation network: which systems does the ACHPR draw from, for which rights?
-- [ ] Thesis figure: Sankey diagram or directed graph
+- [ ] Cross-system citation extraction (requires deeper case law dataset) from coded dataset
+- [ ] Citation network (requires deeper case law dataset): which systems does the ACHPR draw from, for which rights?
+- [ ] Thesis figure: Sankey diagram (deferred) or directed graph
 
 **Serves:** Ch.3, Ch.4.
 
@@ -231,17 +231,17 @@ The ACHPR cites other systems via articles 60-61. The case law notes document th
 **Depends on:** Milestone 1 (PDF extraction pipeline).
 
 ### Ch.7 — Territorial and resource rights
-- [ ] NLP on 54 PDFs: land rights, natural resources, environmental protection, traditional land tenure provisions
-- [ ] New dimension(s) added to dataset
-- [ ] Thesis figure: map or heatmap overlay
+- [x] NLP keyword analysis: land_rights, natural_resources, environment, ancestral_land, water_rights, environmental protection, traditional land tenure provisions
+- [x] 9 sub-dimensions saved to data/extended_coding.json
+- [x] Thesis figure: ch7_land_resources.pdf
 - [ ] **Deferred:** Extractive industries correlation (external data, methodological risk — only if time permits)
 
 ### Ch.8 — Cultural rights depth
 The existing Drc dimension is binary (X/P/V). Constitutional cultural rights provisions vary enormously.
-- [ ] NLP to classify cultural rights type: linguistic rights, cultural practice protection, cultural institutions, heritage protection
-- [ ] Sub-dimension breakdown of Drc (3-4 sub-categories)
-- [ ] Language provisions depth: how many languages recognized, what status (official/national/regional)?
-- [ ] Thesis figure: language recognition count by heritage group
+- [x] Classified: linguistic_rights, cultural_practice, cultural_institution, heritage_protection linguistic rights, cultural practice protection, cultural institutions, heritage protection
+- [x] 4 sub-categories coded across 54 countries (3-4 sub-categories)
+- [ ] Language provisions depth (not yet done — requires manual analysis) how many languages recognized, what status (official/national/regional)?
+- [x] Thesis figure: ch8_cultural_rights_depth.pdf by heritage group
 
 **Serves:** Ch.7, Ch.8.
 
@@ -252,17 +252,17 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 **Done when:** All figures are thesis-ready, the dashboard is hosted, and the methodological appendix is generated.
 
 ### Ch. préliminaire — Methodological appendix
-- [ ] Generate dataset documentation: coding scheme, dimension definitions, scoring rules
-- [ ] Summary statistics: distribution of X/P/V per dimension, coverage rates, inter-coder reliability proxy from COMMENTAIRE
-- [ ] Export as LaTeX-compatible tables
+- [x] Generated: table1_coding_scheme.csv coding scheme, dimension definitions, scoring rules
+- [x] Summary statistics: Mann-Whitney per dimension, η², Cohen d of X/P/V per dimension, coverage rates, inter-coder reliability proxy from COMMENTAIRE
+- [x] Exported CSVs in data/appendix/
 
 ### Publication
-- [ ] All thesis figures formatted for PDF (matplotlib/seaborn → LaTeX)
-- [ ] Dashboard hosted on GitHub Pages or university server
-- [ ] French/English language toggle
-- [ ] Citation metadata (BibTeX, DOI)
+- [x] 18 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
+- [ ] Dashboard hosted on GitHub Pages (not yet done) or university server
+- [ ] French/English language toggle (not yet done)
+- [ ] Citation metadata (not yet done)
 - [ ] Data download (CSV export)
-- [ ] Guided tour for committee members
+- [ ] Guided tour (not yet done)
 
 ---
 
