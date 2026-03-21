@@ -272,6 +272,18 @@ function renderMap() {
   const path = d3.geoPath().projection(proj);
   const g = svg.append('g');
 
+  // Zoom + pan
+  const resetBtn = document.getElementById('zoom-reset');
+  const zoom = d3.zoom()
+    .scaleExtent([1, 8])
+    .on('zoom', (ev) => {
+      g.attr('transform', ev.transform);
+      if (resetBtn) resetBtn.style.display = ev.transform.k > 1.05 ? 'block' : 'none';
+    });
+  svg.call(zoom);
+  svg.on('dblclick.zoom', null);
+  if (resetBtn) resetBtn.addEventListener('click', () => svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity));
+
   // Background (non-African or non-data countries)
   const dataIsos = new Set(Object.values(DATA.name_to_iso));
   dataIsos.add('SOL'); // Somaliland → part of Somalia
