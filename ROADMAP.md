@@ -17,7 +17,8 @@ DONE: M1b — PDF extraction + corpus EDA (54 texts, 1.4M words, 49 preambles)
 DONE: First deep review — findings integrated into Known Issues
 DONE: M0 Phase 4 — Scatter plot beeswarm redesign (treaty irrelevance, click→bio)
 DONE: M3 start — ACHPR case law schema + processing script
-NEXT: M2 — Preamble sovereignty/identity analysis (Ch.1 S1) + self-determination classification (Ch.5)
+DONE: M2 — 7 thesis figures: preamble rhetoric, naming analysis, self-determination classification
+NEXT: M4 — Constitutional clustering + treaty gap analysis
 
 ---
 
@@ -99,31 +100,24 @@ NEXT: M2 — Preamble sovereignty/identity analysis (Ch.1 S1) + self-determinati
 
 ---
 
-## Milestone 2: Constitutional Text Analysis
+## Milestone 2: Constitutional Text Analysis — DONE
 
-**Done when:** Preamble rhetoric and self-determination analyses are complete, with thesis figures generated for Ch.1 S1 and Ch.5.
+**Output:** `notebooks/m2_constitutional_text_analysis.ipynb`, 7 figures in `data/figures/`
 
 ### Ch.1 S1 — Sovereignty vs. identity rhetoric
-The thesis argues that sovereignty and identity are competing forces in African constitutional law. The preambles are where this tension is most visible.
-- [ ] Keyword co-occurrence analysis: "unite/un/indivisible" near "peuple(s)/ethnie/tribu/communauté/nation"
-- [ ] Sovereignty clause frequency by heritage group (bar chart)
-- [ ] Build `scripts/analyze_preambles.py`
-- [ ] Generate thesis figure: sovereignty-identity tension matrix (54 countries × indicators)
+- [x] Preamble sovereignty/identity scatter with heritage group means (Fig. 1)
+- [x] Balance bar chart: identity − sovereignty per 1k words, 49 countries sorted (Fig. 2)
+- [x] Sovereignty markers by heritage: "indivisible" 70% franco vs 21% anglo (Fig. 3)
 
-### Ch.1 S2 — Enhancement: naming analysis
-The existing dashboard shows WHAT dimensions are recognized. This adds HOW constitutions name sub-state groups.
-- [ ] Extract group-naming terminology from `COMMENTAIRE` column in source spreadsheet
-- [ ] Produce a "lexical map": which terms each constitution uses (ethnie, tribu, communauté, peuple, autochtone, minorité)
-- [ ] Thesis figure or dashboard enhancement
+### Ch.1 S2 — Naming analysis
+- [x] Heritage × naming terminology heatmap: people, peoples, ethnic, tribe, indigenous, etc. (Fig. 4)
+- [x] "people" vs "peoples" scatter + bar — singular sovereign vs plural rights-bearing (Fig. 5)
 
-### Ch.5 — Self-determination language
-Art. 20(1) of the Charter guarantees peoples' right to self-determination. How do constitutions position themselves?
-- [ ] NLP on 54 PDFs: detect "self-determination", "autodetermination", "secession" provisions
-- [ ] Classify each constitution: (a) silent, (b) prohibits secession, (c) recognizes internal self-determination, (d) permits external self-determination (Ethiopia only)
-- [ ] Thesis figure: 54-country map of self-determination posture
-- [ ] Pre/post-Ogyek evolution (if case law dataset from M3 available)
-
-**Infrastructure:** Regex-based keyword analysis (no ML needed for this corpus size). Upgrade to spaCy only if keyword precision proves insufficient.
+### Ch.5 — Self-determination classification
+- [x] 7-category posture classification: external SD, internal SD, mentioned, autonomy, indivisible+autonomy, indivisible, silent
+- [x] Posture stacked bar by heritage (Fig. 6)
+- [x] Binary flags heatmap: 54 countries × 4 markers (Fig. 7)
+- [ ] Pre/post-Ogyek evolution (requires M3 case law dataset — deferred)
 
 **Serves:** Ch.1, Ch.5.
 
