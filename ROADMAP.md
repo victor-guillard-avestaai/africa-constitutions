@@ -405,8 +405,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 ### Methodology
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
-| **Religion analysis unverifiable** | THESIS.md Insight #11 claims η² increment, KW p-value, within-heritage means — no notebook preserves the computation or religion coding | Next | Needs dedicated notebook cell |
-| **Extended coding has no notebook** | THESIS.md Insight #10 p-values verified by recomputation from `extended_coding_v2.json` but no notebook runs the analysis | Next | Needs dedicated notebook cell |
+| ~~**Religion analysis unverifiable**~~ | Now computed in EDA notebook (cell 40) with `scripts/religion_coding.json`. η² increment=2.0%, KW p=0.45 | — | **Fixed** |
+| ~~**Extended coding has no notebook**~~ | Now computed in EDA notebook (cell 38) from `data/extended_coding_v2.json`. All cultural p>0.10 confirmed | — | **Fixed** |
 | **Post-conflict borderline codings** | Sierra Leone (1991 constitution predates civil war) and Liberia (1986 constitution predates civil wars) are borderline per the stated criterion | — | Needs legal validation by Alex |
 
 ### Documentation
