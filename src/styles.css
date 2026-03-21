@@ -690,6 +690,38 @@ footer {
   .tt, .div-tt { max-width: calc(100vw - 2rem); }
 }
 
+/* ─── Figure Cards ───────────────────────────────────────── */
+.fig-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem;
+  max-width: 480px;
+  position: relative;
+}
+
+.fig-card img {
+  border-radius: 4px;
+  display: block;
+}
+
+.fig-dl {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font);
+}
+
+.fig-dl:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
 /* ─── Print Stylesheet ───────────────────────────────────── */
 @media print {
   .tab-bar { display: none; }

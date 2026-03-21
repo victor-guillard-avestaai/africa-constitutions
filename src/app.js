@@ -846,6 +846,101 @@ function renderScatter() {
 
 }
 
+// ─── Post-Conflict Interaction Chart ──────────────────────
+function renderConflictChart() {
+  if (!DATA.post_conflict) return;
+  const cont = document.getElementById('conflict-chart-container');
+  if (!cont) return;
+
+  const groups = [
+    { label: 'Francophone\nnon-conflit', heritage: 'francophone', pc: false },
+    { label: 'Francophone\npost-conflit', heritage: 'francophone', pc: true },
+    { label: 'Anglophone\nnon-conflit', heritage: 'anglophone', pc: false },
+    { label: 'Anglophone\npost-conflit', heritage: 'anglophone', pc: true },
+  ];
+
+  groups.forEach(g => {
+    const countries = DATA.feature_matrix.filter(r => {
+      const h = DATA.colonial_heritage[r.PAYS] || 'other';
+      const pc = DATA.post_conflict[r.PAYS] || false;
+      return h === g.heritage && pc === g.pc;
+    });
+    g.scores = countries.map(r => DATA.features.reduce((s, f) => s + r[f], 0));
+    g.mean = g.scores.length ? d3.mean(g.scores) : 0;
+    g.n = countries.length;
+    g.countries = countries.map(r => r.PAYS);
+  });
+
+  const M = { top: 30, right: 20, bottom: 60, left: 50 };
+  const w = 500, h = 320;
+
+  const svg = d3.select(cont).append('svg')
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${h + M.top + M.bottom}`)
+    .style('max-width', '650px');
+
+  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
+  const yS = d3.scaleLinear().domain([0, 20]).range([h, 0]);
+  const xS = d3.scaleBand().domain(groups.map(gr => gr.label)).range([0, w]).padding(0.25);
+
+  g.append('g').call(d3.axisLeft(yS).ticks(10).tickSize(-w))
+    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '11px');
+  g.selectAll('.domain').remove();
+  g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
+
+  g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -38)
+    .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '11px')
+    .text('Score moyen (sur 20)');
+
+  const scTT = d3.select('#scatter-tooltip');
+
+  g.selectAll('rect.conflict-bar').data(groups).join('rect')
+    .attr('class', 'conflict-bar')
+    .attr('x', d => xS(d.label))
+    .attr('y', d => yS(d.mean))
+    .attr('width', xS.bandwidth())
+    .attr('height', d => h - yS(d.mean))
+    .attr('fill', d => HC[d.heritage] || HC.other)
+    .attr('opacity', d => d.pc ? 1 : 0.5)
+    .attr('rx', 3)
+    .style('cursor', 'pointer')
+    .on('mouseenter', function(ev, d) {
+      scTT.html(
+        `<div class="tt-name">${d.label.replace('\n', ' ')}</div>` +
+        `<div style="font-size:0.8rem">Score moyen : <b>${d.mean.toFixed(1)}</b>/20 (n=${d.n})</div>` +
+        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.2rem">${d.countries.join(', ')}</div>`
+      ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
+    })
+    .on('mousemove', function(ev) { scTT.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px'); })
+    .on('mouseleave', function() { scTT.style('opacity', '0'); });
+
+  // Value labels on bars
+  g.selectAll('text.bar-val').data(groups).join('text')
+    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
+    .attr('y', d => yS(d.mean) - 6)
+    .attr('text-anchor', 'middle').attr('fill', CSS.text).attr('font-size', '12px').attr('font-weight', '600')
+    .text(d => d.mean.toFixed(1));
+
+  // n= labels
+  g.selectAll('text.bar-n').data(groups).join('text')
+    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
+    .attr('y', h + 16)
+    .attr('text-anchor', 'middle').attr('fill', CSS.dim).attr('font-size', '9px')
+    .text(d => `n=${d.n}`);
+
+  // X-axis labels (multi-line)
+  g.selectAll('text.bar-label').data(groups).join('text')
+    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
+    .attr('y', h + 35)
+    .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '10px')
+    .each(function(d) {
+      const lines = d.label.split('\n');
+      d3.select(this).selectAll('tspan').data(lines).join('tspan')
+        .attr('x', xS(d.label) + xS.bandwidth() / 2)
+        .attr('dy', (_, i) => i === 0 ? 0 : '1.1em')
+        .text(t => t);
+    });
+}
+
 // ─── CSV Download ─────────────────────────────────────────
 document.getElementById('download-csv')?.addEventListener('click', () => {
   const header = ['Pays','Héritage','Post-conflit','Score total',...DATA.features.map(f => DATA.feature_labels[f]),'Traités ratifiés'];
@@ -878,3 +973,4 @@ renderHeatmap();
 initHeatmapFilters();
 renderDivergence();
 renderScatter();
+renderConflictChart();
