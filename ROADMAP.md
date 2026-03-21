@@ -287,6 +287,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 **Two-tier approach:** All statistical claims (p-values, effect sizes, η²) are computed on Tier 1 (francophone n=23 vs anglophone n=19 = 42 countries). Lusophone (n=5), Other (n=7), and Mixed (n=1) are discussed as Tier 2 case studies — qualitatively, not statistically. See THESIS.md for rationale.
 
+**Post-conflict variable:** A second explanatory variable alongside heritage. Codes whether the *current constitution* (not the country) was adopted as a result of a negotiated peace process, post-war/post-genocide transition, or post-liberation state-building. 15/54 constitutions coded as post-conflict. Heritage+post-conflict together explain 54.9% of variance (vs heritage alone 22.3%). Coding with per-country justification in `scripts/post_conflict_coding.json`. Preliminary — requires legal validation.
+
 **Translation caveat:** NLP on constitution texts operates on English translations (constituteproject.org). Only anglophone constitutions are in original language. Binary detection (presence/absence of terms) is reliable; frequency comparison requires caution. See `docs/linguistic_decisions.md`.
 
 **Self-determination classification:** The 7-category posture system (M2) is keyword-based regex. It is labeled "preliminary" and requires legal validation by Victor before thesis citation.

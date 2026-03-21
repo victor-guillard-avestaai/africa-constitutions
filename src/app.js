@@ -526,11 +526,14 @@ function renderHeatmap() {
   // Build data
   let rows = DATA.feature_matrix.map(r => {
     const total = feats.reduce((s, f) => s + r[f], 0);
-    return { ...r, _total: total, _heritage: DATA.colonial_heritage[r.PAYS] || 'other' };
+    const pc = DATA.post_conflict && DATA.post_conflict[r.PAYS] || false;
+    return { ...r, _total: total, _heritage: DATA.colonial_heritage[r.PAYS] || 'other', _postConflict: pc };
   });
 
   // Filter
-  if (hmFilter !== 'all') rows = rows.filter(r => r._heritage === hmFilter);
+  if (hmFilter === 'post-conflict') rows = rows.filter(r => r._postConflict);
+  else if (hmFilter === 'non-conflict') rows = rows.filter(r => !r._postConflict);
+  else if (hmFilter !== 'all') rows = rows.filter(r => r._heritage === hmFilter);
 
   // Sort
   rows.sort((a, b) => {
