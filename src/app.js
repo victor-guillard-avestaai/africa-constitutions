@@ -704,7 +704,7 @@ function renderDivergence() {
   });
 }
 
-// ─── Scatter Plot ──────────────────────────────────────────
+// ─── Scatter Plot (Beeswarm) ──────────────────────────────
 function renderScatter() {
   const countries = [];
   for (const row of DATA.feature_matrix) {
@@ -717,25 +717,39 @@ function renderScatter() {
   }
 
   const cont = document.getElementById('scatter-container');
-  const M = { top:30, right:30, bottom:55, left:60 };
-  const w = 720, h = 480;
+  const M = { top:30, right:160, bottom:55, left:60 };
+  const w = 620, h = 500;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
-    .style('max-width','880px');
+    .style('max-width','920px');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
-  const xS = d3.scaleLinear().domain([-0.3, 6.3]).range([0, w]);
+  // X-axis: band scale for discrete treaty counts (3, 4, 5, 6)
+  const treatyCounts = [...new Set(countries.map(d => d.treatyCount))].sort();
+  const xBand = d3.scaleBand().domain(treatyCounts).range([0, w]).padding(0.15);
   const yS = d3.scaleLinear().domain([0, 20]).range([h, 0]);
 
-  // Grid
-  g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(xS).ticks(7).tickFormat(d3.format('d')))
-    .selectAll('text').attr('fill',CSS.dim).attr('font-size','11px');
+  // X-axis
+  g.append('g').attr('transform', `translate(0,${h})`)
+    .call(d3.axisBottom(d3.scalePoint().domain(treatyCounts.map(String)).range([xBand(treatyCounts[0]) + xBand.bandwidth()/2, xBand(treatyCounts[treatyCounts.length-1]) + xBand.bandwidth()/2])))
+    .selectAll('text').attr('fill',CSS.dim).attr('font-size','12px');
+
+  // Y-axis with grid
   g.append('g').call(d3.axisLeft(yS).ticks(10).tickSize(-w))
     .selectAll('text').attr('fill',CSS.dim).attr('font-size','11px');
   g.selectAll('.domain').remove();
   g.selectAll('.tick line').attr('stroke',CSS.axisGrid);
+
+  // Column count labels at top
+  treatyCounts.forEach(tc => {
+    const n = countries.filter(d => d.treatyCount === tc).length;
+    g.append('text')
+      .attr('x', xBand(tc) + xBand.bandwidth()/2).attr('y', -10)
+      .attr('text-anchor', 'middle').attr('fill', CSS.dim).attr('font-size', '10px')
+      .text(`n=${n}`);
+  });
 
   // Axis labels
   g.append('text').attr('x',w/2).attr('y',h+44).attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
@@ -745,17 +759,15 @@ function renderScatter() {
     .attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
     .text('Score constitutionnel total (sur 20)');
 
-  // Regression line (flat — no correlation)
-  const meanY = d3.mean(countries, d => d.totalScore);
-  g.append('line')
-    .attr('x1', xS(-0.2)).attr('y1', yS(meanY))
-    .attr('x2', xS(6.2)).attr('y2', yS(meanY))
-    .attr('stroke', CSS.dim).attr('stroke-width', 1.5)
-    .attr('stroke-dasharray', '8,4').attr('opacity', 0.6);
-
-  g.append('text').attr('x', xS(6.1)).attr('y', yS(meanY) - 8)
-    .attr('text-anchor', 'end').attr('fill', CSS.dim).attr('font-size', '9.5px')
-    .text(`moyenne = ${meanY.toFixed(1)}`);
+  // Mean line per column
+  treatyCounts.forEach(tc => {
+    const col = countries.filter(d => d.treatyCount === tc);
+    const colMean = d3.mean(col, d => d.totalScore);
+    g.append('line')
+      .attr('x1', xBand(tc) + 4).attr('x2', xBand(tc) + xBand.bandwidth() - 4)
+      .attr('y1', yS(colMean)).attr('y2', yS(colMean))
+      .attr('stroke', CSS.dim).attr('stroke-width', 1.5).attr('stroke-dasharray', '4,3').attr('opacity', 0.5);
+  });
 
   // Statistical annotation
   g.append('text').attr('x', w - 4).attr('y', 16)
@@ -763,20 +775,43 @@ function renderScatter() {
     .attr('font-style', 'italic')
     .text('Spearman ρ = −0,06 · p = 0,68 (non significatif)');
 
+  // Beeswarm: force-simulate within each column to avoid overlap
+  const R = 5.5;
+  countries.forEach(d => {
+    d.bx = xBand(d.treatyCount) + xBand.bandwidth() / 2;
+    d.by = yS(d.totalScore);
+    d.x = d.bx;
+    d.y = d.by;
+  });
+
+  const sim = d3.forceSimulation(countries)
+    .force('x', d3.forceX(d => d.bx).strength(0.8))
+    .force('y', d3.forceY(d => d.by).strength(1))
+    .force('collide', d3.forceCollide(R + 1.5))
+    .stop();
+
+  for (let i = 0; i < 200; i++) sim.tick();
+
+  // Clamp dots within their column band
+  countries.forEach(d => {
+    d.x = Math.max(xBand(d.treatyCount) + R + 1, Math.min(xBand(d.treatyCount) + xBand.bandwidth() - R - 1, d.x));
+    d.y = Math.max(R, Math.min(h - R, d.y));
+  });
+
   // Scatter tooltip
   const scTT = d3.select('#scatter-tooltip');
 
   // Dots
   g.selectAll('circle.scatter-dot').data(countries).join('circle')
     .attr('class','scatter-dot')
-    .attr('cx', d => xS(d.treatyCount)).attr('cy', d => yS(d.totalScore))
-    .attr('r', 5.5)
+    .attr('cx', d => d.x).attr('cy', d => d.y)
+    .attr('r', R)
     .attr('fill', d => HC[d.heritage] || HC.other)
-    .attr('opacity', 0.82)
+    .attr('opacity', 0.85)
     .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',0.5)
     .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
-      d3.select(this).attr('r',8).attr('opacity',1);
+      d3.select(this).attr('r', R + 3).attr('opacity',1);
       scTT.html(
         `<div class="tt-name">${d.name}</div>` +
         `<div style="font-size:0.8rem;margin-top:0.15rem">Score constitutionnel : <b>${d.totalScore}</b>/20</div>` +
@@ -786,28 +821,34 @@ function renderScatter() {
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function() { d3.select(this).attr('r',5.5).attr('opacity',0.82); scTT.style('opacity','0'); })
+    .on('mouseleave', function() { d3.select(this).attr('r', R).attr('opacity',0.85); scTT.style('opacity','0'); })
     .on('click', function(ev, d) { scTT.style('opacity','0'); openBio(d.name); });
 
-  // Force-directed label placement to avoid overlap
-  const labelData = countries.map(d => ({
-    name: d.name, heritage: d.heritage,
-    x: xS(d.treatyCount), y: yS(d.totalScore),
-    tx: xS(d.treatyCount) + 8, ty: yS(d.totalScore) + 3,
+  // Labels: position to the right of each dot, force-simulated to avoid overlap
+  const labelNodes = countries.map(d => ({
+    name: d.name, dotX: d.x, dotY: d.y, heritage: d.heritage,
+    x: d.x + R + 3, y: d.y + 3,
   }));
 
-  const sim = d3.forceSimulation(labelData)
-    .force('x', d3.forceX(d => d.x + 8).strength(0.3))
-    .force('y', d3.forceY(d => d.y + 3).strength(0.3))
-    .force('collide', d3.forceCollide(7))
+  const labelSim = d3.forceSimulation(labelNodes)
+    .force('x', d3.forceX(d => d.dotX + R + 30).strength(0.15))
+    .force('y', d3.forceY(d => d.dotY).strength(0.6))
+    .force('collide', d3.forceCollide(5.5))
     .stop();
 
-  for (let i = 0; i < 120; i++) sim.tick();
+  for (let i = 0; i < 200; i++) labelSim.tick();
 
-  g.selectAll('text.sl').data(labelData).join('text')
+  // Leader lines from dot to label
+  g.selectAll('line.sl-leader').data(labelNodes).join('line')
+    .attr('class', 'sl-leader')
+    .attr('x1', d => d.dotX + R).attr('y1', d => d.dotY)
+    .attr('x2', d => d.x - 2).attr('y2', d => d.y - 2)
+    .attr('stroke', CSS.dim).attr('stroke-width', 0.4).attr('opacity', 0.4);
+
+  g.selectAll('text.sl').data(labelNodes).join('text')
     .attr('class', 'sl')
-    .attr('x', d => Math.max(8, Math.min(w - 40, d.x)))
-    .attr('y', d => Math.max(10, Math.min(h - 4, d.y)))
+    .attr('x', d => d.x)
+    .attr('y', d => d.y)
     .attr('fill', CSS.muted).attr('font-size', '7.5px')
     .text(d => d.name);
 }
