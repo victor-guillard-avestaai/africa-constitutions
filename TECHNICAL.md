@@ -28,10 +28,13 @@ Single-page interactive visualization dashboard. No build system, no bundler, no
 - **pandas, numpy** — data manipulation
 - **matplotlib, seaborn** — thesis figures
 - **scipy, scikit-learn** — statistics, clustering, PCA
+- **voyageai** — legal-domain embeddings (voyage-law-2) for semantic clustering
+- **umap-learn** — dimensionality reduction for embedding visualization
 - **openpyxl** — Excel spreadsheet reading
 - **pdfplumber** — PDF text extraction (constitution texts)
 - **python-docx** — Word document reading (case law notes)
-- **ipykernel** — Jupyter notebook support
+- **python-dotenv** — API key management (.env)
+- **ipykernel, nbconvert** — Jupyter notebook support
 
 ## File structure
 
@@ -44,6 +47,9 @@ pyproject.toml        — Python dependencies (managed by uv)
 Makefile              — Development commands
 notebooks/
   eda_constitutional_dataset.ipynb  — EDA on the structured dataset
+  eda_constitution_texts.ipynb      — EDA on the PDF corpus
+  m2_constitutional_text_analysis.ipynb — Ch.1/Ch.5 text analysis (7 figures)
+  post_conflict_analysis.ipynb      — Post-conflict interaction analysis
 src/
   index.html          — HTML skeleton (~160 lines)
   styles.css          — All CSS (~660 lines)

@@ -10,15 +10,10 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ## This Week (2026-03-21)
 
-DONE: KB overhaul — thesis-aligned structure, root-level KB files, review system upgrade
-DONE: Thesis-aligned roadmap with 8 milestones + 2 EDA milestones
-DONE: M1a — EDA on constitutional dataset (key findings in THESIS.md "Key Insights")
-DONE: M1b — PDF extraction + corpus EDA (54 texts, 1.4M words, 49 preambles)
-DONE: First deep review — findings integrated into Known Issues
-DONE: M0 Phase 4 — Scatter plot beeswarm redesign (treaty irrelevance, click→bio)
-DONE: M3 start — ACHPR case law schema + processing script
-DONE: M2 — 7 thesis figures: preamble rhetoric, naming analysis, self-determination classification
-NEXT: M4 — Constitutional clustering + treaty gap analysis
+DONE: KB overhaul, EDA (M1a+M1b), scatter redesign (M0 P4), text analysis (M2), post-conflict variable, methodological overhaul (two-tier, η², caveats)
+DONE: M3 start — ACHPR case law schema
+DONE: Post-conflict analysis — strongest predictor (η²=45.5%), integrated into dashboard
+NEXT: Tabbed dashboard + semantic embeddings (voyage-law-2) + clustering
 
 ---
 
@@ -152,31 +147,45 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 
 ---
 
-## Milestone 4: Constitutional Model Typology
+## Milestone 4: Semantic Clustering + Tabbed Dashboard
 
-**Done when:** Clustering analysis produces an empirical typology of constitutional models, and the treaty coverage gap is visualized.
+**Done when:** Embedding-based and dimension-based clustering reveal empirical constitutional models. Dashboard restructured as tabbed interface.
 
-### Ch.2 S1 — Treaty coverage gap
-The thesis argues that no single international regime covers the full range. The data already exists in `ratif_data`.
-- [ ] Upset plot or Venn diagram: treaty ratification combinations across 54 countries
-- [ ] Correlation analysis: does ratifying UNDRIP predict higher Dpa scores? (Hypothesis: no)
-- [ ] Integrate into redesigned scatter plot (M0 Phase 4)
+### 4a. Tabbed Dashboard Restructure
+Convert the single-page dashboard into a tabbed interface. Each tab tells one thesis story.
+- [ ] Tab navigation (CSS display toggle, no framework)
+- [ ] **Carte** tab: existing map + bio panel + year slider (current page)
+- [ ] **Héritage** tab: heatmap + divergence charts + heritage stats
+- [ ] **Traités** tab: beeswarm scatter (moved from main page)
+- [ ] **Post-conflit** tab: 2×2 interaction chart + per-dimension comparison + map overlay
+- [ ] **Textes** tab: preamble rhetoric scatter + SD classification + keyword findings
+- [ ] **Clusters** tab: embedding visualization + dendrogram + cluster profiles
+- [ ] Fix scatter legend (circle/diamond display issue)
 
-### Ch.2 S2 — Enhancement: empirical clustering
+### 4b. Semantic Embeddings (Voyage AI)
+Use `voyage-law-2` (legal-domain embeddings) to embed constitution texts and preambles. Compare semantic clustering with coded-dimension clustering.
+- [ ] Embed 54 full constitutions via Voyage API (voyage-law-2, ~2M tokens)
+- [ ] Embed 49 preambles separately (shorter, more focused)
+- [ ] UMAP 2D projection, colored by heritage + shaped by post-conflict
+- [ ] Compare: do embedding clusters agree with heritage groups? With coded-dimension clusters?
+- [ ] Cross-constitutional similarity matrix (cosine distance) → D3 force graph or heatmap
+- [ ] Thesis figure: UMAP scatter + similarity network
+
+### 4c. Dimension-Based Clustering
 Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals constitutional *output* patterns.
-- [ ] Hierarchical clustering on the feature matrix (scipy/sklearn)
-- [ ] Identify emergent constitutional model types (e.g., "comprehensive recognizers", "selective recognizers", "silent constitutions")
-- [ ] Do some francophone countries cluster with anglophone ones post-2000? (Key thesis test)
+- [ ] Hierarchical clustering on the feature matrix (Ward, scipy)
+- [ ] Identify emergent constitutional model types ("comprehensive recognizers", "selective recognizers", "silent constitutions")
+- [ ] Do some francophone countries cluster with anglophone ones? (Key thesis test)
 - [ ] Thesis figure: dendrogram + cluster profiles
 
-### Ch.6 — Enhancement: institutional architecture typology
-Beyond the 4 binary dimensions (Dc/Dau/F/PJ), classify countries by institutional model.
-- [ ] Semi-automatic classification from `COMMENTAIRE` column: unitary centralized, unitary decentralized, quasi-federal, federal, special autonomy
-- [ ] Thesis figure or map overlay with 5-type classification
+### 4d. Advanced NLP
+- [ ] BERTopic or LDA topic modeling on the 54 constitutions — discover latent topics beyond the 10 coded dimensions
+- [ ] KWIC (keyword-in-context) analysis: extend the "peoples" contextual approach to "autonomy", "indigenous", "customary law"
+- [ ] Cross-constitutional similarity network: which constitutions are textually most similar?
 
-**Infrastructure:** `pip install scikit-learn` (or numpy/scipy — clustering is ~10 lines of code).
+**Infrastructure:** `voyageai` (voyage-law-2, 50M free tokens), `umap-learn`, `python-dotenv`. API key in `.env`.
 
-**Serves:** Ch.2, Ch.6.
+**Serves:** Ch.2 S2 (empirical typology), Ch.1 S2 (semantic patterns), cross-cutting (validation of coded dimensions).
 
 ---
 
@@ -267,19 +276,21 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ## Priority Order
 
-**Recommended execution order**, balancing impact, dependencies, and the case law coding bottleneck:
+**Completed:** M0 (Phases 1-4), M1a, M1b, M2, M3 start, post-conflict analysis.
 
-1. **M0** — Dashboard completion (finish what's started)
-2. **M1a** — EDA on constitutional dataset (understand the data before building on it)
-3. **M1b** — PDF extraction + corpus EDA (unlocks all NLP work)
-4. **M3** — Case law dataset schema + initial coding (start early — legal coding is slow, runs in background)
-5. **M2** — Preamble/self-determination NLP (high-impact, informed by M1b EDA)
-6. **M4** — Constitutional clustering + treaty gap (informed by M1a EDA)
-7. **M5** — Case law analysis (depends on M3 progress)
+**Next:**
+
+1. **M4a** — Tabbed dashboard restructure (presentation-ready)
+2. **M4b** — Semantic embeddings (voyage-law-2 → UMAP → thesis figure)
+3. **M4c** — Dimension-based clustering (dendrogram + cluster profiles)
+4. **M4d** — Advanced NLP (BERTopic, KWIC, similarity network)
+5. **M3 coding** — Victor codes ACHPR cases (runs in background)
+6. **M5** — Case law analysis (depends on M3 progress)
+7. **M0 P5** — Final dashboard polish (accessibility, print stylesheet)
 8. **M6** — Extended constitutional coding (if time permits)
-9. **M7** — Thesis integration (final)
+9. **M7** — Thesis integration + publication
 
-**If time is limited:** Completing M0, M1a/b, M2–M4 covers 6 of 8 chapters (Ch.1, Ch.2, Ch.3 partially, Ch.5, Ch.6, and Ch. prélim.). M5–M7 are high-value but not essential for the defense.
+**If time is limited:** M4a-c covers the remaining high-impact work. M4d, M5-M7 are enhancements.
 
 ---
 
