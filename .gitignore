@@ -43,3 +43,4 @@ Thumbs.db
 # Jupyter
 .ipynb_checkpoints/
 data/figures/
+data/embeddings/
