@@ -689,3 +689,16 @@ footer {
   /* Tooltips wider to avoid clipping */
   .tt, .div-tt { max-width: calc(100vw - 2rem); }
 }
+
+/* ─── Print Stylesheet ───────────────────────────────────── */
+@media print {
+  .tab-bar { display: none; }
+  .tab-panel { display: block !important; break-inside: avoid; }
+  header { border-bottom: none; }
+  footer button { display: none; }
+  .bio-close { display: none; }
+  .mode-switch, .heatmap-controls { display: none; }
+  .section { page-break-inside: avoid; }
+  body { background: white; }
+  .card { box-shadow: none; border: 1px solid #ddd; }
+}
