@@ -13,7 +13,11 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 DONE: KB overhaul, EDA (M1a+M1b), scatter redesign (M0 P4), text analysis (M2), post-conflict variable, methodological overhaul (two-tier, η², caveats)
 DONE: M3 start — ACHPR case law schema
 DONE: Post-conflict analysis — strongest predictor (η²=45.5%), integrated into dashboard
-NEXT: Tabbed dashboard + semantic embeddings (voyage-law-2) + clustering
+DONE: M4 — Tabbed dashboard, Voyage embeddings (54×1024), clustering, KWIC, BERTopic
+DONE: M3 — Extracted 30 cases from docx files (5 with peoples' articles, 3 autochtone, 2 functional)
+DONE: M5 — Case law analysis (functional criterion in Kenya/Ethiopia only)
+DONE: M6 — Extended coding: Ch.7 land/resources + Ch.8 cultural rights depth
+NEXT: M7 — Thesis integration + publication
 
 ---
 
