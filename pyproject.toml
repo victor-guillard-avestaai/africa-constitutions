@@ -18,6 +18,7 @@ dependencies = [
     "voyageai>=0.3.7",
     "python-dotenv>=1.2.2",
     "umap-learn>=0.5.11",
+    "bertopic>=0.17.4",
 ]
 
 [dependency-groups]
