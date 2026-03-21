@@ -274,6 +274,7 @@ function renderMap() {
 
   // Background (non-African or non-data countries)
   const dataIsos = new Set(Object.values(DATA.name_to_iso));
+  dataIsos.add('SOL'); // Somaliland → part of Somalia
   g.selectAll('path.bg').data(geoData.features.filter(f => !dataIsos.has(f.properties.ISO_A3) && !dataIsos.has(f.properties.ADM0_A3)))
     .join('path').attr('d', d => path(d)).attr('fill', CSS.hatchBg).attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3);
 
@@ -283,6 +284,8 @@ function renderMap() {
     const geo = isoToGeo[iso];
     if (geo) cPaths.push({ name, iso, geo });
   }
+  // Somaliland (SOL) → treat as part of Somalia
+  if (isoToGeo['SOL']) cPaths.push({ name: 'Somalie', iso: 'SOL', geo: isoToGeo['SOL'] });
 
   g.selectAll('path.country-path').data(cPaths, d => d.iso).join('path')
     .attr('class', 'country-path')
