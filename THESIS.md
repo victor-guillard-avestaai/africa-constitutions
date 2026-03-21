@@ -128,6 +128,8 @@ X = absent (0), P = partial (1), V = recognized (2)
 
 6. **Structural gaps.** F (fédéralisme) 89% absent, Dpa (peuples autochtones) 85% absent — near-zero across all groups. Dis (anti-discrimination) 98% recognized, Dc (décentralisation) 93% — near-universal. The gap between "baseline" and "identity" dimensions is the story.
 
+7. **Religion is not an independent factor.** Constitutional references to Islam, secularism, or religious neutrality do not predict recognition scores independently of colonial heritage (η² increment = 3.3 percentage points, Kruskal-Wallis p=0.53). Within each heritage group, religion makes no difference: francophone Islamic countries score 7.4 ≈ francophone secular 7.6; anglophone Islamic 10.3 ≈ anglophone secular 10.3. The religion signal is fully absorbed by heritage.
+
 ## Reference Documents (data/sources/)
 
 - **PLAN #11 A.S.docx** — PhD thesis plan (8 chapters across 2 parts)
