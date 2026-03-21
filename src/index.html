@@ -30,6 +30,7 @@
 <!-- ═══════ TAB BAR ═══════ -->
 <nav class="tab-bar" role="tablist" aria-label="Sections thématiques">
   <button class="tab-btn active" data-tab="carte" role="tab" aria-selected="true" aria-controls="tab-carte">Carte</button>
+  <button class="tab-btn" data-tab="matrice" role="tab" aria-selected="false" aria-controls="tab-matrice">Matrice</button>
   <button class="tab-btn" data-tab="heritage" role="tab" aria-selected="false" aria-controls="tab-heritage">Héritage</button>
   <button class="tab-btn" data-tab="traites" role="tab" aria-selected="false" aria-controls="tab-traites">Traités</button>
   <button class="tab-btn" data-tab="conflit" role="tab" aria-selected="false" aria-controls="tab-conflit">Post-conflit</button>
@@ -109,7 +110,12 @@
   </div>
 </div>
 
-<!-- Heatmap stays in Carte tab — it's the primary data exploration tool -->
+
+</div><!-- end tab-carte -->
+
+<!-- ═══════ TAB: MATRICE ═══════ -->
+<div class="tab-panel" id="tab-matrice" role="tabpanel" aria-label="Matrice comparative">
+
 <div class="section">
   <div class="card">
     <h2>Matrice comparative — 54 pays × 10 dimensions</h2>
@@ -136,7 +142,7 @@
   </div>
 </div>
 
-</div><!-- end tab-carte -->
+</div><!-- end tab-matrice -->
 
 <!-- ═══════ TAB: HERITAGE ═══════ -->
 <div class="tab-panel" id="tab-heritage" role="tabpanel" aria-label="Divergence par héritage colonial">
