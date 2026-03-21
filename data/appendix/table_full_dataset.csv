@@ -1,0 +1,55 @@
+Pays,Héritage,Post-conflit,Traités ratifiés,Droits peuples autochtones,Fédéralisme,Autonomie,Droits culturels,Droits des minorités,Identité,Langues,Pluralisme juridique,Décentralisation,Anti-discrimination,Score total
+Afrique du Sud,anglophone,True,5,1,0,1,2,2,2,2,2,2,2,16
+Algérie,francophone,False,5,0,0,0,0,0,2,2,0,2,2,8
+Angola,lusophone,True,4,0,0,1,1,0,1,2,2,2,2,11
+Botswana,anglophone,False,3,0,0,0,0,2,2,0,2,1,2,9
+Burkina Faso,francophone,False,5,0,0,0,1,0,1,1,2,2,2,9
+Burundi,francophone,True,5,1,0,0,2,1,1,2,0,2,2,11
+Bénin,francophone,False,5,0,0,0,0,0,0,0,0,2,2,4
+Cameroun,mixed,False,5,2,0,1,1,2,2,2,2,2,2,16
+Cap-Vert,lusophone,False,5,0,0,0,0,0,0,0,0,2,2,4
+Comores,francophone,False,3,0,1,0,0,0,1,2,2,2,2,10
+Côte d'Ivoire,francophone,False,5,0,0,0,0,0,1,0,1,2,2,6
+Djibouti,francophone,False,4,0,0,0,0,0,0,2,0,0,2,4
+Eswatini,anglophone,False,4,0,0,0,0,0,2,2,2,1,2,9
+Gabon,francophone,False,5,0,0,0,0,0,0,1,0,2,2,5
+Gambie,anglophone,False,5,0,0,0,0,0,1,0,2,2,2,7
+Ghana,anglophone,False,5,0,0,0,1,1,2,1,2,2,2,11
+Guinée,francophone,False,5,0,0,0,0,0,0,0,0,1,2,3
+Guinée Équatoriale,other,False,4,0,0,0,0,0,0,1,0,1,2,4
+Guinée-Bissau,lusophone,False,3,0,0,0,0,0,0,0,0,2,2,4
+Kenya,anglophone,True,4,2,0,2,2,2,2,2,2,2,2,18
+Lesotho,anglophone,False,5,0,0,0,0,0,2,2,2,0,2,8
+Libye,other,False,5,0,0,0,0,1,1,1,1,1,2,7
+Libéria,other,True,4,0,0,0,0,0,0,0,2,1,2,5
+Madagascar,francophone,False,5,0,0,0,0,0,0,2,0,2,2,6
+Malawi,anglophone,False,5,0,0,0,0,0,0,0,2,2,2,6
+Mali,francophone,False,5,0,0,1,0,0,1,2,2,2,2,10
+Maroc,francophone,False,5,0,0,1,0,0,2,2,0,2,2,9
+Maurice,anglophone,False,5,0,0,0,0,2,2,1,0,1,2,8
+Mauritanie,francophone,False,5,0,0,0,0,0,1,0,1,2,2,6
+Mozambique,lusophone,True,4,0,0,1,0,0,1,1,2,2,2,9
+Namibie,anglophone,False,5,0,0,0,0,1,1,1,2,2,2,9
+Niger,francophone,False,5,0,0,0,1,0,1,2,1,2,2,9
+Nigéria,anglophone,False,5,0,2,1,1,1,2,1,2,2,2,14
+Ouganda,anglophone,True,5,1,0,1,2,2,2,2,2,2,2,16
+Rwanda,francophone,True,5,0,0,0,0,0,0,2,1,2,2,7
+République centrafricaine,francophone,False,6,0,0,0,0,0,1,2,1,2,2,8
+République du Congo,francophone,False,5,0,0,0,0,0,0,2,0,2,2,6
+République démocratique du Congo,francophone,True,5,0,1,2,1,1,2,2,2,2,2,15
+Sao Tomé-et-Príncipe,lusophone,False,5,0,0,1,0,0,0,0,0,2,2,5
+Seychelles,francophone,False,5,0,0,0,0,0,1,2,1,0,2,6
+Sierra Leone,anglophone,True,5,0,0,0,1,0,1,0,2,2,2,8
+Somalie,other,True,4,0,2,2,1,1,1,2,2,2,2,15
+Soudan,anglophone,True,5,0,0,1,1,1,1,1,2,2,2,11
+Soudan du Sud,anglophone,True,4,1,0,2,2,2,2,2,2,2,2,17
+Sénégal,francophone,False,5,0,0,0,0,0,1,2,0,2,2,7
+Tanzanie,anglophone,False,5,0,1,1,0,0,1,0,0,0,2,5
+Tchad,francophone,False,5,0,0,1,0,0,1,2,2,2,2,10
+Togo,francophone,False,5,0,0,0,0,0,1,0,1,2,2,6
+Tunisie,francophone,False,5,0,0,0,0,0,0,0,1,1,1,3
+Zambie,anglophone,False,5,0,0,0,0,1,2,0,2,2,2,9
+Zimbabwe,anglophone,True,5,1,0,1,2,2,2,2,2,2,2,16
+Égypte,anglophone,False,4,1,0,0,0,1,1,1,2,2,2,10
+Érythrée,other,False,4,0,0,0,0,0,1,2,0,1,2,6
+Éthiopie,other,True,5,0,2,2,2,2,2,2,2,2,2,18

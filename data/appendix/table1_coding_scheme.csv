@@ -1,0 +1,11 @@
+Code,Label (FR),Groupe,X (absent),P (partiel),V (reconnu),Moyenne
+Dpa,Droits peuples autochtones,Protections,46/54 (85%),6/54 (11%),2/54 (4%),0.19
+F,Fédéralisme,Institutionnel,48/54 (89%),3/54 (6%),3/54 (6%),0.17
+Dau,Autonomie,Institutionnel,36/54 (67%),13/54 (24%),5/54 (9%),0.43
+Drc,Droits culturels,Identitaire,37/54 (69%),10/54 (19%),7/54 (13%),0.44
+Drm,Droits des minorités,Identitaire,35/54 (65%),10/54 (19%),9/54 (17%),0.52
+Id,Identité,Identitaire,14/54 (26%),23/54 (43%),17/54 (31%),1.06
+La,Langues,Identitaire,16/54 (30%),11/54 (20%),27/54 (50%),1.20
+PJ,Pluralisme juridique,Institutionnel,17/54 (31%),9/54 (17%),28/54 (52%),1.20
+Dc,Décentralisation,Institutionnel,4/54 (7%),9/54 (17%),41/54 (76%),1.69
+Dis,Anti-discrimination,Protections,0/54 (0%),1/54 (2%),53/54 (98%),1.98
