@@ -257,6 +257,17 @@ function renderMap() {
   pat.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 0).attr('y2', 6)
     .attr('stroke', CSS.hatchStroke).attr('stroke-width', 1.5);
 
+  // Cross-hatch pattern for disputed territories (République sahraouie)
+  const patD = defs.append('pattern')
+    .attr('id', 'hatch-disputed')
+    .attr('width', 6).attr('height', 6)
+    .attr('patternUnits', 'userSpaceOnUse');
+  patD.append('rect').attr('width', 6).attr('height', 6).attr('fill', '#e8e4dd');
+  patD.append('line').attr('x1', 0).attr('y1', 0).attr('x2', 6).attr('y2', 6)
+    .attr('stroke', '#c0b8a8').attr('stroke-width', 0.8);
+  patD.append('line').attr('x1', 6).attr('y1', 0).attr('x2', 0).attr('y2', 6)
+    .attr('stroke', '#c0b8a8').attr('stroke-width', 0.8);
+
   const proj = d3.geoMercator().center([20, 3]).scale(Math.min(W, H) * 0.65).translate([W/2, H/2]);
   const path = d3.geoPath().projection(proj);
   const g = svg.append('g');
@@ -307,14 +318,23 @@ function updateMap() {
     const splitOk = isSplitYet(d.name, selYear);
     const h = DATA.colonial_heritage[d.name] || 'other';
 
+    // Disputed territory: République sahraouie (no constitution)
+    if (d.name === 'République sahraouie') {
+      el.attr('fill', 'url(#hatch-disputed)');
+      return;
+    }
+
     if (!splitOk) {
+      // Before split: show parent's color with no visible border
       const parent = getParentCountry(d.name);
       if (parent) {
         const pH = DATA.colonial_heritage[parent] || 'other';
         const pState = getState(parent, selYear);
         const pScore = compScore(pState);
-        el.attr('fill', fillFor(pScore, pH));
-        el.attr('stroke', fillFor(pScore, pH)).attr('stroke-width', 0.8);
+        const parentIndep = isIndependent(parent, selYear);
+        const parentFill = parentIndep ? fillFor(pScore, pH) : 'url(#hatch-colonial)';
+        el.attr('fill', parentFill);
+        el.attr('stroke', parentIndep ? fillFor(pScore, pH) : CSS.hatchBg).attr('stroke-width', 0.8);
       }
     } else if (!indep) {
       el.attr('fill', 'url(#hatch-colonial)');
@@ -330,6 +350,16 @@ function updateMap() {
 const tooltip = document.getElementById('tooltip');
 
 function onHover(ev, d) {
+  // Disputed territory — special tooltip
+  if (d.name === 'République sahraouie') {
+    const tt = document.getElementById('tooltip');
+    tt.innerHTML = `<div class="tt-name">République sahraouie (RASD)</div><div style="font-size:0.75rem;color:${CSS.dim}">Territoire disputé — membre de l'UA depuis 1984.<br>Pas de constitution. Non inclus dans l'analyse.</div>`;
+    tt.style.opacity = '1';
+    tt.style.left = (ev.clientX + 14) + 'px';
+    tt.style.top = (ev.clientY - 10) + 'px';
+    return;
+  }
+
   const indep = isIndependent(d.name, selYear);
   const splitOk = isSplitYet(d.name, selYear);
 
