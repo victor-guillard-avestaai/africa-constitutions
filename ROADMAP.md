@@ -10,15 +10,53 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ## This Week (2026-03-21)
 
-DONE: KB overhaul, EDA (M1a+M1b), scatter redesign (M0 P4), text analysis (M2), post-conflict variable, methodological overhaul (two-tier, η², caveats)
-DONE: M3 start — ACHPR case law schema
-DONE: Post-conflict analysis — strongest predictor (η²=45.5%), integrated into dashboard
-DONE: M4 — Tabbed dashboard, Voyage embeddings (54×1024), clustering, KWIC, BERTopic
-DONE: M3 — Extracted 30 cases from docx files (5 with peoples' articles, 3 autochtone, 2 functional)
-DONE: M5 — Case law analysis (functional criterion in Kenya/Ethiopia only)
-DONE: M6 — Extended coding: Ch.7 land/resources + Ch.8 cultural rights depth
-DONE: M7 (partial) — Methodological appendix, figure index, 18 thesis figures, CSV exports
-REMAINING: Dashboard hosting (GitHub Pages), French/English toggle, citation metadata, guided tour
+**Research phase DONE.** M0-M7 all have deliverables: 18 thesis figures, 6 notebooks, 30 cases, embeddings, extended coding, methodological appendix.
+
+**Now: Presentation phase.** Reorganize and present the work for a non-technical PhD committee audience. Maximize clarity, interactivity, and impact.
+
+---
+
+## Milestone 8: Presentation & Polish — IN PROGRESS
+
+**Audience:** Constitutional law researchers. Zero knowledge of data science, ML, or NLP. Every technique must be explained in plain language. Every visualization must answer a thesis question.
+
+**Principle:** Interactivity over static. Toggles over separate charts. Explain what we did and why it matters.
+
+### 8a. Fill the three empty dashboard tabs
+The Post-conflit, Textes, and Clusters tabs are placeholders. They need interactive content.
+- [ ] **Post-conflit tab**: interactive 2×2 chart (D3), post-conflict toggle on the map, per-dimension comparison
+- [ ] **Textes tab**: embed M2 figures (sovereignty scatter, naming heatmap, SD classification) with download buttons, add methodology explainer
+- [ ] **Clusters tab**: interactive UMAP scatter (D3, hover to see country), similarity heatmap, methodology explainer for embeddings
+
+### 8b. Enhanced interactivity
+- [ ] **Scatter plot toggle**: switch between heritage view and post-conflict view (circle/diamond → filled/outlined), with animated transition
+- [ ] **Post-conflict distinction**: split post-conflict into sub-types (peace process vs post-war vs post-liberation) if data supports it
+- [ ] **Static figures embedded in tabs**: each tab shows relevant thesis figures with download buttons (PDF + PNG)
+- [ ] **Heatmap**: add post-conflict column or indicator next to country names
+
+### 8c. Methodology explainers (for non-technical audience)
+Every tab needs a plain-language explanation of what was done and why.
+- [ ] **Carte tab**: "What are the 10 dimensions and how were they coded?"
+- [ ] **Héritage tab**: "What is heritage determinism and how do we measure it?"
+- [ ] **Traités tab**: "What does zero correlation mean in plain language?"
+- [ ] **Post-conflit tab**: "What counts as a post-conflict constitution and why does it matter?"
+- [ ] **Textes tab**: "How did we analyze 1.4 million words? What are embeddings?"
+- [ ] **Clusters tab**: "What does it mean for constitutions to be semantically similar?"
+- [ ] **General**: add a "Méthodologie" section or modal accessible from all tabs
+
+### 8d. Accessibility & polish
+- [ ] ARIA labels on all interactive elements (map, heatmap, scatter, tabs)
+- [ ] Colorblind toggle (low priority — only if not too much work)
+- [ ] Year slider: extend to 1847 or document why it starts at 1930
+- [ ] Dimension deselection feedback (visual cue when minimum enforced)
+
+### 8e. Hosting & publication
+- [ ] GitHub Pages deployment (push to repo, configure Pages)
+- [ ] French/English toggle (significant work — lower priority)
+- [ ] Guided tour overlay for first-time visitors (low priority nice-to-have)
+
+### Iteration strategy
+Complete a first draft of all tabs with interactive content, then iterate on each to improve clarity, visual quality, and thesis alignment. Don't perfect one tab before the others exist.
 
 ---
 
