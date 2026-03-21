@@ -17,7 +17,8 @@ DONE: M4 — Tabbed dashboard, Voyage embeddings (54×1024), clustering, KWIC, B
 DONE: M3 — Extracted 30 cases from docx files (5 with peoples' articles, 3 autochtone, 2 functional)
 DONE: M5 — Case law analysis (functional criterion in Kenya/Ethiopia only)
 DONE: M6 — Extended coding: Ch.7 land/resources + Ch.8 cultural rights depth
-NEXT: M7 — Thesis integration + publication
+DONE: M7 (partial) — Methodological appendix, figure index, 18 thesis figures, CSV exports
+REMAINING: Dashboard hosting (GitHub Pages), French/English toggle, citation metadata, guided tour
 
 ---
 
