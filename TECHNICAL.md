@@ -78,7 +78,7 @@ scripts/
   extract_constitutions.py — PDF → plain text + preamble extraction
   embed_constitutions.py — Voyage API embedding pipeline
   process_caselaw.py  — ACHPR case law validation + JSON export
-  country_mapping.json — English filename ↔ French spreadsheet names (55 entries)
+  country_mapping.json — English filename ↔ French spreadsheet names (54 entries)
   post_conflict_coding.json — Post-conflict coding with per-country justification
   review.sh           — Automated review system (L0-L3)
   recheck_findings.py — Verify review findings integrated into ROADMAP.md
@@ -86,12 +86,9 @@ scripts/
   review_prompts/     — L2/L3 sub-agent prompt files (7 files)
 .claude/
   settings.json       — Hooks (PostToolUse lint, Stop DOD/tmp/findings)
-  ops/                — Hook documentation
+  ops/                — Hook documentation (OPS.md + per-hook docs)
 .github/
   workflows/deploy.yml — GitHub Pages deployment (src/ → Pages)
-.claude/
-  settings.json       — Hooks (PostToolUse lint, Stop DOD/tmp/findings)
-  ops/                — Hook documentation (OPS.md + per-hook docs)
 ```
 
 ## Color system

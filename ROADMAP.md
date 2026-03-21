@@ -14,14 +14,14 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ### Deliverable 1: Thesis Figures & Statistical Results
 PDF-ready academic figures + statistical tables for the thesis document. Must be in **French and English**.
-- 18 figures exist, 5 need French translation
-- 4 missing high-priority figures (divergence, beeswarm, correlation, boxplot)
+- 25 figures exist (18 original + 7 case law), 5 need French translation
+- 4 missing high-priority figures (heritage divergence, treaty beeswarm, correlation matrix, score boxplot)
 - Statistical tables in data/appendix/ (coding scheme, full dataset)
 - All figures need captions, source citations, figure numbers
 
 ### Deliverable 2: Interactive Dashboard
 Website where non-technical law researchers explore the data interactively.
-- 6-tab structure (Carte, Héritage, Traités, Post-conflit, Textes, Clusters)
+- 7-tab structure (Carte, Matrice, Héritage, Traités, Post-conflit, Textes, Clusters)
 - 4 tabs interactive (D3), 2 tabs static image embeds (need conversion to D3)
 - Live at: https://victor-guillard-avestaai.github.io/africa-constitutions/
 - Must work in **French and English**
@@ -32,7 +32,7 @@ Website where non-technical law researchers explore the data interactively.
 
 ### A. Thesis Figures (Deliverable 1)
 - [ ] Translate 5 figures to French: ch5_sd_posture, ch7_land, kwic_customary, topics_heritage, ch1s2_people_vs_peoples
-- [ ] Generate English versions of all 18 figures
+- [ ] Generate English versions of all 25 figures
 - [ ] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
 - [ ] Add captions and source citations to figure_index.md
 - [ ] Fix dendrogram readability (vertical or larger font)
@@ -168,7 +168,7 @@ Website where non-technical law researchers explore the data interactively.
 
 ---
 
-## Milestone 3: ACHPR Case Law Dataset
+## Milestone 3: ACHPR Case Law Dataset — DONE
 
 **Done when:** A structured, coded dataset of ACHPR/African Court decisions on peoples' rights exists and supports timeline visualization.
 
@@ -184,7 +184,7 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 - [x] Extracted 16 cases from `Communication 298 copie.docx` (Lower Omo, Nuba — the two most important cases)
 - [x] Extracted from `Note RJCDI n°102.docx` (different format, partial) (African Court, 77th session)
 - [x] Extracted 12 cases from `RJDCI n°104.docx` (sessions 76-81)
-- [x] Endorois (276/03) and Ogiek (006/2012) added manually not in the docx files: Endorois (2010), Ogyek (2017), earlier hesitations
+- [x] Endorois (276/03) and Ogiek (006/2012) added manually not in the docx files: Endorois (2010), Ogiek (2017), earlier hesitations
 
 ### Visualization
 - [x] Case law timeline: 30 cases by filing year, peoples' rights highlighted, functional criterion annotated (ch3_case_law_timeline.pdf)
@@ -198,7 +198,7 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 
 ---
 
-## Milestone 4: Semantic Clustering + Tabbed Dashboard
+## Milestone 4: Semantic Clustering + Tabbed Dashboard — DONE
 
 **Done when:** Embedding-based and dimension-based clustering reveal empirical constitutional models. Dashboard restructured as tabbed interface.
 
@@ -240,7 +240,7 @@ Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals 
 
 ---
 
-## Milestone 5: Case Law Analysis
+## Milestone 5: Case Law Analysis — DONE
 
 **Done when:** Functional criterion emergence and cross-system citation patterns are visualized.
 
@@ -266,7 +266,7 @@ The ACHPR cites other systems via articles 60-61. The case law notes document th
 
 ---
 
-## Milestone 6: Extended Constitutional Coding
+## Milestone 6: Extended Constitutional Coding — DONE
 
 **Done when:** New dimensions for Ch.7 and Ch.8 are extracted from PDFs and visualized.
 
@@ -274,14 +274,14 @@ The ACHPR cites other systems via articles 60-61. The case law notes document th
 
 ### Ch.7 — Territorial and resource rights
 - [x] NLP keyword analysis: land_rights, natural_resources, environment, ancestral_land, water_rights, environmental protection, traditional land tenure provisions
-- [x] 9 sub-dimensions saved to data/extended_coding.json
+- [x] 5 land sub-categories saved to data/extended_coding_v2.json (land_tenure, natural_resources, environment, water, territorial_integrity)
 - [x] Thesis figure: ch7_land_resources.pdf
 - [ ] **Deferred:** Extractive industries correlation (external data, methodological risk — only if time permits)
 
 ### Ch.8 — Cultural rights depth
 The existing Drc dimension is binary (X/P/V). Constitutional cultural rights provisions vary enormously.
 - [x] Classified: linguistic_rights, cultural_practice, cultural_institution, heritage_protection linguistic rights, cultural practice protection, cultural institutions, heritage protection
-- [x] 4 sub-categories coded across 54 countries (3-4 sub-categories)
+- [x] 7 culture sub-categories coded across 54 countries (language_official, language_minority, cultural_heritage, cultural_practice, cultural_institution, education_culture, religious_freedom)
 - [ ] Language provisions depth (not yet done — requires manual analysis) how many languages recognized, what status (official/national/regional)?
 - [x] Thesis figure: ch8_cultural_rights_depth.pdf by heritage group
 
@@ -289,7 +289,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ---
 
-## Milestone 7: Thesis Integration & Publication
+## Milestone 7: Thesis Integration & Publication — DONE (partial)
 
 **Done when:** All figures are thesis-ready, the dashboard is hosted, and the methodological appendix is generated.
 
@@ -299,7 +299,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - [x] Exported CSVs in data/appendix/
 
 ### Publication
-- [x] 18 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
+- [x] 25 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
 - [x] Dashboard hosted on GitHub Pages or university server
 - [ ] French/English language toggle (not yet done)
 - [x] Citation metadata (HTML meta tags)
@@ -312,17 +312,17 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 | Chapter | Status | Contribution | Milestone |
 |---------|--------|-------------|-----------|
-| Ch. prélim. | Planned | Methodological appendix, dataset documentation | M7 |
+| Ch. prélim. | **Delivered** | Methodological appendix, coding scheme, summary statistics | M7 |
 | Ch.1 S1 | **Delivered** | Preamble sovereignty/identity rhetoric, "indivisible" marker, "peoples" contextual analysis | M2 |
 | Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries (dashboard) + naming terminology heatmap | M0+M2 |
 | Ch.2 S1 | **Delivered** | Treaty irrelevance: beeswarm scatter, structural incapacity of international regime | M0 |
-| Ch.2 S2 | **Delivered** (base) | Heritage determinism (Cohen d=1.05), divergence charts. Enhancement: clustering (M4, planned) | M0+M4 |
+| Ch.2 S2 | **Delivered** | Heritage determinism (Cohen d=1.05), divergence charts, clustering (ARI=0.033 dimension, ARI=0.466 embedding) | M0+M4 |
 | Ch.3 | **Delivered** | Case law timeline, functional criterion emergence (5 key cases), article frequency | M3+M5 |
 | Ch.4 | **Delivered** | Doctrinal concept frequency, cross-system citations, landmark case citations | M5 |
 | Ch.5 | **Delivered** (preliminary) | 7-category SD classification, keyword-based — requires legal validation | M2 |
 | Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement (M4, planned) | M0+M4 |
-| Ch.7 | Planned | Territorial/resource rights provisions | M6 |
-| Ch.8 | Planned | Cultural rights sub-dimensions, language depth | M6 |
+| Ch.7 | **Delivered** | 5 land/resource sub-categories coded, thesis figure | M6 |
+| Ch.8 | **Delivered** | 7 cultural sub-categories coded, thesis figure | M6 |
 
 ---
 
@@ -344,7 +344,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ## Methodological Notes
 
-**Two-tier approach:** All statistical claims (p-values, effect sizes, η²) are computed on Tier 1 (francophone n=23 vs anglophone n=19 = 42 countries). Lusophone (n=5), Other (n=7), and Mixed (n=1) are discussed as Tier 2 case studies — qualitatively, not statistically. See THESIS.md for rationale.
+**Two-tier approach:** All statistical claims (p-values, effect sizes, η²) are computed on Tier 1 (francophone n=23 vs anglophone n=19 = 42 countries). Lusophone (n=5), Other (n=6), and Mixed (n=1) are discussed as Tier 2 case studies — qualitatively, not statistically. See THESIS.md for rationale.
 
 **Post-conflict variable:** A second explanatory variable alongside heritage. Codes whether the *current constitution* (not the country) was adopted as a result of a negotiated peace process, post-war/post-genocide transition, or post-liberation state-building. 15/54 constitutions coded as post-conflict. Heritage+post-conflict together explain 54.9% of variance (vs heritage alone 22.3%). Coding with per-country justification in `scripts/post_conflict_coding.json`. Preliminary — requires legal validation.
 

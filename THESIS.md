@@ -8,7 +8,7 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 
 **Central argument:** The African human rights system (ACHPR + African Court) has progressively constructed a functional legal category of "sub-state peoples" through case law — distinct from both "indigenous peoples" (UNDRIP/ILO C169) and "minorities" (ICCPR Art. 27). This category is non-essentialist, built on identity-function rather than ethnic labeling, and uniquely suited to African constitutional realities.
 
-**Key ACHPR cases:** Endorois (2010), Ogyek (2017), Lower Omo (2023), Nuba (ongoing). These cases crystallize the functional criterion: a people is recognized not by what it *is* but by what legal protections its situation *requires*.
+**Key ACHPR cases:** Endorois (2010), Ogiek (2017), Lower Omo (2023), Nuba (ongoing). These cases crystallize the functional criterion: a people is recognized not by what it *is* but by what legal protections its situation *requires*.
 
 **Audience:** PhD committee, constitutional law scholars, African studies researchers.
 
@@ -29,7 +29,7 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 **Titre 2 — Le choix du système africain**
 
 - **Chapitre 3** — La cristallisation africaine du peuple infra-étatique comme catégorie juridique fonctionnelle
-  - S1: Construction progressive (hésitations pré-Ogyek → stabilisation)
+  - S1: Construction progressive (hésitations pré-Ogiek → stabilisation)
   - S2: Le peuple infra-étatique comme catégorie fonctionnelle (droit positif + opérabilité contentieuse)
 
 - **Chapitre 4** — La spécificité africaine d'une catégorie non essentialiste
@@ -79,7 +79,7 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 | Ch.4 S1 | Doctrinal concept frequency: thesis vocabulary absent (0 occurrences), ACHPR uses "peuples autochtones" (5), "autodétermination" (2) | Delivered (M5) |
 | Ch.4 S2 | Cross-system citations (art. 60-61): CIJ (4), CIDH (2), CEDH (2). Landmark citations: Nuba (9), Lower Omo (2) | Delivered (M5) |
 | Ch.5 | Pre/post-Ogiek evolution: 14 constitutions adopted post-2017, mean 7.8 vs pre-Ogiek 9.2 — effect not yet visible | Delivered (M3+M5) |
-| Ch.7 | Territorial/resource rights: 12 sub-categories coded across 54 countries | Delivered (M6) |
+| Ch.7 | Territorial/resource rights: 5 land sub-categories coded across 54 countries | Delivered (M6) |
 | Ch.8 | Cultural rights depth: 7 sub-categories, no heritage gap on culture (p>0.10) | Delivered (M6) |
 
 ### Future enhancements

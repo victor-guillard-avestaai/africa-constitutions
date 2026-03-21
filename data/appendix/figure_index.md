@@ -54,6 +54,28 @@ Generated from notebooks. Regenerate with `uv run jupyter nbconvert --execute`.
 | Interaction 2×2 (héritage × post-conflit) | post_conflict_interaction.pdf | post_conflict_analysis.ipynb |
 | Heatmap 4 cellules × 10 dimensions | post_conflict_dimensions.pdf | post_conflict_analysis.ipynb |
 
+## Ch.3 — Chronologie jurisprudentielle
+
+| Figure | File | Source |
+|--------|------|--------|
+| Chronologie des 30 décisions CADHP | ch3_case_law_timeline.pdf | m3_m5_case_law_analysis.ipynb |
+| Fréquence d'invocation des articles | ch3_article_frequency.pdf | m3_m5_case_law_analysis.ipynb |
+| Émergence du critère fonctionnel | ch3_functional_criterion_emergence.pdf | m3_m5_case_law_analysis.ipynb |
+
+## Ch.4 — Concepts doctrinaux et citations
+
+| Figure | File | Source |
+|--------|------|--------|
+| Vocabulaire doctrinal dans la jurisprudence | ch4s1_doctrinal_concepts.pdf | m3_m5_case_law_analysis.ipynb |
+| Citations inter-systémiques (art. 60-61) | ch4s2_cross_system_citations.pdf | m3_m5_case_law_analysis.ipynb |
+| Citations de décisions emblématiques | ch4_landmark_citations.pdf | m3_m5_case_law_analysis.ipynb |
+
+## Ch.5 — Évolution pré/post-Ogiek
+
+| Figure | File | Source |
+|--------|------|--------|
+| Reconnaissance avant/après Ogiek (2017) | ch5_pre_post_ogiek.pdf | m3_m5_case_law_analysis.ipynb |
+
 ## Transversal — NLP
 
 | Figure | File | Source |
