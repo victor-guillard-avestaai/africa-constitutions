@@ -110,7 +110,7 @@ Website where non-technical law researchers explore the data interactively.
 - [x] PCA: PC1 explains 39.6%, correlates r=0.428 with heritage — significant but not dominant
 
 ### Treaty and ratification data
-- [x] Treaty ratification: CADHP 98%, DNUDPA 96%, C169 1.9% — only CAR ratified the indigenous peoples convention (2010)
+- [x] Treaty ratification: CADHP 98%, DUDPA 96%, C169 1.9% — only CAR ratified the indigenous peoples convention (2010)
 - [x] Constitutional score vs treaty ratification: r=-0.057, p=0.682 — zero correlation
 - [x] Heritage group × ratification: nearly identical across groups (~4.5 treaties each)
 
@@ -284,7 +284,7 @@ The ACHPR cites other systems via articles 60-61. The case law notes document th
 The existing Drc dimension is binary (X/P/V). Constitutional cultural rights provisions vary enormously.
 - [x] Classified: linguistic_rights, cultural_practice, cultural_institution, heritage_protection linguistic rights, cultural practice protection, cultural institutions, heritage protection
 - [x] 7 culture sub-categories coded across 54 countries (language_official, language_minority, cultural_heritage, cultural_practice, cultural_institution, education_culture, religious_freedom)
-- [ ] Language provisions depth (not yet done — requires manual analysis) how many languages recognized, what status (official/national/regional)?
+- [ ] ~~Language provisions depth~~ (deferred — requires manual legal analysis by Alex, moved to Parking Lot)
 - [x] Thesis figure: ch8_cultural_rights_depth.pdf by heritage group
 
 **Serves:** Ch.7, Ch.8.
@@ -436,6 +436,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - spaCy/transformers upgrade (only if keyword approach proves insufficient)
 - Cross-system citation network depth (Ch.4 S2)
 - Historical border changes animation
+- Ch.6 institutional architecture typology from COMMENTAIRE (orphaned from M4, never started)
+- Ch.8 language provisions depth (requires manual legal analysis by Alex)
 
 ---
 

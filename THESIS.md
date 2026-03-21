@@ -82,11 +82,12 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 | Ch.7 | Territorial/resource rights: 5 land sub-categories coded across 54 countries | Delivered (M6) |
 | Ch.8 | Cultural rights depth: 7 sub-categories, no heritage gap on culture (p>0.10) | Delivered (M6) |
 
-### Future enhancements
+### Future enhancements (Parking Lot)
 
-| Chapter | Contribution | Method | Roadmap |
-|---------|-------------|--------|---------|
-| Ch.6 | Enhancement: institutional architecture typology from COMMENTAIRE | Semi-automatic classification | M4 |
+| Chapter | Contribution | Method | Status |
+|---------|-------------|--------|--------|
+| Ch.6 | Institutional architecture typology from COMMENTAIRE | Semi-automatic classification | Deferred (Parking Lot) |
+| Ch.8 | Language provisions depth (how many languages, what status) | Manual legal analysis by Alex | Deferred (Parking Lot) |
 
 ## The Dataset
 

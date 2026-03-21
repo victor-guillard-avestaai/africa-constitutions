@@ -129,6 +129,9 @@ All semantic colors defined as CSS custom properties in `:root` (styles.css). JS
 | `--pill-bg-v/p/x`, `--pill-c-v/p/x` | | Pill text colors |
 | `--stroke-default`, `--axis-grid` | | Chart strokes and grid |
 | `--hatch-bg/stroke` | | Colonial territory hatching |
+| `--explainer-bg` | `#f0ece5` | Explainer block background |
+| `--hover-light` | `#ede9e2` | Button/row hover background |
+| `--stripe-bg` | `#f8f5f0` | Table alternate row stripe |
 
 ### Adding a new color
 1. Add variable to `:root` in `styles.css`
@@ -141,9 +144,9 @@ Exception: `HERITAGE_COLORS` gradient intermediates (X/P/V per-heritage ramps fo
 
 0. Tab Navigation
 1. CSS Custom Property Reader
-2. Constants & Color Scales (HERITAGE_COLORS, HERITAGE_SCALES, HC, HL, HM_SHORT)
+2. Constants & Color Scales (HERITAGE_COLORS, HERITAGE_SCALES, HC, HL, HM_SHORT, numVal)
 3. Application State (selDims, selYear, selCountry, mapMode, hmSort, hmFilter)
-4. Utility Functions (getState, compScore, fillFor, fillForScore, numVal — note: isIndependent, isSplitYet, getParentCountry are in Map section)
+4. Utility Functions (getState, compScore, fillFor, fillForScore — note: isIndependent, isSplitYet, getParentCountry are in Map section)
 5. Scale Bar / 2D Legend
 6. Dimension Buttons (buildDimBtns, syncDims)
 7. Mode Switch (buildModeSwitch, resetStrokes)
@@ -154,7 +157,9 @@ Exception: `HERITAGE_COLORS` gradient intermediates (X/P/V per-heritage ramps fo
 12. Heatmap Table (renderHeatmap, initHeatmapFilters)
 13. Divergence Charts (renderDivergence + annotations)
 14. Scatter Plot (renderScatter)
-15. Initialization
+15. Post-Conflict Chart (renderConflictChart)
+16. CSV Download
+17. Initialization
 
 ## Data model
 
