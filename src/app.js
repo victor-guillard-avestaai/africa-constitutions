@@ -293,7 +293,7 @@ function renderMap() {
     .attr('data-country', d => d.name)
     .on('mouseenter', onHover).on('mousemove', onMove).on('mouseleave', onLeave).on('click', onClick);
 
-  // Island nation markers — circles to make small islands clickable
+  // Island nation markers — colored circles as click/hover targets
   const islandData = [
     { name: 'Cap-Vert', lon: -23.64, lat: 15.07 },
     { name: 'Sao Tomé-et-Príncipe', lon: 7.02, lat: 0.97 },
@@ -303,29 +303,18 @@ function renderMap() {
   ].map(d => ({ ...d, projected: proj([d.lon, d.lat]) }))
    .filter(d => d.projected);
 
-  const islandG = g.selectAll('g.island-marker').data(islandData).join('g')
+  g.selectAll('circle.island-marker').data(islandData).join('circle')
     .attr('class', 'island-marker')
-    .attr('transform', d => `translate(${d.projected[0]},${d.projected[1]})`)
+    .attr('cx', d => d.projected[0])
+    .attr('cy', d => d.projected[1])
+    .attr('r', 8)
+    .attr('stroke', 'white')
+    .attr('stroke-width', 1.5)
     .style('cursor', 'pointer')
-    .on('mouseenter', function(ev, d) { onHover.call(this, ev, d); })
+    .on('mouseenter', function(ev, d) { d3.select(this).attr('r', 11); onHover.call(this, ev, d); })
     .on('mousemove', onMove)
-    .on('mouseleave', onLeave)
+    .on('mouseleave', function(ev, d) { d3.select(this).attr('r', 8); onLeave.call(this, ev, d); })
     .on('click', function(ev, d) { onClick.call(this, ev, d); });
-
-  islandG.append('circle')
-    .attr('r', 10)
-    .attr('fill', 'none')
-    .attr('stroke', CSS.dim)
-    .attr('stroke-width', 1)
-    .attr('stroke-dasharray', '3,2')
-    .attr('opacity', 0.6);
-
-  islandG.append('text')
-    .attr('y', -13)
-    .attr('text-anchor', 'middle')
-    .attr('fill', CSS.dim)
-    .attr('font-size', '7px')
-    .text(d => d.name.length > 12 ? d.name.split('-')[0].split(' ')[0] : d.name);
 
   updateMap();
 }
@@ -380,6 +369,14 @@ function updateMap() {
       el.attr('fill', fillFor(compScore(st), h));
     }
   });
+
+  // Update island marker colors
+  d3.selectAll('circle.island-marker').each(function(d) {
+    const h = DATA.colonial_heritage[d.name] || 'other';
+    const st = getState(d.name, selYear);
+    d3.select(this).attr('fill', fillFor(compScore(st), h));
+  });
+
   resetStrokes();
 }
 
