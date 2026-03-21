@@ -718,11 +718,11 @@ function renderScatter() {
 
   const cont = document.getElementById('scatter-container');
   const M = { top:30, right:30, bottom:55, left:60 };
-  const w = 720, h = 500;
+  const w = 480, h = 500;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
-    .style('max-width','920px');
+    .style('max-width','650px');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
