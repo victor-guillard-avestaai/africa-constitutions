@@ -284,8 +284,8 @@ function renderMap() {
     const geo = isoToGeo[iso];
     if (geo) cPaths.push({ name, iso, geo });
   }
-  // Somaliland (SOL) → treat as part of Somalia
-  if (isoToGeo['SOL']) cPaths.push({ name: 'Somalie', iso: 'SOL', geo: isoToGeo['SOL'] });
+  // Somaliland (SOL) → disputed territory
+  if (isoToGeo['SOL']) cPaths.push({ name: 'Somaliland', iso: 'SOL', geo: isoToGeo['SOL'] });
 
   g.selectAll('path.country-path').data(cPaths, d => d.iso).join('path')
     .attr('class', 'country-path')
@@ -355,8 +355,8 @@ function updateMap() {
     const splitOk = isSplitYet(d.name, selYear);
     const h = DATA.colonial_heritage[d.name] || 'other';
 
-    // Disputed territory: République sahraouie (no constitution)
-    if (d.name === 'République sahraouie') {
+    // Disputed territories (no constitution)
+    if (d.name === 'République sahraouie' || d.name === 'Somaliland') {
       el.attr('fill', 'url(#hatch-disputed)');
       return;
     }
@@ -387,10 +387,15 @@ function updateMap() {
 const tooltip = document.getElementById('tooltip');
 
 function onHover(ev, d) {
-  // Disputed territory — special tooltip
-  if (d.name === 'République sahraouie') {
+  // Disputed territories — special tooltip
+  const disputedInfo = {
+    'République sahraouie': 'République sahraouie (RASD)|Territoire disputé — membre de l\'UA depuis 1984.<br>Pas de constitution. Non inclus dans l\'analyse.',
+    'Somaliland': 'Somaliland|Territoire autoproclamé indépendant depuis 1991.<br>Non reconnu internationalement. Pas de constitution dans le dataset.',
+  };
+  if (disputedInfo[d.name]) {
+    const [title, desc] = disputedInfo[d.name].split('|');
     const tt = document.getElementById('tooltip');
-    tt.innerHTML = `<div class="tt-name">République sahraouie (RASD)</div><div style="font-size:0.75rem;color:${CSS.dim}">Territoire disputé — membre de l'UA depuis 1984.<br>Pas de constitution. Non inclus dans l'analyse.</div>`;
+    tt.innerHTML = `<div class="tt-name">${title}</div><div style="font-size:0.75rem;color:${CSS.dim}">${desc}</div>`;
     tt.style.opacity = '1';
     tt.style.left = (ev.clientX + 14) + 'px';
     tt.style.top = (ev.clientY - 10) + 'px';
