@@ -8,6 +8,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<meta name="author" content="Victor Music">
+<meta name="description" content="Visualisation interactive de la reconnaissance constitutionnelle de la diversité ethnoculturelle dans 54 pays africains (1847–2026). Contribution technique à une thèse de doctorat en droit constitutionnel international.">
+<meta name="citation_title" content="Constitutions d'Afrique — Reconnaissance de la diversité ethnoculturelle">
+<meta name="citation_author" content="Music, Victor">
+<meta name="citation_date" content="2026">
+<meta name="citation_language" content="fr">
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 </head>
 <body>
@@ -170,8 +176,8 @@
       <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div>Anglophone</div>
       <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div>Lusophone</div>
       <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div>Autre</div>
-      <div class="sl-item" style="margin-left:1.5rem">● Non-conflit</div>
-      <div class="sl-item">◆ Post-conflit</div>
+      <div class="sl-item" style="margin-left:1.5rem"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--muted)" opacity="0.6"/></svg> Non-conflit</div>
+      <div class="sl-item"><svg width="12" height="12"><polygon points="6,1 11,6 6,11 1,6" fill="var(--muted)" opacity="0.6"/></svg> Post-conflit</div>
     </div>
   </div>
 </div>
@@ -236,7 +242,8 @@
 
 <footer>
   Source : tableau_constit_pays_af_complet_copie.xlsx — 54 pays, 439 textes constitutionnels (1847–2026)<br>
-  Codage : X = absent, P = partiel, V = reconnu | Dimensions : fédéralisme, décentralisation, droits des minorités, langues, droits culturels, peuples autochtones, anti-discrimination, identité, autonomie, pluralisme juridique
+  Codage : X = absent, P = partiel, V = reconnu | Dimensions : fédéralisme, décentralisation, droits des minorités, langues, droits culturels, peuples autochtones, anti-discrimination, identité, autonomie, pluralisme juridique<br>
+  <button id="download-csv" style="margin-top:0.5rem;padding:0.3rem 0.8rem;font-family:var(--font);font-size:0.75rem;cursor:pointer;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--muted)">Télécharger les données (CSV)</button>
 </footer>
 
 <script src="data.js"></script>

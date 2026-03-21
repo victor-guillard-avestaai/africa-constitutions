@@ -845,6 +845,26 @@ function renderScatter() {
 
 }
 
+// ─── CSV Download ─────────────────────────────────────────
+document.getElementById('download-csv')?.addEventListener('click', () => {
+  const header = ['Pays','Héritage','Post-conflit','Score total',...DATA.features.map(f => DATA.feature_labels[f]),'Traités ratifiés'];
+  const rows = DATA.feature_matrix.map(r => {
+    const c = r.PAYS;
+    const h = DATA.colonial_heritage[c] || 'other';
+    const pc = DATA.post_conflict && DATA.post_conflict[c] ? 'Oui' : 'Non';
+    const total = DATA.features.reduce((s,f) => s + r[f], 0);
+    const rats = DATA.ratif_data[c] || {};
+    const ratCount = DATA.treaties.reduce((s,t) => s + (rats[t]==='V'?1:0), 0);
+    return [c, h, pc, total, ...DATA.features.map(f => ['X','P','V'][r[f]]), ratCount];
+  });
+  const csv = [header,...rows].map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'constitutions_afrique_donnees.csv';
+  a.click();
+});
+
 // ─── Init ──────────────────────────────────────────────────
 renderScale();
 buildDimBtns();
