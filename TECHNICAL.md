@@ -55,14 +55,16 @@ notebooks/
   m4d_kwic_topics.ipynb             — KWIC + BERTopic (M4d)
   m3_m5_case_law_analysis.ipynb     — ACHPR case law: timeline, citations, Ogiek (M3/M5)
 src/                  — Dashboard (open index.html in browser)
-  index.html          — 6-tab dashboard (~290 lines)
+  index.html          — 7-tab dashboard (~300 lines)
   styles.css          — All CSS (~700 lines)
   data.js             — Inline dataset (362KB, 1 line) — DO NOT REFORMAT
-  app.js              — Application logic (~920 lines, D3 charts)
+  app.js              — Application logic (~1060 lines, D3 charts)
   figures/            — Thesis figures copied for web serving (gitignored from data/figures/)
 data/
   tableau_constit_pays_af_complet_copie.xlsx   — Source spreadsheet (54 countries)
   constitutions/      — 54 PDF constitutions (constituteproject.org)
+  constitution_corpus/ — 54 extracted plain text files (from extract_constitutions.py)
+  preamble_corpus/    — 49 extracted preamble text files
   sources/            — Reference documents (PhD plan, legal texts, ACHPR decisions)
   achpr_cases.json    — 30 extracted ACHPR cases (M3/M5)
   case_law_analysis.json — Doctrinal concepts, cross-system citations (M5)
@@ -80,6 +82,7 @@ scripts/
   process_caselaw.py  — ACHPR case law validation + JSON export
   country_mapping.json — English filename ↔ French spreadsheet names (54 entries)
   post_conflict_coding.json — Post-conflict coding with per-country justification
+  religion_coding.json — Religion coding (islamic/secular/neutral) for 54 countries
   review.sh           — Automated review system (L0-L3)
   recheck_findings.py — Verify review findings integrated into ROADMAP.md
   dod_check.sh        — Definition of Done enforcement (lint + clean git)

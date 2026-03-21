@@ -75,7 +75,7 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 
 | Ch. prélim. | Methodological appendix: coding scheme, summary statistics | Delivered (M7) |
 | Ch.2 S2 | Enhancement: empirical clustering — ARI=0.033 (dimension clusters don't reproduce heritage), ARI=0.466 (embeddings partially do) | Delivered (M4) |
-| Ch.3 | Case law timeline: functional criterion emergence through 5 key ACHPR cases (Endorois→Ogiek→Lower Omo→Nuba). 7 thesis figures | Delivered (M3+M5) |
+| Ch.3 | Case law timeline: functional criterion emergence through 5 key ACHPR cases (Endorois→Ogiek→Lower Omo→Nuba→744/20). 7 thesis figures | Delivered (M3+M5) |
 | Ch.4 S1 | Doctrinal concept frequency: thesis vocabulary absent (0 occurrences), ACHPR uses "peuples autochtones" (5), "autodétermination" (2) | Delivered (M5) |
 | Ch.4 S2 | Cross-system citations (art. 60-61): CIJ (4), CIDH (2), CEDH (2). Landmark citations: Nuba (9), Lower Omo (2) | Delivered (M5) |
 | Ch.5 | Pre/post-Ogiek evolution: 14 constitutions adopted post-2017, mean 7.8 vs pre-Ogiek 9.2 — effect not yet visible | Delivered (M3+M5) |

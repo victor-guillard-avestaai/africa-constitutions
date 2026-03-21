@@ -22,7 +22,7 @@ PDF-ready academic figures + statistical tables for the thesis document. Must be
 ### Deliverable 2: Interactive Dashboard
 Website where non-technical law researchers explore the data interactively.
 - 7-tab structure (Carte, Matrice, Héritage, Traités, Post-conflit, Textes, Clusters)
-- 4 tabs interactive (D3), 2 tabs static image embeds (need conversion to D3)
+- 5 tabs interactive (D3), 2 tabs static image embeds (need conversion to D3)
 - Live at: https://victor-guillard-avestaai.github.io/africa-constitutions/
 - Must work in **French and English**
 
@@ -103,7 +103,7 @@ Website where non-technical law researchers explore the data interactively.
 - [x] Missing data: 209/440 rows uncoded (transitional periods, coups). 52% coverage rate
 
 ### Correlations and clusters
-- [x] Correlation matrix: Drc↔Drm r=0.70, Drm↔Id r=0.66, Dpa↔Drm r=0.66 — identity recognition comes as a package
+- [x] Correlation matrix: Drc↔Drm r=0.70, Drm↔Id r=0.66, Dpa↔Drm r=0.66 (all 54; Tier 1: 0.69/0.62/0.68) — identity recognition comes as a package
 - [x] Heritage group profiles: heatmap of 10-dimension means per heritage group
 - [x] Outliers: RDC (+7.7 above francophone mean), Tanzanie (-5.9 below anglophone mean)
 - [x] PCA: PC1 explains 39.6%, correlates r=0.428 with heritage — significant but not dominant
@@ -206,7 +206,8 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 Convert the single-page dashboard into a tabbed interface. Each tab tells one thesis story.
 - [x] Tab navigation (CSS display toggle, sticky nav)
 - [x] **Carte** tab: existing map + bio panel + year slider (current page)
-- [x] **Héritage** tab: heatmap + divergence charts + heritage stats
+- [x] **Matrice** tab: comparative heatmap (moved from Carte to fix scroll-zoom conflict)
+- [x] **Héritage** tab: divergence charts + heritage stats
 - [x] **Traités** tab: beeswarm scatter (moved from main page)
 - [x] **Post-conflit** tab: 2×2 interaction chart + per-dimension comparison + map overlay
 - [x] **Textes** tab: preamble rhetoric scatter + SD classification + keyword findings
@@ -320,7 +321,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | Ch.3 | **Delivered** | Case law timeline, functional criterion emergence (5 key cases), article frequency | M3+M5 |
 | Ch.4 | **Delivered** | Doctrinal concept frequency, cross-system citations, landmark case citations | M5 |
 | Ch.5 | **Delivered** (preliminary) | 7-category SD classification, keyword-based — requires legal validation | M2 |
-| Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement (M4, planned) | M0+M4 |
+| Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions across heritage groups | M0 |
 | Ch.7 | **Delivered** | 5 land/resource sub-categories coded, thesis figure | M6 |
 | Ch.8 | **Delivered** | 7 cultural sub-categories coded, thesis figure | M6 |
 
