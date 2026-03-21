@@ -48,7 +48,7 @@ REMAINING: Dashboard hosting (GitHub Pages), French/English toggle, citation met
 - [ ] Accessibility audit (ARIA labels, keyboard navigation, colorblind patterns)
 - [ ] Year slider range review (1847 vs 1930 start)
 - [ ] Dimension constraint feedback (visual cue when minimum enforced)
-- [ ] Print stylesheet for PDF export
+- [x] Print stylesheet for PDF export
 
 ---
 
@@ -170,7 +170,7 @@ Convert the single-page dashboard into a tabbed interface. Each tab tells one th
 - [x] **Post-conflit** tab: 2×2 interaction chart + per-dimension comparison + map overlay
 - [x] **Textes** tab: preamble rhetoric scatter + SD classification + keyword findings
 - [x] **Clusters** tab: embedding visualization + dendrogram + cluster profiles
-- [ ] Fix scatter legend (circle/diamond display issue)
+- [x] Fixed scatter legend (SVG shapes in legend) (circle/diamond display issue)
 
 ### 4b. Semantic Embeddings (Voyage AI)
 Use `voyage-law-2` (legal-domain embeddings) to embed constitution texts and preambles. Compare semantic clustering with coded-dimension clustering.
@@ -260,7 +260,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - [x] 18 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
 - [ ] Dashboard hosted on GitHub Pages (not yet done) or university server
 - [ ] French/English language toggle (not yet done)
-- [ ] Citation metadata (not yet done)
+- [x] Citation metadata (HTML meta tags)
 - [ ] Data download (CSV export)
 - [ ] Guided tour (not yet done)
 
