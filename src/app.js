@@ -709,17 +709,16 @@ function renderScatter() {
   const countries = [];
   for (const row of DATA.feature_matrix) {
     const c = row.PAYS;
-    const constScore = DATA.features.reduce((s, f) => s + row[f], 0) / DATA.features.length;
+    const totalScore = DATA.features.reduce((s, f) => s + row[f], 0);
     const rats = DATA.ratif_data[c] || {};
     const treatyCount = DATA.treaties.reduce((s, t) => s + (rats[t] === 'V' ? 1 : 0), 0);
-    const treatyScore = (treatyCount / DATA.treaties.length) * 2;
     const h = DATA.colonial_heritage[c] || 'other';
-    countries.push({ name:c, constScore, treatyScore, treatyCount, heritage:h });
+    countries.push({ name:c, totalScore, treatyCount, heritage:h });
   }
 
   const cont = document.getElementById('scatter-container');
-  const M = { top:30, right:40, bottom:55, left:60 };
-  const w = 720, h = 520;
+  const M = { top:30, right:30, bottom:55, left:60 };
+  const w = 720, h = 480;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
@@ -727,55 +726,42 @@ function renderScatter() {
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
-  const xS = d3.scaleLinear().domain([0,2.15]).range([0,w]);
-  const yS = d3.scaleLinear().domain([0,2.15]).range([h,0]);
+  const xS = d3.scaleLinear().domain([-0.3, 6.3]).range([0, w]);
+  const yS = d3.scaleLinear().domain([0, 20]).range([h, 0]);
 
   // Grid
-  g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(xS).ticks(5))
+  g.append('g').attr('transform',`translate(0,${h})`).call(d3.axisBottom(xS).ticks(7).tickFormat(d3.format('d')))
     .selectAll('text').attr('fill',CSS.dim).attr('font-size','11px');
-  g.append('g').call(d3.axisLeft(yS).ticks(5).tickSize(-w))
+  g.append('g').call(d3.axisLeft(yS).ticks(10).tickSize(-w))
     .selectAll('text').attr('fill',CSS.dim).attr('font-size','11px');
   g.selectAll('.domain').remove();
   g.selectAll('.tick line').attr('stroke',CSS.axisGrid);
 
   // Axis labels
   g.append('text').attr('x',w/2).attr('y',h+44).attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
-    .text('← Moins de traités ratifiés          Traités internationaux ratifiés (normalisé 0–2)          Plus de traités ratifiés →');
+    .text('Nombre de traités internationaux ratifiés (sur 6)');
 
   g.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-44)
     .attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
-    .text('← Moins reconnu          Score constitutionnel moyen          Plus reconnu →');
+    .text('Score constitutionnel total (sur 20)');
 
-  // Diagonal parity
+  // Regression line (flat — no correlation)
+  const meanY = d3.mean(countries, d => d.totalScore);
   g.append('line')
-    .attr('x1',xS(0)).attr('y1',yS(0)).attr('x2',xS(2)).attr('y2',yS(2))
-    .attr('stroke','rgba(0,0,0,0.12)').attr('stroke-width',1.5).attr('stroke-dasharray','6,4');
+    .attr('x1', xS(-0.2)).attr('y1', yS(meanY))
+    .attr('x2', xS(6.2)).attr('y2', yS(meanY))
+    .attr('stroke', CSS.dim).attr('stroke-width', 1.5)
+    .attr('stroke-dasharray', '8,4').attr('opacity', 0.6);
 
-  g.append('text').attr('x',xS(0.6)).attr('y',yS(0.7))
-    .attr('transform',`rotate(-38, ${xS(0.6)}, ${yS(0.7)})`)
-    .attr('fill',CSS.dim).attr('font-size','10px').text('Ligne de parité');
+  g.append('text').attr('x', xS(6.1)).attr('y', yS(meanY) - 8)
+    .attr('text-anchor', 'end').attr('fill', CSS.dim).attr('font-size', '9.5px')
+    .text(`moyenne = ${meanY.toFixed(1)}`);
 
-  // Quadrant zones with labels
-  // Top-left: high const, low treaties (rare)
-  g.append('text').attr('x',xS(0.3)).attr('y',yS(1.9))
-    .attr('fill','#a0b0a8').attr('font-size','10px').attr('font-weight','600')
-    .text('Reconnaissance sans');
-  g.append('text').attr('x',xS(0.3)).attr('y',yS(1.82))
-    .attr('fill','#a0b0a8').attr('font-size','10px').attr('font-weight','600')
-    .text('engagements internationaux');
-
-  // Top-right: high both (ideal)
-  g.append('text').attr('x',xS(1.5)).attr('y',yS(1.95))
-    .attr('fill','#88a898').attr('font-size','10.5px').attr('font-weight','700')
-    .text('Cohérence maximale');
-
-  // Bottom-right: high treaties, low const (hypocrisy)
-  g.append('text').attr('x',xS(1.4)).attr('y',yS(0.35))
-    .attr('fill','#b89898').attr('font-size','10.5px').attr('font-weight','700')
-    .text('Engagements non');
-  g.append('text').attr('x',xS(1.4)).attr('y',yS(0.25))
-    .attr('fill','#b89898').attr('font-size','10.5px').attr('font-weight','700')
-    .text('concrétisés');
+  // Statistical annotation
+  g.append('text').attr('x', w - 4).attr('y', 16)
+    .attr('text-anchor', 'end').attr('fill', CSS.dim).attr('font-size', '10px')
+    .attr('font-style', 'italic')
+    .text('Spearman ρ = −0,06 · p = 0,68 (non significatif)');
 
   // Scatter tooltip
   const scTT = d3.select('#scatter-tooltip');
@@ -783,35 +769,46 @@ function renderScatter() {
   // Dots
   g.selectAll('circle.scatter-dot').data(countries).join('circle')
     .attr('class','scatter-dot')
-    .attr('cx', d => xS(d.treatyScore)).attr('cy', d => yS(d.constScore))
+    .attr('cx', d => xS(d.treatyCount)).attr('cy', d => yS(d.totalScore))
     .attr('r', 5.5)
     .attr('fill', d => HC[d.heritage] || HC.other)
     .attr('opacity', 0.82)
     .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',0.5)
+    .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
       d3.select(this).attr('r',8).attr('opacity',1);
       scTT.html(
         `<div class="tt-name">${d.name}</div>` +
-        `<div style="font-size:0.8rem;margin-top:0.15rem">Score constitutionnel : <b style="color:var(--c2)">${d.constScore.toFixed(2)}</b>/2</div>` +
+        `<div style="font-size:0.8rem;margin-top:0.15rem">Score constitutionnel : <b>${d.totalScore}</b>/20</div>` +
         `<div style="font-size:0.8rem">Traités ratifiés : <b>${d.treatyCount}</b>/6</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL[d.heritage]}</div>`
+        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL[d.heritage]}</div>` +
+        `<div style="font-size:0.7rem;color:var(--dim);margin-top:0.2rem;font-style:italic">Cliquez pour ouvrir la fiche</div>`
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function() { d3.select(this).attr('r',5.5).attr('opacity',0.82); scTT.style('opacity','0'); });
+    .on('mouseleave', function() { d3.select(this).attr('r',5.5).attr('opacity',0.82); scTT.style('opacity','0'); })
+    .on('click', function(ev, d) { scTT.style('opacity','0'); openBio(d.name); });
 
-  // Labels for key countries
-  const labelSet = new Set([
-    'Afrique du Sud','Éthiopie','Kenya','Nigéria','Algérie','Tunisie',
-    'Guinée','Soudan du Sud','Rwanda','Botswana','Zimbabwe','Cameroun',
-    'Sénégal','Maroc','Guinée-Bissau','Burundi','Somalie','Comores',
-  ]);
+  // Force-directed label placement to avoid overlap
+  const labelData = countries.map(d => ({
+    name: d.name, heritage: d.heritage,
+    x: xS(d.treatyCount), y: yS(d.totalScore),
+    tx: xS(d.treatyCount) + 8, ty: yS(d.totalScore) + 3,
+  }));
 
-  const labeled = countries.filter(c => labelSet.has(c.name));
-  g.selectAll('text.sl').data(labeled).join('text')
-    .attr('x', d => xS(d.treatyScore) + 8)
-    .attr('y', d => yS(d.constScore) + 3)
-    .attr('fill',CSS.muted).attr('font-size','8.5px')
+  const sim = d3.forceSimulation(labelData)
+    .force('x', d3.forceX(d => d.x + 8).strength(0.3))
+    .force('y', d3.forceY(d => d.y + 3).strength(0.3))
+    .force('collide', d3.forceCollide(7))
+    .stop();
+
+  for (let i = 0; i < 120; i++) sim.tick();
+
+  g.selectAll('text.sl').data(labelData).join('text')
+    .attr('class', 'sl')
+    .attr('x', d => Math.max(8, Math.min(w - 40, d.x)))
+    .attr('y', d => Math.max(10, Math.min(h - 4, d.y)))
+    .attr('fill', CSS.muted).attr('font-size', '7.5px')
     .text(d => d.name);
 }
 
