@@ -142,9 +142,9 @@
     "note": "Restoration of democracy, no major armed conflict"
   },
   "Libéria": {
-    "post_conflict": true,
+    "post_conflict": false,
     "current_year": 1986,
-    "note": "Post-Doe era; constitution survived two civil wars (1989-2003)"
+    "note": "Post-Doe era; constitution survived two civil wars (1989-2003) — RECODED to false: constitution predates the conflict, does not meet criterion."
   },
   "Libye": {
     "post_conflict": false,
@@ -227,9 +227,9 @@
     "note": "Democratic transition, no armed conflict"
   },
   "Sierra Leone": {
-    "post_conflict": true,
+    "post_conflict": false,
     "current_year": 1991,
-    "note": "Pre-civil-war constitution, but adopted in instability context and survived the war"
+    "note": "Pre-civil-war constitution, but adopted in instability context and survived the war — RECODED to false: constitution predates the conflict, does not meet criterion."
   },
   "Somalie": {
     "post_conflict": true,

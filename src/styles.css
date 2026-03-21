@@ -34,6 +34,11 @@
   --axis-grid: #ddd6cc;
   --hatch-bg: #e8e4dd;
   --hatch-stroke: #b0a898;
+
+  /* Surface variants */
+  --explainer-bg: #f0ece5;
+  --hover-light: #ede9e2;
+  --stripe-bg: #f8f5f0;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -94,7 +99,7 @@ header h1 {
   font-size: 1.65rem;
   font-weight: 700;
   font-family: var(--font-heading);
-  color: #1e2a3a;
+  color: var(--text);
   letter-spacing: -0.01em;
 }
 
@@ -121,7 +126,7 @@ header .lead {
 
 /* Explanation blocks */
 .explainer {
-  background: #f0ece5;
+  background: var(--explainer-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.8rem 1rem;
@@ -172,7 +177,7 @@ header .lead {
 }
 
 #play-btn:hover { color: var(--text); border-color: var(--text); }
-#play-btn.playing { color: #1a6b5a; border-color: #1a6b5a; }
+#play-btn.playing { color: var(--c2); border-color: var(--c2); }
 
 #year-slider { flex: 1; accent-color: var(--c2); cursor: pointer; }
 
@@ -202,7 +207,7 @@ header .lead {
   gap: 0.35rem;
 }
 
-.dim-btn:hover { background: #ede9e2; color: var(--text); }
+.dim-btn:hover { background: var(--hover-light); color: var(--text); }
 
 .dim-btn .cb {
   width: 13px; height: 13px;
@@ -216,7 +221,14 @@ header .lead {
   transition: all 0.12s;
 }
 
-.dim-btn.active .cb { background: var(--c2); border-color: var(--c2); color: #fff; }
+.dim-btn.active .cb { background: var(--c2); border-color: var(--c2); color: var(--card); }
+
+.dim-btn.shake { animation: shake 0.4s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-3px); }
+  40%, 80% { transform: translateX(3px); }
+}
 .dim-btn.active { color: var(--text); font-weight: 500; }
 
 
@@ -262,10 +274,11 @@ header .lead {
 }
 
 .mode-btn:not(:last-child) { border-right: 1px solid var(--border); }
-.mode-btn:hover { background: #ede9e2; color: var(--text); }
-.mode-btn.active { background: #e4dfd6; color: var(--text); font-weight: 600; }
+.mode-btn:hover { background: var(--hover-light); color: var(--text); }
+.mode-btn.active { background: var(--score-x); color: var(--text); font-weight: 600; }
 
 /* 2D legend grid */
+.legend-explain { font-size: 0.68rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.3rem; }
 .legend-grid {
   display: grid;
   grid-template-columns: auto repeat(3, 1fr);
@@ -306,14 +319,14 @@ header .lead {
 #map-svg { width: 100%; height: 100%; }
 
 #map-svg .country-path {
-  stroke: #c0b8aa;
+  stroke: var(--stroke-default);
   stroke-width: 0.4;
   cursor: pointer;
   transition: fill 0.5s ease, stroke 0.3s, stroke-width 0.3s;
 }
 
 #map-svg .country-path:hover { stroke: rgba(0,0,0,0.5); stroke-width: 1.2; }
-#map-svg .country-path.selected { stroke: #1e2a3a; stroke-width: 1.8; }
+#map-svg .country-path.selected { stroke: var(--text); stroke-width: 1.8; }
 
 .scale-bar {
   display: flex;
@@ -327,7 +340,7 @@ header .lead {
 /* ─── Tooltip ───────────────────────────────────────────── */
 .tt {
   position: fixed;
-  background: #ffffff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
@@ -396,7 +409,7 @@ header .lead {
 #commentary-pane {
   display: none;
   margin-top: 0.8rem;
-  background: #f0ece5;
+  background: var(--explainer-bg);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1rem 1.2rem;
@@ -409,7 +422,7 @@ header .lead {
 #commentary-pane .cp-title {
   font-weight: 700;
   font-size: 0.92rem;
-  color: #1a6b5a;
+  color: var(--c2);
   margin-bottom: 0.15rem;
 }
 
@@ -518,8 +531,8 @@ header .lead {
 }
 
 #heatmap-table tr { transition: background 0.12s; }
-#heatmap-table tbody tr:nth-child(even) { background: #f8f5f0; }
-#heatmap-table tbody tr:hover { background: #ede9e2; }
+#heatmap-table tbody tr:nth-child(even) { background: var(--stripe-bg); }
+#heatmap-table tbody tr:hover { background: var(--hover-light); }
 
 .hm-heritage-dot {
   display: inline-block;
@@ -570,7 +583,7 @@ header .lead {
 /* Divergence tooltip */
 .div-tt {
   position: fixed;
-  background: #ffffff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.6rem 0.8rem;

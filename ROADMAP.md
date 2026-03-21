@@ -347,7 +347,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 **Two-tier approach:** All statistical claims (p-values, effect sizes, η²) are computed on Tier 1 (francophone n=23 vs anglophone n=19 = 42 countries). Lusophone (n=5), Other (n=6), and Mixed (n=1) are discussed as Tier 2 case studies — qualitatively, not statistically. See THESIS.md for rationale.
 
-**Post-conflict variable:** A second explanatory variable alongside heritage. Codes whether the *current constitution* (not the country) was adopted as a result of a negotiated peace process, post-war/post-genocide transition, or post-liberation state-building. 15/54 constitutions coded as post-conflict. Heritage+post-conflict together explain 54.9% of variance (vs heritage alone 22.3%). Coding with per-country justification in `scripts/post_conflict_coding.json`. Preliminary — requires legal validation.
+**Post-conflict variable:** A second explanatory variable alongside heritage. Codes whether the *current constitution* (not the country) was adopted as a result of a negotiated peace process, post-war/post-genocide transition, or post-liberation state-building. 13/54 constitutions coded as post-conflict (Sierra Leone and Liberia recoded to false — constitutions predate their civil wars). Heritage+post-conflict together explain 63.2% of variance (vs heritage alone 22.3%, conflict alone 51.0%). Coding with per-country justification in `scripts/post_conflict_coding.json`.
 
 **Translation caveat:** NLP on constitution texts operates on English translations (constituteproject.org). Only anglophone constitutions are in original language. Binary detection (presence/absence of terms) is reliable; frequency comparison requires caution. See `docs/linguistic_decisions.md`.
 
@@ -381,25 +381,25 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | ~~**Scatter plot hard to read**~~ | Redesigned as beeswarm with post-conflict diamonds | — | **Fixed** (M0 Phase 4) |
 | **No colorblind support** | Heritage distinction color-only (~8% male users) | M0 Phase 5 | Deferred |
 | **No keyboard navigation** | Inaccessible to keyboard users | M0 Phase 5 | Deferred |
-| **Dimension deselection silent** | Min-1 constraint re-adds Drm without feedback | M0 Phase 5 | Deferred |
+| ~~**Dimension deselection silent**~~ | Shake animation on last-dimension deselect attempt | — | **Fixed** |
 
 ### Data
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
 | ~~**Source spreadsheet: CAR C169 = X**~~ | Was X, should be V (ratified 30 Aug 2010) | — | **Fixed** |
 | **Year slider starts at 1930** | Liberia 1847 + pre-1960 divergence invisible | M0 Phase 5 | Deferred |
-| **Guinea/Mali in_force=false** | Constitutions may be suspended after coups | M0 Phase 5 | Verify with researcher |
+| ~~**Guinea/Mali in_force=false**~~ | Field does not exist in data.js — suspension status not tracked | — | **Closed** (not applicable) |
 | ~~**No NLP libraries installed**~~ | pdfplumber now in pyproject.toml | — | **Fixed** |
 | ~~**55th country undocumented**~~ | Now included per Alex's decision. Empty row (no constitutional data) | — | **Resolved** | |
-| **Text count 439 vs 440** | THESIS.md says 439, spreadsheet has 440 rows — off by 1, reconcile | M0 Phase 5 | Deferred |
+| ~~**Text count 439 vs 440**~~ | Verified: 439 timeline entries in data.js. Spreadsheet extra row is metadata. No error. | — | **Resolved** |
 
 ### Code
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
-| **HERITAGE_COLORS not centralized** | 12 gradient intermediates in JS constants | — | By design |
-| **13 hardcoded colors in styles.css** | Should use CSS variables | M0 Phase 5 | Deferred |
+| ~~**HERITAGE_COLORS not centralized**~~ | V/flat now read from CSS variables; X/P intermediates remain as JS (D3 interpolation anchors, cannot be CSS) | — | **Fixed** (partially centralized) |
+| ~~**13 hardcoded colors in styles.css**~~ | 15 hardcoded colors replaced with CSS variables + 3 new vars (--explainer-bg, --hover-light, --stripe-bg) | — | **Fixed** |
 | ~~**4 unused CSS reader properties**~~ | CSS.bg, CSS.card, CSS.c0, CSS.c2 — already cleaned up | — | **Fixed** |
-| **8 undocumented DATA keys** | TECHNICAL.md doesn't list adoption, decade_counts, etc. | M0 Phase 5 | Deferred |
+| ~~**8 undocumented DATA keys**~~ | 9 keys added to TECHNICAL.md: post_conflict, adoption, treaty_labels, total_countries, total_entries, country_counts, decade_counts, ratif_counts, regions | — | **Fixed** |
 | ~~**3 dead CSS classes**~~ | `.dim-sep`, `.scale-label`, `.cp-articles` removed | — | **Fixed** |
 | ~~**Color vars undocumented**~~ | Added `--c-none`, `--c0`, `--c1`, `--c2` to TECHNICAL.md | — | **Fixed** |
 
@@ -408,7 +408,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 |-------|--------|--------|--------|
 | ~~**Religion analysis unverifiable**~~ | Now computed in EDA notebook (cell 40) with `scripts/religion_coding.json`. η² increment=2.0%, KW p=0.45 | — | **Fixed** |
 | ~~**Extended coding has no notebook**~~ | Now computed in EDA notebook (cell 38) from `data/extended_coding_v2.json`. All cultural p>0.10 confirmed | — | **Fixed** |
-| **Post-conflict borderline codings** | Sierra Leone (1991 constitution predates civil war) and Liberia (1986 constitution predates civil wars) are borderline per the stated criterion | — | Needs legal validation by Alex |
+| ~~**Post-conflict borderline codings**~~ | Sierra Leone and Liberia recoded to false — constitutions predate civil wars, don't meet criterion. 15→13 post-conflict. Effect strengthened: η²=51.0% (was 45.5%), combined 63.2% (was 54.9%) | — | **Fixed** |
 
 ### Documentation
 | Issue | Impact | Target | Status |
@@ -422,12 +422,12 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
 | **Mode switch scope not explained** | Users may expect all charts to change | M0 Phase 5 | Deferred |
-| **"mixed" vs "other" heritage undocumented** | Cameroun is "mixed" but looks identical to "other" | M0 Phase 5 | Deferred |
+| ~~**"mixed" vs "other" heritage undocumented**~~ | "Mixte" row added to 2D legend (same colors as "Autre" — Cameroun is the only mixed-heritage country) | — | **Fixed** |
 | ~~**Score display inconsistency**~~ | Both heatmap and scatter now use 0-20 total | — | **Fixed** (scatter redesign) |
 | ~~**Divergence subtitle claims country lists**~~ | Subtitle corrected to "valeurs exactes par héritage" | — | **Fixed** |
 | **No map → heatmap navigation** | Clicking country opens bio but no link to heatmap row | M0 Phase 5 | Deferred |
 | **Ch.6 art. 13 framing absent** | Dc/Dau/F/PJ present but not foregrounded as participation vs autonomy | M0 Phase 5 | Deferred |
-| **Heritage determinism not explained in UI** | 2D legend is silent about what the encoding means | M0 Phase 5 | Deferred |
+| ~~**Heritage determinism not explained in UI**~~ | Added explanation text above legend: "La teinte indique l'héritage colonial ; l'intensité indique le niveau de reconnaissance" | — | **Fixed** |
 
 ### Parking Lot
 *Deferred/optional items with no current milestone assignment:*

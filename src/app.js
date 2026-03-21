@@ -33,13 +33,14 @@ const CSS = (() => {
 // ─── Constants & Color Scales ─────────────────────────────
 const COLOR_NONE = CSS.cNone;
 
-// Heritage-keyed color gradients (Component A)
+// Heritage-keyed color gradients — V/flat from CSS, X/P are D3 interpolation
+// anchors (lighter tints of each heritage hue for the 3-stop gradient)
 const HERITAGE_COLORS = {
-  francophone: { X: '#d5d0e8', P: '#7a82b8', V: '#4a5a9a', flat: '#4a5a9a' },
-  anglophone:  { X: '#e8d0d4', P: '#b86878', V: '#9a3a4a', flat: '#9a3a4a' },
-  lusophone:   { X: '#cce8dc', P: '#58a880', V: '#2a7a5a', flat: '#2a7a5a' },
-  other:       { X: '#dde0e4', P: '#98a0a8', V: '#7a8088', flat: '#7a8088' },
-  mixed:       { X: '#dde0e4', P: '#98a0a8', V: '#7a8088', flat: '#7a8088' },
+  francophone: { X: '#d5d0e8', P: '#7a82b8', V: CSS.francophone, flat: CSS.francophone },
+  anglophone:  { X: '#e8d0d4', P: '#b86878', V: CSS.anglophone, flat: CSS.anglophone },
+  lusophone:   { X: '#cce8dc', P: '#58a880', V: CSS.lusophone, flat: CSS.lusophone },
+  other:       { X: '#dde0e4', P: '#98a0a8', V: CSS.otherH, flat: CSS.otherH },
+  mixed:       { X: '#dde0e4', P: '#98a0a8', V: CSS.otherH, flat: CSS.otherH },
 };
 
 const HERITAGE_SCALES = {};
@@ -121,22 +122,23 @@ function renderScale() {
 
 function renderLegend2D() {
   const cont = document.getElementById('legend-2d');
-  const heritages = ['francophone','anglophone','lusophone','other'];
+  const heritages = ['francophone','anglophone','lusophone','other','mixed'];
   const scores = ['X','P','V'];
   const scoreLabels = { X:'Absent', P:'Partiel', V:'Reconnu' };
+  const hLabels = { francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre', mixed:'Mixte' };
 
-  let html = '<div class="legend-grid">';
+  let html = '<div class="legend-explain">La <b>teinte</b> indique l\'héritage colonial ; l\'<b>intensité</b> indique le niveau de reconnaissance.</div>';
+  html += '<div class="legend-grid">';
   // Header row
   html += '<div></div>';
   scores.forEach(s => { html += `<div class="lg-header">${scoreLabels[s]}</div>`; });
   // Heritage rows
   heritages.forEach(h => {
-    const hLabel = h === 'other' ? 'Autre' : h.charAt(0).toUpperCase() + h.slice(1);
     const dotColor = HC[h];
-    html += `<div class="lg-row-label"><span class="lg-dot" style="background:${dotColor}"></span>${hLabel}</div>`;
+    html += `<div class="lg-row-label"><span class="lg-dot" style="background:${dotColor}"></span>${hLabels[h]}</div>`;
     scores.forEach(s => {
       const color = HERITAGE_COLORS[h][s];
-      html += `<div class="lg-swatch" style="background:${color}" title="${hLabel} — ${scoreLabels[s]}"></div>`;
+      html += `<div class="lg-swatch" style="background:${color}" title="${hLabels[h]} — ${scoreLabels[s]}"></div>`;
     });
   });
   html += '</div>';
@@ -177,8 +179,10 @@ function buildDimBtns() {
     b.innerHTML = `<span class="cb"></span>${DATA.feature_labels[f]}`;
     b.addEventListener('click', e => {
       if (e.shiftKey || e.ctrlKey || e.metaKey) {
-        if (selDims.has(f)) { if (selDims.size > 1) selDims.delete(f); }
-        else selDims.add(f);
+        if (selDims.has(f)) {
+          if (selDims.size > 1) selDims.delete(f);
+          else { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); return; }
+        } else selDims.add(f);
       } else {
         selDims.clear(); selDims.add(f);
       }

@@ -172,6 +172,15 @@ Exception: `HERITAGE_COLORS` gradient intermediates (X/P/V per-heritage ramps fo
 | `ratif_data` | `{country: {treaty: "X"|"P"|"V"}}` | Scatter plot |
 | `treaties` | `["DUDPA","PIDCP","PIDESC","CERD","C169","CADHP"]` | Scatter plot |
 | `country_region` | `{country: "region"}` | Bio panel metadata |
+| `post_conflict` | `{country: bool}` | Post-conflit tab, scatter diamonds |
+| `adoption` | `{country: year}` | Bio panel (adoption year) |
+| `treaty_labels` | `{treaty_code: "French label"}` | Scatter plot axis |
+| `total_countries` | `int` (54) | Summary statistics |
+| `total_entries` | `int` (439) | Summary statistics |
+| `country_counts` | `{year: count}` | (diagnostic, not rendered) |
+| `decade_counts` | `{decade: count}` | (diagnostic, not rendered) |
+| `ratif_counts` | `{treaty: count}` | (diagnostic, not rendered) |
+| `regions` | `[region_names]` | Bio panel filter |
 
 ### 10 features (rarest → most common)
 `Dpa` (Peuples autochtones), `F` (Fédéralisme), `Dau` (Autonomie), `Drc` (Droits culturels), `Drm` (Droits des minorités), `Id` (Identité), `La` (Langues), `PJ` (Pluralisme juridique), `Dc` (Décentralisation), `Dis` (Anti-discrimination)
