@@ -66,7 +66,6 @@ scripts/
 .claude/
   settings.json       — Hooks (PostToolUse lint, Stop DOD/tmp/findings)
   ops/                — Hook documentation (OPS.md + per-hook docs)
-  review_prompts/     — L2/L3 sub-agent prompt files
 ```
 
 ## Color system

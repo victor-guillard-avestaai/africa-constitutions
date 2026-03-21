@@ -14,8 +14,8 @@ DONE: KB overhaul — thesis-aligned structure, root-level KB files, review syst
 DONE: Thesis-aligned roadmap with 8 milestones + 2 EDA milestones
 DONE: M1a — EDA on constitutional dataset (key findings in THESIS.md "Key Insights")
 DONE: M1b — PDF extraction + corpus EDA (54 texts, 1.4M words, 49 preambles)
+DONE: First deep review — findings integrated into Known Issues
 NEXT: M0 Phase 4 — Scatter plot redesign (informed by EDA treaty findings)
-NEXT: M1b — PDF extraction + corpus EDA
 
 ---
 
@@ -258,7 +258,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | Ch.1 S1 | Planned | Preamble sovereignty rhetoric, naming analysis | M2 |
 | Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries × 439 texts (map, heatmap, bio) | M0 |
 | Ch.2 S1 | Partial | Treaty coverage gap, redesigned scatter | M0+M4 |
-| Ch.2 S2 | **Delivered** | Heritage determinism (divergence charts, heatmap) + clustering enhancement | M0+M4 |
+| Ch.2 S2 | **Delivered** (base) | Heritage determinism (divergence charts, heatmap). Enhancement: clustering (M4, planned) | M0+M4 |
 | Ch.3 | Planned | Case law timeline, functional criterion emergence | M3+M5 |
 | Ch.4 | Planned | Doctrinal concept mapping, cross-system citation network | M5 |
 | Ch.5 | Planned | Self-determination language in constitutions | M2 |
@@ -313,24 +313,48 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 ### Data
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
-| ~~**Source spreadsheet: CAR C169 = X**~~ | Was X, should be V (ratified 30 Aug 2010) | — | **Fixed** (spreadsheet + data.js) |
-| **Year slider starts at 1930** | Liberia has data from 1847 — gap undocumented | M0 Phase 5 | Deferred |
+| ~~**Source spreadsheet: CAR C169 = X**~~ | Was X, should be V (ratified 30 Aug 2010) | — | **Fixed** |
+| **Year slider starts at 1930** | Liberia 1847 + pre-1960 divergence invisible | M0 Phase 5 | Deferred |
 | **Guinea/Mali in_force=false** | Constitutions may be suspended after coups | M0 Phase 5 | Verify with researcher |
-| **No NLP libraries installed** | M1/M2 require pdfplumber at minimum | M1 | Planned |
+| ~~**No NLP libraries installed**~~ | pdfplumber now in pyproject.toml | — | **Fixed** |
+| **55th country undocumented** | République sahraouie in DATA but excluded silently; all docs say "54 countries" | M0 Phase 5 | Deferred |
+| **Text count 439 vs 440** | THESIS.md says 439, spreadsheet has 440 rows — off by 1, reconcile | M0 Phase 5 | Deferred |
 
 ### Code
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
 | **HERITAGE_COLORS not centralized** | 12 gradient intermediates in JS constants | — | By design |
 | **13 hardcoded colors in styles.css** | Should use CSS variables | M0 Phase 5 | Deferred |
-| **4 unused CSS reader properties** | CSS.bg, CSS.card, CSS.c0, CSS.c2 never used in JS | M0 Phase 5 | Deferred |
+| ~~**4 unused CSS reader properties**~~ | CSS.bg, CSS.card, CSS.c0, CSS.c2 — already cleaned up | — | **Fixed** |
 | **8 undocumented DATA keys** | TECHNICAL.md doesn't list adoption, decade_counts, etc. | M0 Phase 5 | Deferred |
+| **3 dead CSS classes** | `.dim-sep`, `.scale-label`, `.cp-articles` defined but never used | M0 Phase 5 | Deferred |
+| **Color vars undocumented** | `--c-none`, `--c0`, `--c1`, `--c2` missing from TECHNICAL.md color tables | M0 Phase 5 | Deferred |
+
+### Documentation
+| Issue | Impact | Target | Status |
+|-------|--------|--------|--------|
+| **TECHNICAL.md section 4 misattributed** | Utility functions list wrong; `fillForScore` omitted | M0 Phase 5 | Deferred |
+| ~~**TECHNICAL.md file structure stale**~~ | Listed `.claude/review_prompts/` — removed | — | **Fixed** |
+| ~~**PCA figure in THESIS.md wrong**~~ | Was ~43%, corrected to 39.6% with proper attribution | — | **Fixed** |
+| ~~**ROADMAP Ch.2 S2 overstated**~~ | Separated base delivery from planned clustering enhancement | — | **Fixed** |
 
 ### UX
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
 | **Mode switch scope not explained** | Users may expect all charts to change | M0 Phase 5 | Deferred |
 | **"mixed" vs "other" heritage undocumented** | Cameroun is "mixed" but looks identical to "other" | M0 Phase 5 | Deferred |
+| **Score display inconsistency** | Heatmap uses 0-20 total, scatter uses 0-2 normalized — confusing | M0 Phase 4 | Deferred |
+| **Divergence subtitle claims country lists** | Tooltip shows averages, not country lists as subtitle says | M0 Phase 5 | Deferred |
+| **No map → heatmap navigation** | Clicking country opens bio but no link to heatmap row | M0 Phase 5 | Deferred |
+| **Ch.6 art. 13 framing absent** | Dc/Dau/F/PJ present but not foregrounded as participation vs autonomy | M0 Phase 5 | Deferred |
+| **Heritage determinism not explained in UI** | 2D legend is silent about what the encoding means | M0 Phase 5 | Deferred |
+
+### Parking Lot
+*Deferred/optional items with no current milestone assignment:*
+- Extractive industries correlation (Ch.7 — external data, methodological risk)
+- spaCy/transformers upgrade (only if keyword approach proves insufficient)
+- Cross-system citation network depth (Ch.4 S2)
+- Historical border changes animation
 
 ---
 

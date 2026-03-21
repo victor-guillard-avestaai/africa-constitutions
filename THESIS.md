@@ -109,7 +109,7 @@ X = absent (0), P = partial (1), V = recognized (2)
 
 ## Key Insights (Confirmed by EDA, 2026-03-20)
 
-1. **Heritage determinism — significant but not dominant.** Francophone mean 7.3/20 vs anglophone 10.9/20 (Mann-Whitney p=0.004). But PCA shows heritage explains only ~43% of variance (PC1 ↔ heritage r=0.428). Heritage is *one factor among several*. The outliers (RDC scoring 15 as francophone, Tanzanie scoring 5 as anglophone) are precisely where existing categories fail — and where the functional criterion is needed.
+1. **Heritage determinism — significant but not dominant.** Francophone mean 7.3/20 vs anglophone 10.9/20 (Mann-Whitney p=0.004). But PCA shows PC1 explains only 39.6% of variance, and PC1 correlates only r=0.428 with heritage (Spearman). Heritage is *one factor among several*. The outliers (RDC scoring 15 as francophone, Tanzanie scoring 5 as anglophone) are precisely where existing categories fail — and where the functional criterion is needed.
 
 2. **Post-1990 divergence, not convergence.** The anglo-franco gap actually *widened* from 2.4 pre-1990 to 4.7 post-1990. The democratic wave brought francophone countries to recognize decentralization (Dc: +1.50) and languages (La: +0.95), but the deeper identity dimensions (Drm: +0.06, Dpa: +0.03) remained near-zero. Convergence is dimension-specific, not general.
 
