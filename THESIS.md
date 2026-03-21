@@ -52,32 +52,39 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 
 **Chapitre préliminaire** — Méthodologie (cross-cutting, not numbered in the 8)
 
+## Methodology: Two-Tier Comparative Approach
+
+**Primary comparison (Tier 1):** Francophone (n=23) vs Anglophone (n=19) — all statistical claims (p-values, effect sizes, correlations) are computed on this n=42 subset. These two groups have sufficient sample sizes for inference and represent the thesis's core contrast: Jacobin vs Common Law models.
+
+**Case studies (Tier 2):** Lusophone (n=5), Other (n=7), Mixed (n=1) — discussed qualitatively, not statistically. Key cases: Ethiopia (permits secession, key ACHPR case), CAR (only C169 ratification), Cameroun (mixed heritage, high recognition). Lusophone countries show distinctive patterns (60% mention self-determination) but n=5 is too small for inference.
+
+**Translation caveat:** The NLP analysis operates on English translations from constituteproject.org. Only the 19 anglophone constitutions are in their original language. Binary detection ("indivisible" present/absent) is reliable across translations; keyword frequency comparison requires caution. See `docs/linguistic_decisions.md` for details.
+
 ## How This Project Serves the Thesis
 
-### Current coverage
+### Delivered
 
 | Chapter | Contribution | Status |
 |---------|-------------|--------|
-| Ch.1 S2 | Constitutional tensions: how 54 African states encode (or silence) collective identities — visualization of 10 coded dimensions across 439 texts | Delivered |
-| Ch.2 S2 | Heterogeneity of constitutional solutions: heritage determinism (francophone silence vs. anglophone pluralism), divergence patterns, structural gaps | Delivered |
-| Ch.6 | Participation vs. autonomy models: heatmap of decentralization, autonomy, federalism, and pluralisme juridique across heritage groups — maps directly to art. 13 analysis | Delivered |
+| Ch.1 S1 | Preamble sovereignty/identity rhetoric: scatter, balance bar, "indivisible" as heritage marker. Contextual analysis of "peoples" usage (74% francophone usage = Charter citations) | Delivered (M2) |
+| Ch.1 S2 | Constitutional recognition of collective identities: 10 dimensions × 54 countries × 439 texts (map, heatmap, bio panel). Naming terminology heatmap | Delivered (M0+M2) |
+| Ch.2 S1 | Treaty ratification is irrelevant to constitutional recognition: beeswarm scatter, Spearman ρ=−0.06, p=0.68. Near-zero treaty count variance limits test power but strengthens the argument | Delivered (M0) |
+| Ch.2 S2 | Heterogeneity of constitutional solutions: heritage determinism (Cohen d=1.05), divergence patterns, structural gaps | Delivered (M0) |
+| Ch.5 | Self-determination classification: 7-category posture for 54 countries. 8/54 mention SD, 70% francophone use "indivisible". Preliminary, keyword-based — requires legal validation | Delivered (M2, preliminary) |
+| Ch.6 | Participation vs. autonomy: Dc/Dau/F/PJ dimensions across heritage groups | Delivered (M0) |
 
-### Future contributions (not yet built)
+### Future contributions
 
 | Chapter | Contribution | Method | Roadmap |
 |---------|-------------|--------|---------|
-| Ch. prélim. | Methodological appendix: coding scheme documentation, summary statistics, inter-coder reliability proxy from COMMENTAIRE column | Script (prepare_data.py extension) | M7 |
-| Ch.1 S1 | Preamble sovereignty rhetoric: keyword co-occurrence analysis ("unite/indivisible" near "peuple/ethnie/communauté"), sovereignty clause frequency by heritage group | NLP on 54 PDFs (regex, pdfplumber) | M2 |
-| Ch.1 S2 | Enhancement: lexical map of how constitutions name sub-state groups (ethnie, tribu, communauté, peuple, autochtone, minorité) — extracted from COMMENTAIRE column | Text mining on source spreadsheet | M2 |
-| Ch.2 S1 | Treaty coverage gap: upset plot of ratification combinations, correlation between UNDRIP ratification and Dpa scores (hypothesis: none) | Existing ratif_data + visualization | M0+M4 |
-| Ch.2 S2 | Enhancement: empirical clustering of 54 countries on 10 dimensions — reveals constitutional *output* patterns beyond colonial *input* heritage | Hierarchical clustering (scipy) | M4 |
-| Ch.3 | Case law timeline: progressive emergence of functional criterion through ACHPR jurisprudence (Endorois → Ogyek → Lower Omo → Nuba). Article invocation frequency over time | Structured case law dataset + visualization | M3+M5 |
-| Ch.4 S1 | Doctrinal concept frequency: "identité complexe", "droits collectifs", "protection systémique" — first appearances and recurrence | Text mining on case law notes | M5 |
-| Ch.4 S2 | Cross-system citation network: which systems does the ACHPR draw from via articles 60-61? For which rights? | Citation extraction + network diagram | M5 |
-| Ch.5 | Self-determination posture of 54 constitutions: silent / prohibits secession / internal self-determination / external self-determination (Ethiopia only) | NLP on 54 PDFs (keyword classification) | M2 |
-| Ch.6 | Enhancement: institutional architecture typology (unitary centralized / unitary decentralized / quasi-federal / federal / special autonomy) from COMMENTAIRE column | Semi-automatic classification | M4 |
-| Ch.7 | Territorial/resource rights provisions: land rights, natural resources, environmental protection, traditional land tenure | NLP on 54 PDFs (new dimensions) | M6 |
-| Ch.8 | Cultural rights depth: sub-dimension breakdown (linguistic rights, cultural practice, cultural institutions, heritage protection). Language recognition count by heritage group | NLP + qualitative coding | M6 |
+| Ch. prélim. | Methodological appendix: coding scheme, summary statistics | Script | M7 |
+| Ch.2 S2 | Enhancement: empirical clustering on 10 dimensions — constitutional *output* patterns beyond colonial *input* heritage | Hierarchical clustering | M4 |
+| Ch.3 | Case law timeline: functional criterion emergence through ACHPR jurisprudence | Structured dataset + visualization | M3+M5 |
+| Ch.4 S1 | Doctrinal concept frequency in case law | Text mining on case law notes | M5 |
+| Ch.4 S2 | Cross-system citation network (articles 60-61) | Citation extraction | M5 |
+| Ch.6 | Enhancement: institutional architecture typology from COMMENTAIRE | Semi-automatic classification | M4 |
+| Ch.7 | Territorial/resource rights provisions | NLP on 54 PDFs | M6 |
+| Ch.8 | Cultural rights depth: sub-dimension breakdown | NLP + qualitative coding | M6 |
 
 ## The Dataset
 
@@ -107,17 +114,17 @@ X = absent (0), P = partial (1), V = recognized (2)
 - **Lusophone** (5) — Post-independence socialist constitutionalism
 - **Other** (7) + **Mixed** (1: Cameroun)
 
-## Key Insights (Confirmed by EDA, 2026-03-20)
+## Key Insights (EDA confirmed, methodological review 2026-03-21)
 
-1. **Heritage determinism — significant but not dominant.** Francophone mean 7.3/20 vs anglophone 10.9/20 (Mann-Whitney p=0.004). But PCA shows PC1 explains only 39.6% of variance, and PC1 correlates only r=0.428 with heritage (Spearman). Heritage is *one factor among several*. The outliers (RDC scoring 15 as francophone, Tanzanie scoring 5 as anglophone) are precisely where existing categories fail — and where the functional criterion is needed.
+1. **Heritage determines identity recognition, not institutional features.** Among n=42 francophone+anglophone countries: Cohen's d=1.05 (large effect), η²=22.3%. Per-dimension Mann-Whitney tests reveal a clean split: the **identity cluster** (Drm p<0.001, Id p<0.001, PJ p<0.001, Dpa p=0.02, Drc p=0.03) shows significant heritage gaps; the **institutional/baseline dimensions** (F, La, Dc, Dis, Dau) show none. Francophone and anglophone countries decentralize equally, discriminate equally, recognize languages similarly — but diverge sharply on identity, minorities, and legal pluralism. The outliers (RDC scoring 15 as francophone, Tanzanie scoring 5 as anglophone) are precisely where existing categories fail.
 
-2. **Post-1990 divergence, not convergence.** The anglo-franco gap actually *widened* from 2.4 pre-1990 to 4.7 post-1990. The democratic wave brought francophone countries to recognize decentralization (Dc: +1.50) and languages (La: +0.95), but the deeper identity dimensions (Drm: +0.06, Dpa: +0.03) remained near-zero. Convergence is dimension-specific, not general.
+2. **Post-1990 divergence, not convergence.** The anglo-franco gap *widened* from 2.4 pre-1990 to 4.7 post-1990. The democratic wave brought francophone countries to recognize decentralization (Dc: +1.50) and languages (La: +0.95), but the identity dimensions (Drm: +0.06, Dpa: +0.03) remained near-zero. Convergence is dimension-specific, not general. *Caveat: this is a cross-sectional comparison, not a panel analysis — selection effects (which countries adopted new constitutions) are not controlled.*
 
-3. **Treaty ratification is irrelevant.** Constitutional score vs treaty ratification count: r=-0.057, p=0.682 — zero correlation. No individual treaty predicts constitutional recognition. C169 (the indigenous peoples convention) has been ratified by only 1 of 54 countries (République centrafricaine, 2010 — the only African state party). International regimes do not reach African constitutional reality. This directly supports Ch.2 S1.
+3. **Treaty ratification is structurally incapable of differentiating.** 5 of 6 treaties have near-universal ratification (89-98%); C169 has near-universal non-ratification (1/54). Treaty count variance is too low (std=0.6) for a correlation test to have power. The correct framing: the international regime gives every country the same score, making it structurally incapable of predicting constitutional diversity. This supports Ch.2 S1 more strongly than a null correlation alone.
 
 4. **Recognition comes as a package.** Drc ↔ Drm r=0.70, Dpa ↔ Drm r=0.66, Drm ↔ Id r=0.66. Countries either recognize the full identity cluster or stay silent. You cannot carve out "indigenous peoples" as a separate category — the functional criterion captures the whole package. Dc and Dis are near-universal and orthogonal to the identity cluster.
 
-5. **Francophone silence is in the law, not in reality.** COMMENTAIRE analysis shows francophone entries use "ethni" at 13.7/1000 words vs anglophone 7.2. They *discuss* ethnicity more while *recognizing* it less constitutionally. The silence is a legal construction, not an absence of diversity.
+5. **Francophone silence is in the law, not in reality.** COMMENTAIRE analysis (same language, same coder — methodologically reliable) shows francophone entries use "ethni" at 13.7/1000 words vs anglophone 7.2. They *discuss* ethnicity more while *recognizing* it less constitutionally. Contextual analysis of "peoples" in constitution texts confirms: 74% of francophone usage = African Charter citations and diplomatic solidarity, not domestic recognition. They cite the Charter on Human and *Peoples'* Rights without translating "peoples" into domestic law.
 
 6. **Structural gaps.** F (fédéralisme) 89% absent, Dpa (peuples autochtones) 85% absent — near-zero across all groups. Dis (anti-discrimination) 98% recognized, Dc (décentralisation) 93% — near-universal. The gap between "baseline" and "identity" dimensions is the story.
 

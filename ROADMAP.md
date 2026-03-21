@@ -4,7 +4,7 @@
 
 Data science, NLP, and visualization contributions to a PhD thesis on sub-state peoples in African human rights law. The thesis has 8 chapters across 2 parts; this project provides quantitative evidence for each. See THESIS.md for the full thesis structure.
 
-**Current state:** 3 of 8 chapters have delivered contributions (Ch.1 S2, Ch.2 S2, Ch.6). The interactive dashboard is functional but needs polish. The remaining chapters need new data pipelines (PDF text extraction, case law coding, clustering).
+**Current state:** 6 chapter sections have delivered contributions (Ch.1 S1, Ch.1 S2, Ch.2 S1, Ch.2 S2, Ch.5 preliminary, Ch.6). Statistical claims use a two-tier approach: Tier 1 = francophone vs anglophone (n=42, all p-values and effect sizes); Tier 2 = lusophone/other/mixed as case studies (n=13, qualitative only).
 
 ---
 
@@ -252,14 +252,14 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | Chapter | Status | Contribution | Milestone |
 |---------|--------|-------------|-----------|
 | Ch. prélim. | Planned | Methodological appendix, dataset documentation | M7 |
-| Ch.1 S1 | Planned | Preamble sovereignty rhetoric, naming analysis | M2 |
-| Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries × 439 texts (map, heatmap, bio) | M0 |
-| Ch.2 S1 | Partial | Treaty coverage gap, redesigned scatter | M0+M4 |
-| Ch.2 S2 | **Delivered** (base) | Heritage determinism (divergence charts, heatmap). Enhancement: clustering (M4, planned) | M0+M4 |
+| Ch.1 S1 | **Delivered** | Preamble sovereignty/identity rhetoric, "indivisible" marker, "peoples" contextual analysis | M2 |
+| Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries (dashboard) + naming terminology heatmap | M0+M2 |
+| Ch.2 S1 | **Delivered** | Treaty irrelevance: beeswarm scatter, structural incapacity of international regime | M0 |
+| Ch.2 S2 | **Delivered** (base) | Heritage determinism (Cohen d=1.05), divergence charts. Enhancement: clustering (M4, planned) | M0+M4 |
 | Ch.3 | Planned | Case law timeline, functional criterion emergence | M3+M5 |
 | Ch.4 | Planned | Doctrinal concept mapping, cross-system citation network | M5 |
-| Ch.5 | Planned | Self-determination language in constitutions | M2 |
-| Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement | M0+M4 |
+| Ch.5 | **Delivered** (preliminary) | 7-category SD classification, keyword-based — requires legal validation | M2 |
+| Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement (M4, planned) | M0+M4 |
 | Ch.7 | Planned | Territorial/resource rights provisions | M6 |
 | Ch.8 | Planned | Cultural rights sub-dimensions, language depth | M6 |
 
@@ -283,6 +283,18 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ---
 
+## Methodological Notes
+
+**Two-tier approach:** All statistical claims (p-values, effect sizes, η²) are computed on Tier 1 (francophone n=23 vs anglophone n=19 = 42 countries). Lusophone (n=5), Other (n=7), and Mixed (n=1) are discussed as Tier 2 case studies — qualitatively, not statistically. See THESIS.md for rationale.
+
+**Translation caveat:** NLP on constitution texts operates on English translations (constituteproject.org). Only anglophone constitutions are in original language. Binary detection (presence/absence of terms) is reliable; frequency comparison requires caution. See `docs/linguistic_decisions.md`.
+
+**Self-determination classification:** The 7-category posture system (M2) is keyword-based regex. It is labeled "preliminary" and requires legal validation by Victor before thesis citation.
+
+**Temporal analysis:** Pre/post-1990 comparisons are cross-sectional (comparing average scores in each period), not panel data (tracking the same countries over time). Selection effects are not controlled.
+
+---
+
 ## Risks
 
 | Risk | Impact | Mitigation |
@@ -292,6 +304,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | **Dashboard architecture limits** | Vanilla JS / file:// cannot easily host case law timeline or citation networks | Static thesis figures (matplotlib) for complex new visualizations; dashboard for the core constitutional data |
 | **Scope creep** | 8 chapters × multiple analyses per chapter = unbounded work | Strict milestone ordering; M6 items are optional enhancements |
 | **Extractive industries correlation (Ch.7)** | External data + causality claims are methodologically risky in a legal thesis | Defer unless specifically needed; constitutional provisions analysis alone is sufficient |
+| **Lusophone n=5** | Too small for statistical inference; any lusophone-specific finding is exploratory | Report as observation, not finding; discuss as case study |
+| **Treaty count variance near-zero** | 72% at count=5, std=0.6 — correlation tests have no power | Reframe as structural argument (regime cannot differentiate), not null-correlation argument |
 
 ---
 
