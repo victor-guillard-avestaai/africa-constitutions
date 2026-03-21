@@ -39,36 +39,55 @@ Single-page interactive visualization dashboard. No build system, no bundler, no
 ## File structure
 
 ```
-CLAUDE.md             — Project context for Claude Code (must be at root)
-TECHNICAL.md          — This file (architecture reference)
-THESIS.md             — PhD thesis context (business equivalent)
+CLAUDE.md             — Project context for Claude Code
+TECHNICAL.md          — This file
+THESIS.md             — PhD thesis context
 ROADMAP.md            — Priorities, known issues, decisions
-pyproject.toml        — Python dependencies (managed by uv)
-Makefile              — Development commands
+pyproject.toml        — Python dependencies (uv)
+Makefile              — Development commands (make review, lint, check, etc.)
+.env                  — API keys (gitignored)
 notebooks/
-  eda_constitutional_dataset.ipynb  — EDA on the structured dataset
-  eda_constitution_texts.ipynb      — EDA on the PDF corpus
-  m2_constitutional_text_analysis.ipynb — Ch.1/Ch.5 text analysis (7 figures)
-  post_conflict_analysis.ipynb      — Post-conflict interaction analysis
-src/
-  index.html          — HTML skeleton (~160 lines)
-  styles.css          — All CSS (~660 lines)
+  eda_constitutional_dataset.ipynb  — EDA: structured dataset (M1a)
+  eda_constitution_texts.ipynb      — EDA: PDF corpus (M1b)
+  m2_constitutional_text_analysis.ipynb — Text analysis: Ch.1/Ch.5 (M2)
+  post_conflict_analysis.ipynb      — Post-conflict interaction (transversal)
+  m4_clustering_embeddings.ipynb    — Semantic clustering: Voyage + UMAP (M4b/c)
+  m4d_kwic_topics.ipynb             — KWIC + BERTopic (M4d)
+src/                  — Dashboard (open index.html in browser)
+  index.html          — 6-tab dashboard (~290 lines)
+  styles.css          — All CSS (~700 lines)
   data.js             — Inline dataset (362KB, 1 line) — DO NOT REFORMAT
-  app.js              — Application logic (~830 lines)
+  app.js              — Application logic (~920 lines, D3 charts)
+  figures/            — Thesis figures copied for web serving (gitignored from data/figures/)
 data/
-  tableau_constit_pays_af_complet_copie.xlsx   — Source spreadsheet
+  tableau_constit_pays_af_complet_copie.xlsx   — Source spreadsheet (54 countries)
   constitutions/      — 54 PDF constitutions (constituteproject.org)
   sources/            — Reference documents (PhD plan, legal texts, ACHPR decisions)
+  achpr_cases.json    — 30 extracted ACHPR cases (M3/M5)
+  case_law_analysis.json — Doctrinal concepts, cross-system citations (M5)
+  extended_coding_v2.json — 12 sub-categories: land/resources + cultural rights (M6)
+  embeddings/         — Voyage voyage-law-2 embeddings (gitignored, regenerable)
+  figures/            — 18 thesis-quality PDFs + PNGs (gitignored, regenerable)
+  appendix/           — CSV tables for thesis methodology appendix (M7)
 docs/
   session-prompts.md  — User prompts from initial development session
+  linguistic_decisions.md — Translation caveats and language map
 scripts/
-  prepare_data.py     — Data preparation pipeline (xlsx → json)
+  prepare_data.py     — Data preparation pipeline (xlsx → data.js)
   extract_constitutions.py — PDF → plain text + preamble extraction
-  country_mapping.json — English filename ↔ French spreadsheet name mapping
+  embed_constitutions.py — Voyage API embedding pipeline
+  process_caselaw.py  — ACHPR case law validation + JSON export
+  country_mapping.json — English filename ↔ French spreadsheet names (55 entries)
+  post_conflict_coding.json — Post-conflict coding with per-country justification
   review.sh           — Automated review system (L0-L3)
-  recheck_findings.py — Verify findings integrated into ROADMAP.md
+  recheck_findings.py — Verify review findings integrated into ROADMAP.md
   dod_check.sh        — Definition of Done enforcement (lint + clean git)
-  review_prompts/     — L2/L3 sub-agent prompt files
+  review_prompts/     — L2/L3 sub-agent prompt files (7 files)
+.claude/
+  settings.json       — Hooks (PostToolUse lint, Stop DOD/tmp/findings)
+  ops/                — Hook documentation
+.github/
+  workflows/deploy.yml — GitHub Pages deployment (src/ → Pages)
 .claude/
   settings.json       — Hooks (PostToolUse lint, Stop DOD/tmp/findings)
   ops/                — Hook documentation (OPS.md + per-hook docs)

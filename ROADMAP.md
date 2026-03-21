@@ -2,61 +2,63 @@
 
 ## Vision
 
-Data science, NLP, and visualization contributions to a PhD thesis on sub-state peoples in African human rights law. The thesis has 8 chapters across 2 parts; this project provides quantitative evidence for each. See THESIS.md for the full thesis structure.
+Data science, NLP, and visualization contributions to a PhD thesis on sub-state peoples in African human rights law. 54 countries, 439 constitutional texts, 10 coded dimensions. Two deliverables: thesis figures (PDF) and interactive dashboard (web).
 
-**Current state:** 6 chapter sections have delivered contributions (Ch.1 S1, Ch.1 S2, Ch.2 S1, Ch.2 S2, Ch.5 preliminary, Ch.6). Statistical claims use a two-tier approach: Tier 1 = francophone vs anglophone (n=42, all p-values and effect sizes); Tier 2 = lusophone/other/mixed as case studies (n=13, qualitative only).
+**Team:** Alex (law researcher, PhD student) + Victor (data scientist, developer) + Claude (AI assistant).
 
----
-
-## This Week (2026-03-21)
-
-**Research phase DONE.** M0-M7 all have deliverables: 18 thesis figures, 6 notebooks, 30 cases, embeddings, extended coding, methodological appendix.
-
-**Now: Presentation phase.** Reorganize and present the work for a non-technical PhD committee audience. Maximize clarity, interactivity, and impact.
+**Current state:** Research phase complete (M0-M7). 11 key insights, 18 thesis figures, 6 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
 
 ---
 
-## Milestone 8: Presentation & Polish — IN PROGRESS
+## Two Deliverables
 
-**Audience:** Constitutional law researchers. Zero knowledge of data science, ML, or NLP. Every technique must be explained in plain language. Every visualization must answer a thesis question.
+### Deliverable 1: Thesis Figures & Statistical Results
+PDF-ready academic figures + statistical tables for the thesis document. Must be in **French and English**.
+- 18 figures exist, 5 need French translation
+- 4 missing high-priority figures (divergence, beeswarm, correlation, boxplot)
+- Statistical tables in data/appendix/ (coding scheme, full dataset)
+- All figures need captions, source citations, figure numbers
 
-**Principle:** Interactivity over static. Toggles over separate charts. Explain what we did and why it matters.
+### Deliverable 2: Interactive Dashboard
+Website where non-technical law researchers explore the data interactively.
+- 6-tab structure (Carte, Héritage, Traités, Post-conflit, Textes, Clusters)
+- 4 tabs interactive (D3), 2 tabs static image embeds (need conversion to D3)
+- Live at: https://victor-guillard-avestaai.github.io/africa-constitutions/
+- Must work in **French and English**
 
-### 8a. Fill the three empty dashboard tabs
-The Post-conflit, Textes, and Clusters tabs are placeholders. They need interactive content.
-- [ ] **Post-conflit tab**: interactive 2×2 chart (D3), post-conflict toggle on the map, per-dimension comparison
-- [ ] **Textes tab**: embed M2 figures (sovereignty scatter, naming heatmap, SD classification) with download buttons, add methodology explainer
-- [ ] **Clusters tab**: interactive UMAP scatter (D3, hover to see country), similarity heatmap, methodology explainer for embeddings
+---
 
-### 8b. Enhanced interactivity
-- [ ] **Scatter plot toggle**: switch between heritage view and post-conflict view (circle/diamond → filled/outlined), with animated transition
-- [ ] **Post-conflict distinction**: split post-conflict into sub-types (peace process vs post-war vs post-liberation) if data supports it
-- [ ] **Static figures embedded in tabs**: each tab shows relevant thesis figures with download buttons (PDF + PNG)
-- [ ] **Heatmap**: add post-conflict column or indicator next to country names
+## Remaining Work
 
-### 8c. Methodology explainers (for non-technical audience)
-Every tab needs a plain-language explanation of what was done and why.
-- [ ] **Carte tab**: "What are the 10 dimensions and how were they coded?"
-- [ ] **Héritage tab**: "What is heritage determinism and how do we measure it?"
-- [ ] **Traités tab**: "What does zero correlation mean in plain language?"
-- [ ] **Post-conflit tab**: "What counts as a post-conflict constitution and why does it matter?"
-- [ ] **Textes tab**: "How did we analyze 1.4 million words? What are embeddings?"
-- [ ] **Clusters tab**: "What does it mean for constitutions to be semantically similar?"
-- [ ] **General**: add a "Méthodologie" section or modal accessible from all tabs
+### A. Thesis Figures (Deliverable 1)
+- [ ] Translate 5 figures to French: ch5_sd_posture, ch7_land, kwic_customary, topics_heritage, ch1s2_people_vs_peoples
+- [ ] Generate English versions of all 18 figures
+- [ ] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
+- [ ] Add captions and source citations to figure_index.md
+- [ ] Fix dendrogram readability (vertical or larger font)
 
-### 8d. Accessibility & polish
-- [ ] ARIA labels on all interactive elements (map, heatmap, scatter, tabs)
-- [ ] Colorblind toggle (low priority — only if not too much work)
-- [ ] Year slider: extend to 1847 or document why it starts at 1930
-- [ ] Dimension deselection feedback (visual cue when minimum enforced)
+### B. Dashboard Interactivity (Deliverable 2)
+- [ ] Convert Textes tab from static images to interactive D3 charts
+- [ ] Convert Clusters tab: interactive UMAP scatter (hover for country), interactive similarity heatmap
+- [ ] Add per-dimension breakdown to Post-conflit tab
+- [ ] Add post-conflict toggle to scatter plot (switch heritage/post-conflict view)
+- [ ] Add post-conflict indicator to heatmap (column or icon next to country names)
+- [ ] Add methodology explainer modal accessible from all tabs
+- [ ] Extend year slider to 1847 (Liberia)
 
-### 8e. Hosting & publication
-- [ ] GitHub Pages deployment (push to repo, configure Pages)
-- [ ] French/English toggle (significant work — lower priority)
-- [ ] Guided tour overlay for first-time visitors (low priority nice-to-have)
+### C. Bilingual Support
+- [ ] Dashboard: French/English toggle for all UI text, titles, explainers
+- [ ] Thesis figures: generate both French and English versions from notebooks
 
-### Iteration strategy
-Complete a first draft of all tabs with interactive content, then iterate on each to improve clarity, visual quality, and thesis alignment. Don't perfect one tab before the others exist.
+### D. Polish & Publication
+- [x] GitHub Pages deployment
+- [x] ARIA labels on interactive elements
+- [x] Print stylesheet
+- [x] CSV data download
+- [x] Citation metadata
+- [ ] Colorblind toggle (low priority)
+- [ ] Guided tour for first-time visitors (low priority)
+- [ ] Dimension deselection feedback (low priority)
 
 ---
 
@@ -296,10 +298,10 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ### Publication
 - [x] 18 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
-- [ ] Dashboard hosted on GitHub Pages (not yet done) or university server
+- [x] Dashboard hosted on GitHub Pages or university server
 - [ ] French/English language toggle (not yet done)
 - [x] Citation metadata (HTML meta tags)
-- [ ] Data download (CSV export)
+- [x] CSV data download
 - [ ] Guided tour (not yet done)
 
 ---
@@ -389,7 +391,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | **Year slider starts at 1930** | Liberia 1847 + pre-1960 divergence invisible | M0 Phase 5 | Deferred |
 | **Guinea/Mali in_force=false** | Constitutions may be suspended after coups | M0 Phase 5 | Verify with researcher |
 | ~~**No NLP libraries installed**~~ | pdfplumber now in pyproject.toml | — | **Fixed** |
-| **55th country undocumented** | République sahraouie in DATA but excluded silently; all docs say "54 countries" | M0 Phase 5 | Deferred |
+| ~~**55th country undocumented**~~ | Now included per Alex's decision. Empty row (no constitutional data) | — | **Resolved** | |
 | **Text count 439 vs 440** | THESIS.md says 439, spreadsheet has 440 rows — off by 1, reconcile | M0 Phase 5 | Deferred |
 
 ### Code

@@ -112,7 +112,9 @@ X = absent (0), P = partial (1), V = recognized (2)
 - **Francophone** (23) — Jacobin model, unitary state, constitutional silence on diversity
 - **Anglophone** (19) — Common law pluralism, customary courts, higher recognition scores
 - **Lusophone** (5) — Post-independence socialist constitutionalism
-- **Other** (7) + **Mixed** (1: Cameroun)
+- **Other** (6: Éthiopie, Érythrée, Somalie, Libye, Libéria, Guinée Équatoriale) + **Mixed** (1: Cameroun)
+
+*République sahraouie is in the spreadsheet as an AU member but has no constitutional data. Excluded from all analyses. Statistical claims use Tier 1 (francophone n=23 + anglophone n=19 = 42).*
 
 ## Key Insights (EDA confirmed, methodological review 2026-03-21)
 
