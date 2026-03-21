@@ -713,7 +713,8 @@ function renderScatter() {
     const rats = DATA.ratif_data[c] || {};
     const treatyCount = DATA.treaties.reduce((s, t) => s + (rats[t] === 'V' ? 1 : 0), 0);
     const h = DATA.colonial_heritage[c] || 'other';
-    countries.push({ name:c, totalScore, treatyCount, heritage:h });
+    const pc = DATA.post_conflict && DATA.post_conflict[c] || false;
+    countries.push({ name:c, totalScore, treatyCount, heritage:h, postConflict:pc });
   }
 
   const cont = document.getElementById('scatter-container');
@@ -801,27 +802,30 @@ function renderScatter() {
   // Scatter tooltip
   const scTT = d3.select('#scatter-tooltip');
 
-  // Dots
-  g.selectAll('circle.scatter-dot').data(countries).join('circle')
+  // Dots — circles for non-conflict, diamonds for post-conflict
+  const diamond = d3.symbol().type(d3.symbolDiamond).size(R * R * 3.5);
+  const circle = d3.symbol().type(d3.symbolCircle).size(R * R * 3.14);
+
+  g.selectAll('path.scatter-dot').data(countries).join('path')
     .attr('class','scatter-dot')
-    .attr('cx', d => d.x).attr('cy', d => d.y)
-    .attr('r', R)
+    .attr('d', d => d.postConflict ? diamond() : circle())
+    .attr('transform', d => `translate(${d.x},${d.y})`)
     .attr('fill', d => HC[d.heritage] || HC.other)
     .attr('opacity', 0.85)
     .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',0.5)
     .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
-      d3.select(this).attr('r', R + 3).attr('opacity',1);
+      d3.select(this).attr('opacity',1).attr('d', d.postConflict ? d3.symbol().type(d3.symbolDiamond).size(R*R*7)() : d3.symbol().type(d3.symbolCircle).size(R*R*7)());
       scTT.html(
         `<div class="tt-name">${d.name}</div>` +
         `<div style="font-size:0.8rem;margin-top:0.15rem">Score constitutionnel : <b>${d.totalScore}</b>/20</div>` +
         `<div style="font-size:0.8rem">Traités ratifiés : <b>${d.treatyCount}</b>/6</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL[d.heritage]}</div>` +
+        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL[d.heritage]}${d.postConflict ? ' · Constitution post-conflit' : ''}</div>` +
         `<div style="font-size:0.7rem;color:var(--dim);margin-top:0.2rem;font-style:italic">Cliquez pour ouvrir la fiche</div>`
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function() { d3.select(this).attr('r', R).attr('opacity',0.85); scTT.style('opacity','0'); })
+    .on('mouseleave', function(ev, d) { d3.select(this).attr('opacity',0.85).attr('d', d.postConflict ? diamond() : circle()); scTT.style('opacity','0'); })
     .on('click', function(ev, d) { scTT.style('opacity','0'); openBio(d.name); });
 
 }
