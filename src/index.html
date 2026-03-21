@@ -28,17 +28,17 @@
 </header>
 
 <!-- ═══════ TAB BAR ═══════ -->
-<nav class="tab-bar">
-  <button class="tab-btn active" data-tab="carte">Carte</button>
-  <button class="tab-btn" data-tab="heritage">Héritage</button>
-  <button class="tab-btn" data-tab="traites">Traités</button>
-  <button class="tab-btn" data-tab="conflit">Post-conflit</button>
-  <button class="tab-btn" data-tab="textes">Textes</button>
-  <button class="tab-btn" data-tab="clusters">Clusters</button>
+<nav class="tab-bar" role="tablist" aria-label="Sections thématiques">
+  <button class="tab-btn active" data-tab="carte" role="tab" aria-selected="true" aria-controls="tab-carte">Carte</button>
+  <button class="tab-btn" data-tab="heritage" role="tab" aria-selected="false" aria-controls="tab-heritage">Héritage</button>
+  <button class="tab-btn" data-tab="traites" role="tab" aria-selected="false" aria-controls="tab-traites">Traités</button>
+  <button class="tab-btn" data-tab="conflit" role="tab" aria-selected="false" aria-controls="tab-conflit">Post-conflit</button>
+  <button class="tab-btn" data-tab="textes" role="tab" aria-selected="false" aria-controls="tab-textes">Textes</button>
+  <button class="tab-btn" data-tab="clusters" role="tab" aria-selected="false" aria-controls="tab-clusters">Clusters</button>
 </nav>
 
 <!-- ═══════ TAB: CARTE ═══════ -->
-<div class="tab-panel active" id="tab-carte">
+<div class="tab-panel active" id="tab-carte" role="tabpanel" aria-label="Carte de la reconnaissance constitutionnelle">
 
 <div class="section">
   <div class="card">
@@ -50,8 +50,8 @@
         <div>
           <div class="ctrl-label">Année</div>
           <div class="year-row">
-            <button id="play-btn" title="Animer">&#9654;</button>
-            <input type="range" id="year-slider" min="1930" max="2026" value="2026" step="1">
+            <button id="play-btn" aria-label="Animer le slider temporel" title="Animer">&#9654;</button>
+            <input type="range" id="year-slider" aria-label="Année de référence" min="1930" max="2026" value="2026" step="1">
           </div>
           <div style="text-align:center"><span id="year-display">2026</span></div>
         </div>
@@ -76,7 +76,7 @@
       <div>
         <div id="map-container">
           <div id="loading"><span>Chargement de la carte...</span></div>
-          <svg id="map-svg" style="display:none"></svg>
+          <svg id="map-svg" role="img" aria-label="Carte interactive de la reconnaissance constitutionnelle en Afrique" style="display:none"></svg>
         </div>
         <div class="scale-bar" style="justify-content:center;gap:1rem;">
           <span style="display:inline-flex;align-items:center;gap:0.3rem">
@@ -126,7 +126,7 @@
       <button class="hm-sort-btn" data-hf="non-conflict">Non-conflit</button>
     </div>
     <div id="heatmap-container">
-      <table id="heatmap-table"></table>
+      <table id="heatmap-table" role="table" aria-label="Matrice comparative des 54 pays sur 10 dimensions"></table>
     </div>
   </div>
 </div>
@@ -134,7 +134,7 @@
 </div><!-- end tab-carte -->
 
 <!-- ═══════ TAB: HERITAGE ═══════ -->
-<div class="tab-panel" id="tab-heritage">
+<div class="tab-panel" id="tab-heritage" role="tabpanel" aria-label="Divergence par héritage colonial">
 
 <div class="section">
   <div class="card">
@@ -150,14 +150,14 @@
       <div class="hl-item"><div class="hl-line" style="background:var(--anglophone)"></div>Anglophone (19 pays)</div>
       <div class="hl-item"><div class="hl-line" style="background:var(--lusophone)"></div>Lusophone (5 pays)</div>
     </div>
-    <div class="div-grid" id="div-grid"></div>
+    <div class="div-grid" id="div-grid" role="img" aria-label="Graphiques de divergence par héritage colonial"></div>
   </div>
 </div>
 
 </div><!-- end tab-heritage -->
 
 <!-- ═══════ TAB: TRAITES ═══════ -->
-<div class="tab-panel" id="tab-traites">
+<div class="tab-panel" id="tab-traites" role="tabpanel" aria-label="Traités internationaux et reconnaissance">
 
 <div class="section">
   <div class="card">
@@ -170,7 +170,7 @@
       <strong>Forme</strong> : ● = constitution non-conflit, ◆ = constitution post-conflit.<br>
       <strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.
     </div>
-    <div id="scatter-container"></div>
+    <div id="scatter-container" role="img" aria-label="Graphique en essaim : traités ratifiés vs score constitutionnel"></div>
     <div class="scatter-legend">
       <div class="sl-item"><div class="sl-dot" style="background:var(--francophone)"></div>Francophone</div>
       <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div>Anglophone</div>
@@ -185,7 +185,7 @@
 </div><!-- end tab-traites -->
 
 <!-- ═══════ TAB: POST-CONFLIT ═══════ -->
-<div class="tab-panel" id="tab-conflit">
+<div class="tab-panel" id="tab-conflit" role="tabpanel" aria-label="Le moment constitutionnel post-conflit">
 
 <div class="section">
   <div class="card">
@@ -205,7 +205,7 @@
 </div><!-- end tab-conflit -->
 
 <!-- ═══════ TAB: TEXTES ═══════ -->
-<div class="tab-panel" id="tab-textes">
+<div class="tab-panel" id="tab-textes" role="tabpanel" aria-label="Analyse textuelle des constitutions">
 
 <div class="section">
   <div class="card">
@@ -223,7 +223,7 @@
 </div><!-- end tab-textes -->
 
 <!-- ═══════ TAB: CLUSTERS ═══════ -->
-<div class="tab-panel" id="tab-clusters">
+<div class="tab-panel" id="tab-clusters" role="tabpanel" aria-label="Clustering sémantique">
 
 <div class="section">
   <div class="card">
