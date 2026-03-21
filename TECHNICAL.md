@@ -21,7 +21,7 @@ Single-page interactive visualization dashboard. No build system, no bundler, no
 - **Vanilla JS** — no framework, no jQuery
 - **CSS3** — custom properties, grid, flexbox, sticky positioning, media queries
 - **Google Fonts** — Libre Baskerville (headings), Source Sans 3 (body)
-- **GeoJSON** — Natural Earth 110m admin boundaries (fetched at runtime from GitHub CDN)
+- **GeoJSON** — Natural Earth 50m admin boundaries (fetched at runtime from GitHub CDN)
 
 ### Data science (Python)
 - **uv** — dependency management (`pyproject.toml`). Run scripts with `uv run`.
@@ -188,7 +188,7 @@ X = absent (0), P = partial (1), V = recognized (2)
 
 - `https://cdn.jsdelivr.net/npm/d3@7` — D3.js
 - `https://fonts.googleapis.com/...` — Google Fonts
-- `https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson` — map boundaries
+- `https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson` — map boundaries
 
 ## Commands
 

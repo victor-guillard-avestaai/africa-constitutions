@@ -225,7 +225,7 @@ function resetStrokes() {
 
 // ─── Map ───────────────────────────────────────────────────
 async function initMap() {
-  const r = await fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson');
+  const r = await fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_50m_admin_0_countries.geojson');
   const w = await r.json();
   geoData = { type:'FeatureCollection', features: w.features.filter(f => f.properties.CONTINENT === 'Africa') };
 
