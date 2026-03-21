@@ -8,14 +8,16 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ---
 
-## This Week (2026-03-20)
+## This Week (2026-03-21)
 
 DONE: KB overhaul — thesis-aligned structure, root-level KB files, review system upgrade
 DONE: Thesis-aligned roadmap with 8 milestones + 2 EDA milestones
 DONE: M1a — EDA on constitutional dataset (key findings in THESIS.md "Key Insights")
 DONE: M1b — PDF extraction + corpus EDA (54 texts, 1.4M words, 49 preambles)
 DONE: First deep review — findings integrated into Known Issues
-NEXT: M0 Phase 4 — Scatter plot redesign (informed by EDA treaty findings)
+DONE: M0 Phase 4 — Scatter plot beeswarm redesign (treaty irrelevance, click→bio)
+DONE: M3 start — ACHPR case law schema + processing script
+NEXT: M2 — Preamble sovereignty/identity analysis (Ch.1 S1) + self-determination classification (Ch.5)
 
 ---
 
@@ -28,12 +30,13 @@ NEXT: M0 Phase 4 — Scatter plot redesign (informed by EDA treaty findings)
 - [x] Heritage-keyed color gradients + light academic theme + responsiveness
 - [x] File separation + color centralization + review system + KB overhaul
 
-### Phase 4: Scatter Plot Redesign
-Reframe the scatter to serve the Ch.2 S1 argument: no single international regime covers the full range of sub-state peoples situations. Treaty ratification does not predict constitutional recognition.
-- [ ] Rethink axes: constitutional score vs. treaty ratification count → show the "coverage gap"
-- [ ] Improve label placement (overlapping country names)
-- [ ] Add interactivity (click to open bio panel)
-- [ ] Add thesis-grounded explainer text
+### Phase 4: Scatter Plot Redesign — DONE
+- [x] Beeswarm layout: treaty count (0-6) as discrete columns, force-simulated dot placement
+- [x] Total score (0-20) on Y-axis — matches heatmap scale
+- [x] Statistical annotation: Spearman ρ = −0.06, p = 0.68 (ns)
+- [x] Per-column mean lines showing flat trend
+- [x] Click → bio panel, tooltip on hover
+- [x] Thesis-grounded title: "Ratifier n'est pas reconnaître"
 
 ### Phase 5: Final Polish
 - [ ] Accessibility audit (ARIA labels, keyboard navigation, colorblind patterns)
