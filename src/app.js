@@ -278,8 +278,7 @@ function renderMap() {
     .scaleExtent([1, 8])
     .on('zoom', (ev) => {
       g.attr('transform', ev.transform);
-      const moved = ev.transform.k > 1.05 || Math.abs(ev.transform.x) > 5 || Math.abs(ev.transform.y) > 5;
-      if (resetBtn) resetBtn.style.display = moved ? 'block' : 'none';
+      g.attr('transform', ev.transform);
     });
   svg.call(zoom);
   svg.on('dblclick.zoom', null);
