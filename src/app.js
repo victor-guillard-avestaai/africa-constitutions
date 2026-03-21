@@ -320,13 +320,12 @@ function renderMap() {
     .attr('cx', d => d.projected[0])
     .attr('cy', d => d.projected[1])
     .attr('r', 12)
-    .attr('opacity', 0.35)
     .attr('stroke', 'white')
     .attr('stroke-width', 1.5)
     .style('cursor', 'pointer')
-    .on('mouseenter', function(ev, d) { d3.select(this).attr('r', 15).attr('opacity', 0.5); onHover.call(this, ev, d); })
+    .on('mouseenter', function(ev, d) { d3.select(this).attr('r', 15); onHover.call(this, ev, d); })
     .on('mousemove', onMove)
-    .on('mouseleave', function(ev, d) { d3.select(this).attr('r', 12).attr('opacity', 0.35); onLeave.call(this, ev, d); })
+    .on('mouseleave', function(ev, d) { d3.select(this).attr('r', 12); onLeave.call(this, ev, d); })
     .on('click', function(ev, d) { onClick.call(this, ev, d); });
 
   updateMap();
