@@ -190,6 +190,23 @@ LABELS = {
         'kwic_legend': 'Type de contexte',
         'topics_title': 'Distribution des topics par héritage colonial\n(BERTopic sur paragraphes constitutionnels)',
         'topics_cbar': '% des paragraphes du groupe héritage',
+
+        # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
+        'ch7_title': 'Ch.7 : Provisions territoriales et environnementales',
+        'ch7_right_title': 'Effet post-conflit sur les droits territoriaux',
+        'ch7_xlabel': 'Pour 1000 mots',
+        'ch7_right_xlabel': 'Provisions totales (moyenne)',
+        'ch7_land_cats': ['Droits fonciers', 'Ressources naturelles', 'Environnement', 'Terres ancestrales', 'Droits hydriques'],
+        'ch8_title': 'Ch.8 : Profondeur des droits culturels par héritage',
+        'ch8_cbar': 'Occurrences moyennes',
+        'ch8_cats': ['Droits linguistiques', 'Pratiques culturelles', 'Institutions culturelles', 'Protection du patrimoine'],
+        'people_vs_peoples_title': 'Fréquence de « people » vs « peoples »',
+        'people_vs_peoples_xlabel': '« people » (singulier, pour 1000 mots)',
+        'people_vs_peoples_ylabel': '« peoples » (pluriel, pour 1000 mots)',
+        'people_vs_peoples_right': 'Moyenne par héritage',
+        'people_vs_peoples_right_ylabel': 'pour 1000 mots',
+        'pc_non_conflict_short': 'Non-conflit',
+        'pc_post_conflict_short': 'Post-conflit',
     },
 
     'en': {
@@ -331,6 +348,23 @@ LABELS = {
         'kwic_legend': 'Context type',
         'topics_title': 'Topic distribution by colonial heritage\n(BERTopic on constitutional paragraphs)',
         'topics_cbar': '% of paragraphs in heritage group',
+
+        # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
+        'ch7_title': 'Ch.7: Territorial and environmental provisions',
+        'ch7_right_title': 'Post-conflict effect on territorial rights',
+        'ch7_xlabel': 'Per 1000 words',
+        'ch7_right_xlabel': 'Total provisions (mean)',
+        'ch7_land_cats': ['Land rights', 'Natural resources', 'Environment', 'Ancestral land', 'Water rights'],
+        'ch8_title': 'Ch.8: Cultural rights depth by heritage',
+        'ch8_cbar': 'Mean occurrences',
+        'ch8_cats': ['Linguistic rights', 'Cultural practices', 'Cultural institutions', 'Heritage protection'],
+        'people_vs_peoples_title': 'Frequency of "people" vs "peoples"',
+        'people_vs_peoples_xlabel': '"people" (singular, per 1000 words)',
+        'people_vs_peoples_ylabel': '"peoples" (plural, per 1000 words)',
+        'people_vs_peoples_right': 'Mean by heritage',
+        'people_vs_peoples_right_ylabel': 'per 1000 words',
+        'pc_non_conflict_short': 'Non-conflict',
+        'pc_post_conflict_short': 'Post-conflict',
     },
 }
 

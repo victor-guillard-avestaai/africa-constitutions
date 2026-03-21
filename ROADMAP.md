@@ -15,7 +15,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 ### Deliverable 1: Thesis Figures & Statistical Results
 PDF-ready academic figures + statistical tables for the thesis document. Must be in **French and English**.
 - 29 figures exist (18 original + 7 case law + 4 new). 26 bilingual (FR+EN), 3 FR-only
-- 4 missing high-priority figures (heritage divergence, treaty beeswarm, correlation matrix, score boxplot)
+- ~~4 missing~~ All generated: heritage divergence, treaty beeswarm, correlation matrix, score boxplot
 - Statistical tables in data/appendix/ (coding scheme, full dataset)
 - All figures need captions, source citations, figure numbers
 
@@ -35,9 +35,8 @@ Website where non-technical law researchers explore the data interactively.
 - [x] All 5 figure-generating notebooks retrofitted with `for lang in ('fr', 'en')` loops
 - [x] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
 - [x] Fix dendrogram readability: horizontal orientation, `figsize=(8,14)`, `leaf_font_size=8`
-- [x] 26/29 figures generated in both FR and EN (3 remaining: ch7_land, ch8_cultural, people_vs_peoples — exist in FR only)
-- [ ] Add captions and source citations to figure_index.md
-- [ ] Generate bilingual versions of 3 remaining figures (ch7, ch8, people_vs_peoples)
+- [x] All 29 figures generated in both FR and EN (data/figures/fr/ + data/figures/en/)
+- [x] Add captions and source citations to figure_index.md (29 figures with bilingual titles + insight descriptions)
 
 ### B. Dashboard Interactivity (Deliverable 2)
 - [ ] Convert Textes tab from static images to interactive D3 charts
