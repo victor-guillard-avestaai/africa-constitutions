@@ -46,6 +46,43 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Tab Navigation ─────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0 2rem;
+  border-bottom: 2px solid var(--border);
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.tab-btn {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  background: none;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--text);
+  font-weight: 600;
+  border-bottom-color: var(--text);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
 /* ─── Header ────────────────────────────────────────────── */
 header {
   text-align: center;

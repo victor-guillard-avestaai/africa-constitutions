@@ -21,7 +21,19 @@
   <p class="lead">De la construction nationale au pluralisme identitaire — comment 54 pays africains reconnaissent ou effacent la diversité ethnoculturelle dans leurs constitutions</p>
 </header>
 
-<!-- ═══════ MAP ═══════ -->
+<!-- ═══════ TAB BAR ═══════ -->
+<nav class="tab-bar">
+  <button class="tab-btn active" data-tab="carte">Carte</button>
+  <button class="tab-btn" data-tab="heritage">Héritage</button>
+  <button class="tab-btn" data-tab="traites">Traités</button>
+  <button class="tab-btn" data-tab="conflit">Post-conflit</button>
+  <button class="tab-btn" data-tab="textes">Textes</button>
+  <button class="tab-btn" data-tab="clusters">Clusters</button>
+</nav>
+
+<!-- ═══════ TAB: CARTE ═══════ -->
+<div class="tab-panel active" id="tab-carte">
+
 <div class="section">
   <div class="card">
     <h2>Carte de la reconnaissance constitutionnelle</h2>
@@ -86,7 +98,7 @@
   </div>
 </div>
 
-<!-- ═══════ HEATMAP TABLE ═══════ -->
+<!-- Heatmap stays in Carte tab — it's the primary data exploration tool -->
 <div class="section">
   <div class="card">
     <h2>Matrice comparative — 54 pays × 10 dimensions</h2>
@@ -113,13 +125,19 @@
   </div>
 </div>
 
-<!-- ═══════ DIVERGENCE ═══════ -->
+</div><!-- end tab-carte -->
+
+<!-- ═══════ TAB: HERITAGE ═══════ -->
+<div class="tab-panel" id="tab-heritage">
+
 <div class="section">
   <div class="card">
     <h2>Divergence par héritage colonial</h2>
-    <div class="sub">Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes et la liste des pays de chaque groupe.</div>
+    <div class="sub">Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes.</div>
     <div class="explainer">
       L'héritage colonial détermine la tradition juridique constitutionnelle. Les pays <strong>francophones</strong> ont hérité du modèle jacobin français (État unitaire, silence sur la diversité). Les pays <strong>anglophones</strong> ont hérité du pluralisme de la common law britannique (chefferie traditionnelle, tribunaux coutumiers). Les pays <strong>lusophones</strong> suivent une troisième voie, souvent marquée par le socialisme post-indépendance.
+      <br><br>
+      <strong>Résultat clé</strong> : l'écart francophone-anglophone s'est <em>élargi</em> après 1990, passant de 2,4 à 4,7 points. La vague de démocratisation a apporté la décentralisation et la reconnaissance linguistique, mais pas la reconnaissance identitaire profonde (droits des minorités, peuples autochtones). η² = 22,3 % (n = 42 franco + anglo).
     </div>
     <div class="hl-bar">
       <div class="hl-item"><div class="hl-line" style="background:var(--francophone)"></div>Francophone (23 pays)</div>
@@ -130,7 +148,11 @@
   </div>
 </div>
 
-<!-- ═══════ SCATTER ═══════ -->
+</div><!-- end tab-heritage -->
+
+<!-- ═══════ TAB: TRAITES ═══════ -->
+<div class="tab-panel" id="tab-traites">
+
 <div class="section">
   <div class="card">
     <h2>Ratifier n'est pas reconnaître</h2>
@@ -139,6 +161,7 @@
       <strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br>
       <strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br>
       <strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br>
+      <strong>Forme</strong> : ● = constitution non-conflit, ◆ = constitution post-conflit.<br>
       <strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.
     </div>
     <div id="scatter-container"></div>
@@ -147,11 +170,69 @@
       <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div>Anglophone</div>
       <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div>Lusophone</div>
       <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div>Autre</div>
-      <div class="sl-item" style="margin-left:1.5rem"><div class="sl-dot" style="background:var(--muted);border-radius:50%"></div>● Non-conflit</div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--muted);transform:rotate(45deg);border-radius:2px"></div>◆ Post-conflit</div>
+      <div class="sl-item" style="margin-left:1.5rem">● Non-conflit</div>
+      <div class="sl-item">◆ Post-conflit</div>
     </div>
   </div>
 </div>
+
+</div><!-- end tab-traites -->
+
+<!-- ═══════ TAB: POST-CONFLIT ═══════ -->
+<div class="tab-panel" id="tab-conflit">
+
+<div class="section">
+  <div class="card">
+    <h2>Le moment constitutionnel post-conflit</h2>
+    <div class="sub">Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.</div>
+    <div class="explainer">
+      <strong>Variable</strong> : la <em>constitution actuelle</em> a-t-elle été adoptée dans le cadre d'un processus de paix, d'une transition post-guerre ou d'une construction nationale post-libération ? 15/54 constitutions codées post-conflit.<br>
+      <strong>Résultat</strong> : les constitutions post-conflit obtiennent un score moyen de 12,4/20 contre 7,5 (p = 0,001). L'héritage seul explique 22,3 % de la variance ; héritage + post-conflit en explique 54,9 %. L'effet est concentré sur les dimensions identitaires (Dpa, Dau, Drc, Drm : p &lt; 0,001).<br>
+      <strong>Implication pour la thèse</strong> : la reconnaissance des peuples infra-étatiques est motivée par la nécessité politique (le critère fonctionnel), pas par la tradition juridique héritée seule.
+    </div>
+    <div id="conflict-chart-container">
+      <p style="color:var(--dim);text-align:center;padding:3rem;">Graphiques interactifs à venir — voir <code>notebooks/post_conflict_analysis.ipynb</code> pour les résultats actuels.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab-conflit -->
+
+<!-- ═══════ TAB: TEXTES ═══════ -->
+<div class="tab-panel" id="tab-textes">
+
+<div class="section">
+  <div class="card">
+    <h2>Ce que disent les constitutions</h2>
+    <div class="sub">Analyse textuelle des 54 constitutions (1,4 million de mots, traductions anglaises de constituteproject.org).</div>
+    <div class="explainer">
+      <strong>Souveraineté vs identité</strong> : les préambules francophones utilisent davantage les mots « sovereignty » (0,41/1000) et « unity » (0,48/1000). 70 % contiennent le mot « indivisible » contre 21 % des anglophones.<br>
+      <strong>Usage de « peoples »</strong> : 74 % des occurrences francophones sont des citations de la Charte africaine ou des formules diplomatiques — le mot « peuples » n'est pas traduit en reconnaissance domestique.<br>
+      <strong>Autodétermination</strong> : seuls 8/54 pays mentionnent l'autodétermination. Classification préliminaire (regex) — nécessite une validation juridique.<br>
+      <em>Voir <code>notebooks/m2_constitutional_text_analysis.ipynb</code> pour les figures et l'analyse complète.</em>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab-textes -->
+
+<!-- ═══════ TAB: CLUSTERS ═══════ -->
+<div class="tab-panel" id="tab-clusters">
+
+<div class="section">
+  <div class="card">
+    <h2>Modèles constitutionnels — clustering sémantique</h2>
+    <div class="sub">Les constitutions sont-elles plus proches par leur contenu textuel que par leur héritage colonial ? Embeddings juridiques (Voyage AI, voyage-law-2) + réduction dimensionnelle (UMAP).</div>
+    <div class="explainer">
+      <strong>Méthode</strong> : chaque constitution est convertie en vecteur de 1024 dimensions par un modèle d'embeddings spécialisé en droit. La projection UMAP en 2D révèle les regroupements sémantiques. Les couleurs indiquent l'héritage colonial — la question est : les clusters sémantiques reproduisent-ils les groupes héritage, ou révèlent-ils une structure cachée ?
+    </div>
+    <div id="clusters-container">
+      <p style="color:var(--dim);text-align:center;padding:3rem;">Embeddings en cours de calcul — voir <code>notebooks/</code> pour les résultats.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- end tab-clusters -->
 
 <footer>
   Source : tableau_constit_pays_af_complet_copie.xlsx — 54 pays, 439 textes constitutionnels (1847–2026)<br>
