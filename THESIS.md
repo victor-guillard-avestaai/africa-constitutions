@@ -73,18 +73,20 @@ The agent reads this to make thesis-aware decisions (visualization design, data 
 | Ch.5 | Self-determination classification: 7-category posture for 54 countries. 8/54 mention SD, 70% francophone use "indivisible". Preliminary, keyword-based — requires legal validation | Delivered (M2, preliminary) |
 | Ch.6 | Participation vs. autonomy: Dc/Dau/F/PJ dimensions across heritage groups | Delivered (M0) |
 
-### Future contributions
+| Ch. prélim. | Methodological appendix: coding scheme, summary statistics | Delivered (M7) |
+| Ch.2 S2 | Enhancement: empirical clustering — ARI=0.033 (dimension clusters don't reproduce heritage), ARI=0.466 (embeddings partially do) | Delivered (M4) |
+| Ch.3 | Case law timeline: functional criterion emergence through 5 key ACHPR cases (Endorois→Ogiek→Lower Omo→Nuba). 7 thesis figures | Delivered (M3+M5) |
+| Ch.4 S1 | Doctrinal concept frequency: thesis vocabulary absent (0 occurrences), ACHPR uses "peuples autochtones" (5), "autodétermination" (2) | Delivered (M5) |
+| Ch.4 S2 | Cross-system citations (art. 60-61): CIJ (4), CIDH (2), CEDH (2). Landmark citations: Nuba (9), Lower Omo (2) | Delivered (M5) |
+| Ch.5 | Pre/post-Ogiek evolution: 14 constitutions adopted post-2017, mean 7.8 vs pre-Ogiek 9.2 — effect not yet visible | Delivered (M3+M5) |
+| Ch.7 | Territorial/resource rights: 12 sub-categories coded across 54 countries | Delivered (M6) |
+| Ch.8 | Cultural rights depth: 7 sub-categories, no heritage gap on culture (p>0.10) | Delivered (M6) |
+
+### Future enhancements
 
 | Chapter | Contribution | Method | Roadmap |
 |---------|-------------|--------|---------|
-| Ch. prélim. | Methodological appendix: coding scheme, summary statistics | Script | M7 |
-| Ch.2 S2 | Enhancement: empirical clustering on 10 dimensions — constitutional *output* patterns beyond colonial *input* heritage | Hierarchical clustering | M4 |
-| Ch.3 | Case law timeline: functional criterion emergence through ACHPR jurisprudence | Structured dataset + visualization | M3+M5 |
-| Ch.4 S1 | Doctrinal concept frequency in case law | Text mining on case law notes | M5 |
-| Ch.4 S2 | Cross-system citation network (articles 60-61) | Citation extraction | M5 |
 | Ch.6 | Enhancement: institutional architecture typology from COMMENTAIRE | Semi-automatic classification | M4 |
-| Ch.7 | Territorial/resource rights provisions | NLP on 54 PDFs | M6 |
-| Ch.8 | Cultural rights depth: sub-dimension breakdown | NLP + qualitative coding | M6 |
 
 ## The Dataset
 

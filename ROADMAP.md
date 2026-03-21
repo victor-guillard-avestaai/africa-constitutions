@@ -6,7 +6,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 **Team:** Alex (law researcher, PhD student) + Victor (data scientist, developer) + Claude (AI assistant).
 
-**Current state:** Research phase complete (M0-M7). 11 key insights, 18 thesis figures, 6 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
+**Current state:** Research phase complete (M0-M7). 11 key insights, 25 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
 
 ---
 
@@ -162,7 +162,7 @@ Website where non-technical law researchers explore the data interactively.
 - [x] 7-category posture classification: external SD, internal SD, mentioned, autonomy, indivisible+autonomy, indivisible, silent
 - [x] Posture stacked bar by heritage (Fig. 6)
 - [x] Binary flags heatmap: 54 countries × 4 markers (Fig. 7)
-- [ ] Pre/post-Ogyek evolution (requires M3 case law dataset — deferred)
+- [x] Pre/post-Ogiek evolution: 14 constitutions adopted post-2017, mean 7.8 vs pre-Ogiek 9.2 — Ogiek effect not yet visible (mostly francophone authoritarian revisions)
 
 **Serves:** Ch.1, Ch.5.
 
@@ -187,9 +187,10 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 - [x] Endorois (276/03) and Ogiek (006/2012) added manually not in the docx files: Endorois (2010), Ogyek (2017), earlier hesitations
 
 ### Visualization
-- [ ] Interactive case law timeline (not yet built): decisions over time, color-coded by functional criterion application
-- [ ] Article invocation frequency chart (not yet built) (art. 19, 20, 21, 22, 23, 24 over time)
-- [ ] Decision: integrate into dashboard as new section, or produce as standalone thesis figures?
+- [x] Case law timeline: 30 cases by filing year, peoples' rights highlighted, functional criterion annotated (ch3_case_law_timeline.pdf)
+- [x] Article invocation frequency chart: bar chart with peoples' arts 19-24 highlighted (ch3_article_frequency.pdf)
+- [x] Functional criterion emergence timeline: 5 key cases annotated with legal formulations (ch3_functional_criterion_emergence.pdf)
+- [x] Decision: thesis figures (matplotlib), not dashboard D3 — per architecture decision
 
 **Bottleneck:** Alex must do the substantive legal coding. The project provides infrastructure and visualization. Design a minimal schema — do not over-code.
 
@@ -246,19 +247,20 @@ Heritage groups are a colonial *input*. Clustering on the 10 dimensions reveals 
 **Depends on:** Milestone 3 (case law dataset must be substantially populated).
 
 ### Ch.3 — Functional criterion emergence
-- [ ] Timeline visualization (not yet built): when did key legal formulations first appear?
-- [x] Tracked: 5/30 cases invoke peoples' rights (art. 19-24) from state people" (Lower Omo §177), "identity markers and specific status" (Nuba §236)
-- [x] Functional criterion found in Endorois (2010) and Ogiek (2017) only — both Kenya stabilization — is the break visible in the data?
+- [x] Timeline visualization: functional criterion emergence across 5 key cases (ch3_functional_criterion_emergence.pdf)
+- [x] Tracked: 5/30 cases invoke peoples' rights (art. 19-24): Endorois, Ogiek, Lower Omo, Nuba, 744/20
+- [x] Functional criterion found in Endorois (2010) and Ogiek (2017) only — both Kenya stabilization
+- [x] Progressive shift visible: from "autochtone" labeling (Endorois) to functional protection (Nuba — no "autochtone" label)
 
 ### Ch.4 S1 — Doctrinal concept mapping
-- [ ] Extract doctrinal concept references (requires deeper case law dataset), "droits collectifs", "protection systémique", "lecture relationnelle" from case law notes
-- [ ] Frequency chart (requires deeper case law dataset)
+- [x] Doctrinal concept frequency chart (ch4s1_doctrinal_concepts.pdf): thesis vocabulary absent, ACHPR vocabulary present
+- [x] Key finding: "peuple infra-étatique", "critère fonctionnel" = 0 occurrences. "peuples autochtones" = 5, "autodétermination" = 2
 
 ### Ch.4 S2 — Cross-system citation analysis
 The ACHPR cites other systems via articles 60-61. The case law notes document these citations.
-- [ ] Cross-system citation extraction (requires deeper case law dataset) from coded dataset
-- [ ] Citation network (requires deeper case law dataset): which systems does the ACHPR draw from, for which rights?
-- [ ] Thesis figure: Sankey diagram (deferred) or directed graph
+- [x] Cross-system citation extraction from coded dataset (ch4s2_cross_system_citations.pdf)
+- [x] Citation network: CIJ (4), CADHP auto-ref (6), CIDH (2), CEDH (2), UN HRC (1), African Court (0)
+- [x] Landmark case citations: Nuba/Kordofan dominates (9), Lower Omo (2), Belilos (1) (ch4_landmark_citations.pdf)
 
 **Serves:** Ch.3, Ch.4.
 
@@ -315,8 +317,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | Ch.1 S2 | **Delivered** | 10 dimensions × 54 countries (dashboard) + naming terminology heatmap | M0+M2 |
 | Ch.2 S1 | **Delivered** | Treaty irrelevance: beeswarm scatter, structural incapacity of international regime | M0 |
 | Ch.2 S2 | **Delivered** (base) | Heritage determinism (Cohen d=1.05), divergence charts. Enhancement: clustering (M4, planned) | M0+M4 |
-| Ch.3 | Planned | Case law timeline, functional criterion emergence | M3+M5 |
-| Ch.4 | Planned | Doctrinal concept mapping, cross-system citation network | M5 |
+| Ch.3 | **Delivered** | Case law timeline, functional criterion emergence (5 key cases), article frequency | M3+M5 |
+| Ch.4 | **Delivered** | Doctrinal concept frequency, cross-system citations, landmark case citations | M5 |
 | Ch.5 | **Delivered** (preliminary) | 7-category SD classification, keyword-based — requires legal validation | M2 |
 | Ch.6 | **Delivered** | Dc/Dau/F/PJ dimensions + institutional typology enhancement (M4, planned) | M0+M4 |
 | Ch.7 | Planned | Territorial/resource rights provisions | M6 |
@@ -326,21 +328,17 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 ## Priority Order
 
-**Completed:** M0 (Phases 1-4), M1a, M1b, M2, M3 start, post-conflict analysis.
+**Completed:** M0 (Phases 1-4), M1a, M1b, M2, M3, M4 (a-d), M5, M6, M7 (partial), post-conflict analysis.
 
 **Next:**
 
-1. **M4a** — Tabbed dashboard restructure (presentation-ready)
-2. **M4b** — Semantic embeddings (voyage-law-2 → UMAP → thesis figure)
-3. **M4c** — Dimension-based clustering (dendrogram + cluster profiles)
-4. **M4d** — Advanced NLP (BERTopic, KWIC, similarity network)
-5. **M3 coding** — Alex codes ACHPR cases (runs in background)
-6. **M5** — Case law analysis (depends on M3 progress)
-7. **M0 P5** — Final dashboard polish (accessibility, print stylesheet)
-8. **M6** — Extended constitutional coding (if time permits)
-9. **M7** — Thesis integration + publication
+1. **Remaining Work A** — Thesis figures (French translation, missing figures, captions)
+2. **Remaining Work B** — Dashboard interactivity (convert static tabs to D3)
+3. **Remaining Work C** — Bilingual support (French/English toggle)
+4. **Remaining Work D** — Polish (colorblind, guided tour)
+5. **M0 P5** — Final dashboard polish (accessibility)
 
-**If time is limited:** M4a-c covers the remaining high-impact work. M4d, M5-M7 are enhancements.
+**If time is limited:** A (thesis figures) is the highest-impact remaining work for the thesis defense.
 
 ---
 
