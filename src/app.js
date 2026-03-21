@@ -299,13 +299,7 @@ function renderMap() {
   // Somaliland (SOL) → disputed territory
   if (isoToGeo['SOL']) cPaths.push({ name: 'Somaliland', iso: 'SOL', geo: isoToGeo['SOL'] });
 
-  g.selectAll('path.country-path').data(cPaths, d => d.iso).join('path')
-    .attr('class', 'country-path')
-    .attr('d', d => path(d.geo))
-    .attr('data-country', d => d.name)
-    .on('mouseenter', onHover).on('mousemove', onMove).on('mouseleave', onLeave).on('click', onClick);
-
-  // Island nation markers — colored circles as click/hover targets
+  // Island nation markers — rendered BEFORE country paths so islands sit on top
   const islandData = [
     { name: 'Cap-Vert', lon: -23.64, lat: 15.07 },
     { name: 'Sao Tomé-et-Príncipe', lon: 7.02, lat: 0.97 },
@@ -327,6 +321,13 @@ function renderMap() {
     .on('mousemove', onMove)
     .on('mouseleave', function(ev, d) { d3.select(this).attr('r', 12); onLeave.call(this, ev, d); })
     .on('click', function(ev, d) { onClick.call(this, ev, d); });
+
+  // Country paths — rendered on top so island shapes are visible over the circles
+  g.selectAll('path.country-path').data(cPaths, d => d.iso).join('path')
+    .attr('class', 'country-path')
+    .attr('d', d => path(d.geo))
+    .attr('data-country', d => d.name)
+    .on('mouseenter', onHover).on('mousemove', onMove).on('mouseleave', onLeave).on('click', onClick);
 
   updateMap();
 }
