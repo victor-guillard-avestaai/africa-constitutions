@@ -34,7 +34,12 @@ NEXT: Tabbed dashboard + semantic embeddings (voyage-law-2) + clustering
 - [x] Click → bio panel, tooltip on hover
 - [x] Thesis-grounded title: "Ratifier n'est pas reconnaître"
 
-### Phase 5: Final Polish
+### Phase 5: Final Polish — IN PROGRESS
+- [x] Remove 3 dead CSS classes (.dim-sep, .scale-label, .cp-articles)
+- [x] Fix divergence subtitle (was "liste des pays", now "valeurs exactes par héritage")
+- [x] TECHNICAL.md: add missing color vars (--c-none, --c0, --c1, --c2)
+- [x] TECHNICAL.md: fix utility functions list (fillForScore, map-section functions)
+- [x] TECHNICAL.md: add tab navigation to section order
 - [ ] Accessibility audit (ARIA labels, keyboard navigation, colorblind patterns)
 - [ ] Year slider range review (1847 vs 1930 start)
 - [ ] Dimension constraint feedback (visual cue when minimum enforced)
@@ -329,7 +334,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 ### Visual
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
-| **Scatter plot hard to read** | Overlapping labels, unclear thesis story | M0 Phase 4 | Deferred |
+| ~~**Scatter plot hard to read**~~ | Redesigned as beeswarm with post-conflict diamonds | — | **Fixed** (M0 Phase 4) |
 | **No colorblind support** | Heritage distinction color-only (~8% male users) | M0 Phase 5 | Deferred |
 | **No keyboard navigation** | Inaccessible to keyboard users | M0 Phase 5 | Deferred |
 | **Dimension deselection silent** | Min-1 constraint re-adds Drm without feedback | M0 Phase 5 | Deferred |
@@ -351,13 +356,13 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 | **13 hardcoded colors in styles.css** | Should use CSS variables | M0 Phase 5 | Deferred |
 | ~~**4 unused CSS reader properties**~~ | CSS.bg, CSS.card, CSS.c0, CSS.c2 — already cleaned up | — | **Fixed** |
 | **8 undocumented DATA keys** | TECHNICAL.md doesn't list adoption, decade_counts, etc. | M0 Phase 5 | Deferred |
-| **3 dead CSS classes** | `.dim-sep`, `.scale-label`, `.cp-articles` defined but never used | M0 Phase 5 | Deferred |
-| **Color vars undocumented** | `--c-none`, `--c0`, `--c1`, `--c2` missing from TECHNICAL.md color tables | M0 Phase 5 | Deferred |
+| ~~**3 dead CSS classes**~~ | `.dim-sep`, `.scale-label`, `.cp-articles` removed | — | **Fixed** |
+| ~~**Color vars undocumented**~~ | Added `--c-none`, `--c0`, `--c1`, `--c2` to TECHNICAL.md | — | **Fixed** |
 
 ### Documentation
 | Issue | Impact | Target | Status |
 |-------|--------|--------|--------|
-| **TECHNICAL.md section 4 misattributed** | Utility functions list wrong; `fillForScore` omitted | M0 Phase 5 | Deferred |
+| ~~**TECHNICAL.md section 4 misattributed**~~ | Utility functions corrected, map-section functions noted | — | **Fixed** |
 | ~~**TECHNICAL.md file structure stale**~~ | Listed `.claude/review_prompts/` — removed | — | **Fixed** |
 | ~~**PCA figure in THESIS.md wrong**~~ | Was ~43%, corrected to 39.6% with proper attribution | — | **Fixed** |
 | ~~**ROADMAP Ch.2 S2 overstated**~~ | Separated base delivery from planned clustering enhancement | — | **Fixed** |
@@ -367,8 +372,8 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 |-------|--------|--------|--------|
 | **Mode switch scope not explained** | Users may expect all charts to change | M0 Phase 5 | Deferred |
 | **"mixed" vs "other" heritage undocumented** | Cameroun is "mixed" but looks identical to "other" | M0 Phase 5 | Deferred |
-| **Score display inconsistency** | Heatmap uses 0-20 total, scatter uses 0-2 normalized — confusing | M0 Phase 4 | Deferred |
-| **Divergence subtitle claims country lists** | Tooltip shows averages, not country lists as subtitle says | M0 Phase 5 | Deferred |
+| ~~**Score display inconsistency**~~ | Both heatmap and scatter now use 0-20 total | — | **Fixed** (scatter redesign) |
+| ~~**Divergence subtitle claims country lists**~~ | Subtitle corrected to "valeurs exactes par héritage" | — | **Fixed** |
 | **No map → heatmap navigation** | Clicking country opens bio but no link to heatmap row | M0 Phase 5 | Deferred |
 | **Ch.6 art. 13 framing absent** | Dc/Dau/F/PJ present but not foregrounded as participation vs autonomy | M0 Phase 5 | Deferred |
 | **Heritage determinism not explained in UI** | 2D legend is silent about what the encoding means | M0 Phase 5 | Deferred |

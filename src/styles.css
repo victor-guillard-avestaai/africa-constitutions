@@ -219,7 +219,7 @@ header .lead {
 .dim-btn.active .cb { background: var(--c2); border-color: var(--c2); color: #fff; }
 .dim-btn.active { color: var(--text); font-weight: 500; }
 
-.dim-sep { height: 1px; background: var(--border); margin: 0.2rem 0; }
+
 
 .grp-row { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-bottom: 0.3rem; }
 
@@ -323,7 +323,6 @@ header .lead {
   justify-content: center;
 }
 
-.scale-label { font-size: 0.7rem; color: var(--dim); }
 
 /* ─── Tooltip ───────────────────────────────────────────── */
 .tt {
@@ -435,12 +434,6 @@ header .lead {
   word-wrap: break-word;
 }
 
-#commentary-pane .cp-articles {
-  font-size: 0.8rem;
-  color: var(--muted);
-  margin-top: 0.5rem;
-  font-style: italic;
-}
 
 /* ─── Heatmap Table ─────────────────────────────────────── */
 .heatmap-controls {

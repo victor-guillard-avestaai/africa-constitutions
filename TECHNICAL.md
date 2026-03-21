@@ -96,8 +96,17 @@ All semantic colors defined as CSS custom properties in `:root` (styles.css). JS
 | `--lusophone` | `#2a7a5a` | Forest green |
 | `--other-h` | `#7a8088` | Slate gray |
 
-### Score & pill colors
-`--score-x/p/v`, `--pill-bg-v/p/x`, `--pill-c-v/p/x`, `--stroke-default`, `--axis-grid`, `--hatch-bg/stroke`
+### Score & utility colors
+| Variable | Value | Usage |
+|----------|-------|-------|
+| `--c-none` | `#eae6df` | Uncolored map countries |
+| `--c0` | `#e8e4dd` | Score level 0 background |
+| `--c1` | `#3a7c8a` | Score level 1 |
+| `--c2` | `#1a6b5a` | Score level 2 |
+| `--score-x/p/v` | | Pill backgrounds by score |
+| `--pill-bg-v/p/x`, `--pill-c-v/p/x` | | Pill text colors |
+| `--stroke-default`, `--axis-grid` | | Chart strokes and grid |
+| `--hatch-bg/stroke` | | Colonial territory hatching |
 
 ### Adding a new color
 1. Add variable to `:root` in `styles.css`
@@ -108,10 +117,11 @@ Exception: `HERITAGE_COLORS` gradient intermediates (X/P/V per-heritage ramps fo
 
 ## app.js section order
 
+0. Tab Navigation
 1. CSS Custom Property Reader
 2. Constants & Color Scales (HERITAGE_COLORS, HERITAGE_SCALES, HC, HL, HM_SHORT)
 3. Application State (selDims, selYear, selCountry, mapMode, hmSort, hmFilter)
-4. Utility Functions (numVal, getState, compScore, fillFor, isIndependent, isSplitYet, getParentCountry)
+4. Utility Functions (getState, compScore, fillFor, fillForScore, numVal — note: isIndependent, isSplitYet, getParentCountry are in Map section)
 5. Scale Bar / 2D Legend
 6. Dimension Buttons (buildDimBtns, syncDims)
 7. Mode Switch (buildModeSwitch, resetStrokes)

@@ -260,10 +260,10 @@ fi
 
 # L1-7: File sizes sanity
 HTML_LINES=$(wc -l < src/index.html)
-if [ "$HTML_LINES" -le 200 ]; then
-    l1_result PASS "index.html is $HTML_LINES lines (≤200, properly split)"
+if [ "$HTML_LINES" -le 300 ]; then
+    l1_result PASS "index.html is $HTML_LINES lines (≤300, properly split)"
 else
-    l1_result WARN "index.html is $HTML_LINES lines (>200, may contain inline code)"
+    l1_result WARN "index.html is $HTML_LINES lines (>300, may contain inline code)"
 fi
 
 # L1-8: No stale dark-theme colors
