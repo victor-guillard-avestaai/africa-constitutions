@@ -4,7 +4,7 @@
 
 | Component | Language | Source | Notes |
 |-----------|----------|--------|-------|
-| Source spreadsheet | **French** | Victor's coding | Column names, COMMENTAIRE, dimension codes (F, Dc, Drm...), country names, ratification data |
+| Source spreadsheet | **French** | Alex's coding | Column names, COMMENTAIRE, dimension codes (F, Dc, Drm...), country names, ratification data |
 | Constitution PDFs | **English** | constituteproject.org translations | Originally written in French, English, Portuguese, Arabic, Amharic, etc. — all are English translations |
 | Dashboard UI | **French** | Designed for PhD committee | Titles, labels, tooltips, explainer text, footer |
 | KB files (CLAUDE.md etc.) | **English** | For Claude Code | Project documentation |
@@ -38,7 +38,7 @@ The 54 PDFs from constituteproject.org are English translations of constitutions
 
 5. **"customary", "traditional"**: French "coutumier" → "customary", "traditionnel" → "traditional" — but translation choices may vary. An anglophone constitution written in English uses "customary law" as a legal term of art; a translated francophone constitution might use "customary" differently.
 
-6. **"ethnic", "tribe"**: French "ethnie" → "ethnic", "tribu" → "tribe" — but English-original anglophone constitutions may use different terminology than translations of French texts. The COMMENTAIRE analysis (in French) is more reliable for cross-heritage comparison because it's all in the same language (Victor's coding notes).
+6. **"ethnic", "tribe"**: French "ethnie" → "ethnic", "tribu" → "tribe" — but English-original anglophone constitutions may use different terminology than translations of French texts. The COMMENTAIRE analysis (in French) is more reliable for cross-heritage comparison because it's all in the same language (Alex's coding notes).
 
 ### Reliable analyses
 

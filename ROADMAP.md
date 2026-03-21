@@ -189,7 +189,7 @@ The 3 docx files in `data/sources/` contain ~35 case summaries from sessions 70-
 - [ ] Article invocation frequency chart (not yet built) (art. 19, 20, 21, 22, 23, 24 over time)
 - [ ] Decision: integrate into dashboard as new section, or produce as standalone thesis figures?
 
-**Bottleneck:** Victor must do the substantive legal coding. The project provides infrastructure and visualization. Design a minimal schema — do not over-code.
+**Bottleneck:** Alex must do the substantive legal coding. The project provides infrastructure and visualization. Design a minimal schema — do not over-code.
 
 **Serves:** Ch.3 (primary), Ch.4, Ch.5, Ch.7, Ch.8 (all reference case law).
 
@@ -332,7 +332,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 2. **M4b** — Semantic embeddings (voyage-law-2 → UMAP → thesis figure)
 3. **M4c** — Dimension-based clustering (dendrogram + cluster profiles)
 4. **M4d** — Advanced NLP (BERTopic, KWIC, similarity network)
-5. **M3 coding** — Victor codes ACHPR cases (runs in background)
+5. **M3 coding** — Alex codes ACHPR cases (runs in background)
 6. **M5** — Case law analysis (depends on M3 progress)
 7. **M0 P5** — Final dashboard polish (accessibility, print stylesheet)
 8. **M6** — Extended constitutional coding (if time permits)
@@ -350,7 +350,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 **Translation caveat:** NLP on constitution texts operates on English translations (constituteproject.org). Only anglophone constitutions are in original language. Binary detection (presence/absence of terms) is reliable; frequency comparison requires caution. See `docs/linguistic_decisions.md`.
 
-**Self-determination classification:** The 7-category posture system (M2) is keyword-based regex. It is labeled "preliminary" and requires legal validation by Victor before thesis citation.
+**Self-determination classification:** The 7-category posture system (M2) is keyword-based regex. It is labeled "preliminary" and requires legal validation by Alex before thesis citation.
 
 **Temporal analysis:** Pre/post-1990 comparisons are cross-sectional (comparing average scores in each period), not panel data (tracking the same countries over time). Selection effects are not controlled.
 
@@ -360,7 +360,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| **Case law coding bottleneck** | M3/M5 depend on Victor reading and coding each ACHPR decision | Minimal schema, start early, code 2-3 cases per session |
+| **Case law coding bottleneck** | M3/M5 depend on Alex reading and coding each ACHPR decision | Minimal schema, start early, code 2-3 cases per session |
 | **PDF extraction quality** | OCR artifacts, non-English content, formatting issues in 54 PDFs | Spot-check 10 countries before building full pipeline |
 | **Dashboard architecture limits** | Vanilla JS / file:// cannot easily host case law timeline or citation networks | Static thesis figures (matplotlib) for complex new visualizations; dashboard for the core constitutional data |
 | **Scope creep** | 8 chapters × multiple analyses per chapter = unbounded work | Strict milestone ordering; M6 items are optional enhancements |

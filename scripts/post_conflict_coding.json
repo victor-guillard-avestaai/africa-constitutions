@@ -3,7 +3,7 @@
     "description": "Post-conflict constitutional moment coding for the CURRENT constitution of each country",
     "criterion": "The current constitution was adopted as a direct result of a negotiated peace process, post-war/post-genocide transition, or post-liberation state-building. Coups, authoritarian revisions, and routine amendments are excluded.",
     "unit": "Current constitution (not the country as an inherent property). A country may have both post-conflict and non-conflict constitutions in its history.",
-    "coded_by": "Claude + Victor (preliminary — requires legal validation)",
+    "coded_by": "Claude + Alex (preliminary — requires legal validation)",
     "date": "2026-03-21"
   },
   "Algérie": {"post_conflict": false, "current_year": 2020, "note": "Routine Tebboune revision"},
