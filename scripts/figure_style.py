@@ -5,13 +5,13 @@ Import in notebooks:
     from figure_style import *
 """
 
-import json
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.lines import Line2D
+import json  # noqa: I001
 from pathlib import Path
+import matplotlib.patches as mpatches  # noqa: F401 — re-exported for notebook star-imports
+import matplotlib.pyplot as plt
+import numpy as np  # noqa: F401 — re-exported for notebook star-imports
+import pandas as pd  # noqa: F401 — re-exported for notebook star-imports
+from matplotlib.lines import Line2D  # noqa: F401 — re-exported
 
 # Try seaborn, optional
 try:

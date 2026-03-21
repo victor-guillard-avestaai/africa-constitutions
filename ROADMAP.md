@@ -6,7 +6,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 **Team:** Alex (law researcher, PhD student) + Victor (data scientist, developer) + Claude (AI assistant).
 
-**Current state:** Research phase complete (M0-M7). 11 key insights, 25 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
+**Current state:** Research phase complete (M0-M7). 11 key insights, 29 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
 
 ---
 
@@ -14,7 +14,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ### Deliverable 1: Thesis Figures & Statistical Results
 PDF-ready academic figures + statistical tables for the thesis document. Must be in **French and English**.
-- 25 figures exist (18 original + 7 case law), 5 need French translation
+- 29 figures exist (18 original + 7 case law + 4 new). 26 bilingual (FR+EN), 3 FR-only
 - 4 missing high-priority figures (heritage divergence, treaty beeswarm, correlation matrix, score boxplot)
 - Statistical tables in data/appendix/ (coding scheme, full dataset)
 - All figures need captions, source citations, figure numbers
@@ -31,11 +31,13 @@ Website where non-technical law researchers explore the data interactively.
 ## Remaining Work
 
 ### A. Thesis Figures (Deliverable 1)
-- [ ] Translate 5 figures to French: ch5_sd_posture, ch7_land, kwic_customary, topics_heritage, ch1s2_people_vs_peoples
-- [ ] Generate English versions of all 25 figures
-- [ ] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
+- [x] Bilingual figure pipeline: `scripts/figure_style.py` shared module (107 FR + 107 EN labels)
+- [x] All 5 figure-generating notebooks retrofitted with `for lang in ('fr', 'en')` loops
+- [x] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
+- [x] Fix dendrogram readability: horizontal orientation, `figsize=(8,14)`, `leaf_font_size=8`
+- [x] 26/29 figures generated in both FR and EN (3 remaining: ch7_land, ch8_cultural, people_vs_peoples — exist in FR only)
 - [ ] Add captions and source citations to figure_index.md
-- [ ] Fix dendrogram readability (vertical or larger font)
+- [ ] Generate bilingual versions of 3 remaining figures (ch7, ch8, people_vs_peoples)
 
 ### B. Dashboard Interactivity (Deliverable 2)
 - [ ] Convert Textes tab from static images to interactive D3 charts
@@ -300,7 +302,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - [x] Exported CSVs in data/appendix/
 
 ### Publication
-- [x] 25 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
+- [x] 29 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
 - [x] Dashboard hosted on GitHub Pages or university server
 - [ ] French/English language toggle (not yet done)
 - [x] Citation metadata (HTML meta tags)

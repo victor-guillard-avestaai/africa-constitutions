@@ -54,6 +54,7 @@ notebooks/
   m4_clustering_embeddings.ipynb    — Semantic clustering: Voyage + UMAP (M4b/c)
   m4d_kwic_topics.ipynb             — KWIC + BERTopic (M4d)
   m3_m5_case_law_analysis.ipynb     — ACHPR case law: timeline, citations, Ogiek (M3/M5)
+  thesis_figures.ipynb              — 4 new figures + fixed dendrogram (bilingual)
 src/                  — Dashboard (open index.html in browser)
   index.html          — 7-tab dashboard (~300 lines)
   styles.css          — All CSS (~700 lines)
@@ -70,7 +71,7 @@ data/
   case_law_analysis.json — Doctrinal concepts, cross-system citations (M5)
   extended_coding_v2.json — 12 sub-categories: land/resources + cultural rights (M6)
   embeddings/         — Voyage voyage-law-2 embeddings (gitignored, regenerable)
-  figures/            — 25 thesis-quality PDFs + PNGs (gitignored, regenerable)
+  figures/            — 29 thesis-quality PDFs + PNGs (gitignored, regenerable)
   appendix/           — CSV tables for thesis methodology appendix (M7)
 docs/
   session-prompts.md  — User prompts from initial development session
@@ -83,6 +84,7 @@ scripts/
   country_mapping.json — English filename ↔ French spreadsheet names (54 entries)
   post_conflict_coding.json — Post-conflict coding with per-country justification
   religion_coding.json — Religion coding (islamic/secular/neutral) for 54 countries
+  figure_style.py     — Shared bilingual style module (imported by all figure notebooks)
   review.sh           — Automated review system (L0-L3)
   recheck_findings.py — Verify review findings integrated into ROADMAP.md
   dod_check.sh        — Definition of Done enforcement (lint + clean git)
