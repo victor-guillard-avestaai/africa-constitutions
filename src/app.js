@@ -717,8 +717,8 @@ function renderScatter() {
   }
 
   const cont = document.getElementById('scatter-container');
-  const M = { top:30, right:160, bottom:55, left:60 };
-  const w = 620, h = 500;
+  const M = { top:30, right:30, bottom:55, left:60 };
+  const w = 720, h = 500;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
@@ -824,33 +824,6 @@ function renderScatter() {
     .on('mouseleave', function() { d3.select(this).attr('r', R).attr('opacity',0.85); scTT.style('opacity','0'); })
     .on('click', function(ev, d) { scTT.style('opacity','0'); openBio(d.name); });
 
-  // Labels: position to the right of each dot, force-simulated to avoid overlap
-  const labelNodes = countries.map(d => ({
-    name: d.name, dotX: d.x, dotY: d.y, heritage: d.heritage,
-    x: d.x + R + 3, y: d.y + 3,
-  }));
-
-  const labelSim = d3.forceSimulation(labelNodes)
-    .force('x', d3.forceX(d => d.dotX + R + 30).strength(0.15))
-    .force('y', d3.forceY(d => d.dotY).strength(0.6))
-    .force('collide', d3.forceCollide(5.5))
-    .stop();
-
-  for (let i = 0; i < 200; i++) labelSim.tick();
-
-  // Leader lines from dot to label
-  g.selectAll('line.sl-leader').data(labelNodes).join('line')
-    .attr('class', 'sl-leader')
-    .attr('x1', d => d.dotX + R).attr('y1', d => d.dotY)
-    .attr('x2', d => d.x - 2).attr('y2', d => d.y - 2)
-    .attr('stroke', CSS.dim).attr('stroke-width', 0.4).attr('opacity', 0.4);
-
-  g.selectAll('text.sl').data(labelNodes).join('text')
-    .attr('class', 'sl')
-    .attr('x', d => d.x)
-    .attr('y', d => d.y)
-    .attr('fill', CSS.muted).attr('font-size', '7.5px')
-    .text(d => d.name);
 }
 
 // ─── Init ──────────────────────────────────────────────────
