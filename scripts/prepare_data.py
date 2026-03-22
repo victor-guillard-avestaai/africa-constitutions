@@ -6,6 +6,7 @@ Outputs app_data.json.
 """
 
 import json
+import os
 import re
 
 import pandas as pd
@@ -407,6 +408,117 @@ BORDER_SPLITS = {
 }
 
 
+# ─── Post-conflict coding ────────────────────────────────────────────────────
+
+pc_path = os.path.join(os.path.dirname(__file__), "post_conflict_coding.json")
+with open(pc_path, encoding="utf-8") as f:
+    pc_raw = json.load(f)
+
+POST_CONFLICT = {}
+for country, info in pc_raw.items():
+    # Map English names to French
+    fr_name = None
+    for fr, iso in NAME_TO_ISO.items():
+        if fr.lower() == country.lower() or country.lower() in fr.lower():
+            fr_name = fr
+            break
+    if fr_name:
+        POST_CONFLICT[fr_name] = info.get("post_conflict", False)
+    else:
+        POST_CONFLICT[country] = info.get("post_conflict", False)
+
+
+# ─── Sovereignty vs Identity scores ──────────────────────────────────────────
+
+IDENTITY_DIMS = ["Drm", "Id", "Drc", "Dpa", "PJ"]
+INSTITUTIONAL_DIMS = ["Dc", "La", "Dis", "Dau", "F"]
+
+sov_vs_id_scores = {}
+for row in feature_matrix:
+    country = row["PAYS"]
+    identity = sum(row[f] for f in IDENTITY_DIMS)
+    institutional = sum(row[f] for f in INSTITUTIONAL_DIMS)
+    sov_vs_id_scores[country] = {
+        "identity": identity,
+        "institutional": institutional,
+        "balance": identity - institutional,
+    }
+
+
+# ─── UMAP coordinates ───────────────────────────────────────────────────────
+
+try:
+    import numpy as np  # noqa: I001
+    from scipy.cluster.hierarchy import fcluster, linkage
+    from sklearn.metrics.pairwise import cosine_similarity
+    from sklearn.preprocessing import StandardScaler
+
+    emb_dir = os.path.join(os.path.dirname(__file__), "..", "data", "embeddings")
+
+    # Constitution UMAP
+    const_emb = np.load(os.path.join(emb_dir, "constitution_embeddings.npy"))
+    with open(os.path.join(emb_dir, "constitution_meta.json")) as f:
+        const_meta = json.load(f)
+
+    from umap import UMAP
+    umap_model = UMAP(n_components=2, random_state=42, n_neighbors=10, min_dist=0.3)
+    const_2d = umap_model.fit_transform(const_emb)
+
+    umap_coords = {}
+    for i, meta in enumerate(const_meta):
+        umap_coords[meta["country_fr"]] = [round(float(const_2d[i, 0]), 3),
+                                             round(float(const_2d[i, 1]), 3)]
+
+    # Preamble UMAP
+    pream_emb = np.load(os.path.join(emb_dir, "preamble_embeddings.npy"))
+    with open(os.path.join(emb_dir, "preamble_meta.json")) as f:
+        pream_meta = json.load(f)
+
+    pream_2d = umap_model.fit_transform(pream_emb)
+    umap_preamble_coords = {}
+    for i, meta in enumerate(pream_meta):
+        umap_preamble_coords[meta["country_fr"]] = [round(float(pream_2d[i, 0]), 3),
+                                                      round(float(pream_2d[i, 1]), 3)]
+
+    # Hierarchical clustering (Ward, on 10 coded dimensions)
+    X = np.array([[row[f] for f in FEATURES] for row in feature_matrix])
+    X_scaled = StandardScaler().fit_transform(X)
+    Z = linkage(X_scaled, method="ward")
+    linkage_countries = [row["PAYS"] for row in feature_matrix]
+    linkage_matrix_data = {
+        "countries": linkage_countries,
+        "linkage": [[int(r[0]), int(r[1]), round(float(r[2]), 4), int(r[3])] for r in Z],
+    }
+
+    # Cluster assignments for k=2..8
+    cluster_assignments = {}
+    for k in range(2, 9):
+        labels = fcluster(Z, k, criterion="maxclust")
+        cluster_assignments[f"k{k}"] = {
+            linkage_countries[i]: int(labels[i]) for i in range(len(linkage_countries))
+        }
+
+    # Cosine similarity matrix
+    sim_matrix = cosine_similarity(const_emb)
+    similarity_matrix_data = {
+        "countries": [meta["country_fr"] for meta in const_meta],
+        "matrix": [round(float(v), 3) for row in sim_matrix for v in row],
+    }
+
+    HAS_EMBEDDINGS = True
+    print(f"Computed: UMAP ({len(umap_coords)} const, {len(umap_preamble_coords)} pream), "
+          f"linkage ({len(Z)} rows), clusters (k=2..8), similarity ({len(sim_matrix)}×{len(sim_matrix)})")
+
+except Exception as e:
+    print(f"Warning: could not compute embeddings data: {e}")
+    HAS_EMBEDDINGS = False
+    umap_coords = {}
+    umap_preamble_coords = {}
+    linkage_matrix_data = {}
+    cluster_assignments = {}
+    similarity_matrix_data = {}
+
+
 # ─── Assemble final JSON ────────────────────────────────────────────────────
 
 app_data = {
@@ -431,6 +543,13 @@ app_data = {
     "total_entries": sum(len(e) for e in country_timelines.values()),
     "independence_dates": INDEPENDENCE_DATES,
     "border_splits": BORDER_SPLITS,
+    "post_conflict": POST_CONFLICT,
+    "sov_vs_id_scores": sov_vs_id_scores,
+    "umap_coords": umap_coords,
+    "umap_preamble_coords": umap_preamble_coords,
+    "linkage_data": linkage_matrix_data,
+    "cluster_assignments": cluster_assignments,
+    "similarity_matrix": similarity_matrix_data,
 }
 
 with open("app_data.json", "w", encoding="utf-8") as f:
