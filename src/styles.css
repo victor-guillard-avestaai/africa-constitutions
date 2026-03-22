@@ -668,6 +668,9 @@ footer {
   /* Scatter */
   .scatter-legend { gap: 0.8rem; flex-wrap: wrap; }
   .sl-item { font-size: 0.72rem; }
+
+  /* Clusters */
+  .cluster-layout { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
@@ -703,6 +706,14 @@ footer {
   /* Tooltips wider to avoid clipping */
   .tt, .div-tt { max-width: calc(100vw - 2rem); }
 }
+
+/* ─── Clusters Tab ───────────────────────────────────────── */
+.umap-controls { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
+.cluster-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+#umap-container svg { max-width: 700px; width: 100%; }
+#dendrogram-container svg { width: 100%; }
+#cluster-map-container svg { width: 100%; max-width: 400px; }
+.threshold-line { cursor: ew-resize; }
 
 /* ─── Figure Cards ───────────────────────────────────────── */
 .fig-card {

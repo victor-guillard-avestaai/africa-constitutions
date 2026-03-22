@@ -1176,6 +1176,309 @@ document.getElementById('download-csv')?.addEventListener('click', () => {
   a.click();
 });
 
+// ─── UMAP Scatter ───────────────────────────────────────────
+let umapMode = 'constitutions';
+
+function renderUMAP() {
+  const container = document.getElementById('umap-container');
+  if (!container || !DATA.umap_coords) return;
+  container.innerHTML = '';
+
+  const coords = umapMode === 'preambles' ? DATA.umap_preamble_coords : DATA.umap_coords;
+  if (!coords || Object.keys(coords).length === 0) return;
+
+  const margin = {top: 20, right: 20, bottom: 40, left: 40};
+  const w = 600, h = 400;
+
+  const svg = d3.select(container).append('svg')
+    .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
+    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Get extent
+  const points = Object.entries(coords).map(([name, [x, y]]) => ({name, x, y}));
+  const xExt = d3.extent(points, d => d.x);
+  const yExt = d3.extent(points, d => d.y);
+  const xScale = d3.scaleLinear().domain([xExt[0]-1, xExt[1]+1]).range([0, w]);
+  const yScale = d3.scaleLinear().domain([yExt[0]-1, yExt[1]+1]).range([h, 0]);
+
+  // Axes
+  svg.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(xScale).ticks(5)).selectAll('text').style('font-size','8px');
+  svg.append('g').call(d3.axisLeft(yScale).ticks(5)).selectAll('text').style('font-size','8px');
+  svg.append('text').attr('x',w/2).attr('y',h+35).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 1');
+  svg.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-30).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 2');
+
+  // Draw points
+  points.forEach(p => {
+    const heritage = DATA.colonial_heritage[p.name] || 'other';
+    const pc = DATA.post_conflict && DATA.post_conflict[p.name];
+    const color = HC[heritage] || HC.other;
+
+    const g = svg.append('g').style('cursor','pointer');
+
+    if (pc) {
+      // Diamond for post-conflict
+      const size = 6;
+      g.append('path')
+        .attr('d', `M${xScale(p.x)},${yScale(p.y)-size} L${xScale(p.x)+size},${yScale(p.y)} L${xScale(p.x)},${yScale(p.y)+size} L${xScale(p.x)-size},${yScale(p.y)} Z`)
+        .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
+    } else {
+      g.append('circle')
+        .attr('cx', xScale(p.x)).attr('cy', yScale(p.y)).attr('r', 5)
+        .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
+    }
+
+    // Label for notable countries only
+    const notable = ['RDC','Éthiopie','Afrique du Sud','Kenya','Cameroun','Tunisie','Somalie','Nigéria'];
+    const shortName = p.name.replace('République démocratique du Congo','RDC');
+    if (notable.includes(shortName) || notable.includes(p.name)) {
+      g.append('text').attr('x',xScale(p.x)+8).attr('y',yScale(p.y)+3)
+        .style('font-size','7px').style('fill',color).text(shortName);
+    }
+
+    // Hover tooltip
+    g.on('mouseover', (event) => {
+      const tt = document.getElementById('tooltip');
+      tt.style.display = 'block';
+      tt.style.opacity = '1';
+      tt.innerHTML = `<strong>${p.name}</strong><br>${DATA.colonial_heritage[p.name] || 'autre'}${pc?' &middot; Post-conflit':''}`;
+    })
+    .on('mousemove', (event) => {
+      const tt = document.getElementById('tooltip');
+      tt.style.left = (event.pageX + 12) + 'px';
+      tt.style.top = (event.pageY - 20) + 'px';
+    })
+    .on('mouseout', () => {
+      const tt = document.getElementById('tooltip');
+      tt.style.opacity = '0';
+      tt.style.display = '';
+    })
+    .on('click', () => { openBio(p.name); });
+  });
+}
+
+// UMAP toggle button handlers
+document.querySelectorAll('[data-umap]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-umap]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    umapMode = btn.dataset.umap;
+    renderUMAP();
+  });
+});
+
+// ─── Dendrogram with threshold slider ───────────────────────
+function buildTreeFromLinkage(linkageData) {
+  const n = linkageData.countries.length;
+  const nodes = new Array(2 * n - 1);
+
+  // Leaf nodes
+  for (let i = 0; i < n; i++) {
+    nodes[i] = { id: i, name: linkageData.countries[i], children: null, height: 0, count: 1 };
+  }
+
+  // Internal nodes
+  linkageData.linkage.forEach((row, idx) => {
+    const [left, right, dist, count] = row;
+    nodes[n + idx] = {
+      id: n + idx,
+      children: [nodes[left], nodes[right]],
+      height: dist,
+      count: count,
+      name: null
+    };
+  });
+
+  return nodes[2 * n - 2]; // root
+}
+
+function renderDendrogram() {
+  const container = document.getElementById('dendrogram-container');
+  if (!container || !DATA.linkage_data || !DATA.linkage_data.linkage) return;
+  container.innerHTML = '';
+
+  const root = buildTreeFromLinkage(DATA.linkage_data);
+  const hierarchy = d3.hierarchy(root);
+
+  const margin = {top: 20, right: 30, bottom: 30, left: 180};
+  const w = 400, h = 800;
+
+  const svg = d3.select(container).append('svg')
+    .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
+    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+  // Cluster layout: assigns y positions to leaves evenly spaced
+  const cluster = d3.cluster().size([h, w]);
+  cluster(hierarchy);
+
+  // x scale: map height (distance) to pixels (0 = leaves on left, maxDist = root on right)
+  const maxDist = root.height;
+  const xScale = d3.scaleLinear().domain([0, maxDist]).range([0, w]);
+
+  // Draw links as elbow connectors
+  const links = hierarchy.links();
+  svg.selectAll('.dendro-link')
+    .data(links)
+    .enter().append('path')
+    .attr('class', 'dendro-link')
+    .attr('d', d => {
+      const sx = xScale(d.source.data.height);
+      const sy = d.source.x;
+      const tx = xScale(d.target.data.height);
+      const ty = d.target.x;
+      return `M${sx},${sy} H${tx} V${ty}`;
+    })
+    .attr('fill', 'none')
+    .attr('stroke', '#999')
+    .attr('stroke-width', 1);
+
+  // Draw leaf labels
+  const leaves = hierarchy.leaves();
+  leaves.forEach(leaf => {
+    const name = leaf.data.name;
+    const heritage = DATA.colonial_heritage[name] || 'other';
+    svg.append('text')
+      .attr('x', -5)
+      .attr('y', leaf.x)
+      .attr('dy', '0.35em')
+      .attr('text-anchor', 'end')
+      .style('font-size', '8px')
+      .style('fill', HC[heritage] || HC.other)
+      .style('font-weight', 'bold')
+      .text(name.replace('République démocratique du Congo','RDC').replace('République centrafricaine','Centrafrique'));
+  });
+
+  // Threshold slider line (draggable vertical line)
+  const initialThreshold = maxDist * 0.5;
+  const sliderLine = svg.append('line')
+    .attr('class', 'threshold-line')
+    .attr('x1', xScale(initialThreshold))
+    .attr('x2', xScale(initialThreshold))
+    .attr('y1', -10)
+    .attr('y2', h + 10)
+    .attr('stroke', '#c0392b')
+    .attr('stroke-width', 2)
+    .attr('stroke-dasharray', '6,3')
+    .style('cursor', 'ew-resize');
+
+  // Slider handle
+  const handle = svg.append('rect')
+    .attr('x', xScale(initialThreshold) - 8)
+    .attr('y', -15)
+    .attr('width', 16)
+    .attr('height', 20)
+    .attr('rx', 3)
+    .attr('fill', '#c0392b')
+    .attr('opacity', 0.8)
+    .style('cursor', 'ew-resize');
+
+  // Drag behavior
+  const drag = d3.drag()
+    .on('drag', (event) => {
+      const newX = Math.max(0, Math.min(w, event.x));
+      const threshold = xScale.invert(newX);
+      sliderLine.attr('x1', newX).attr('x2', newX);
+      handle.attr('x', newX - 8);
+      updateClusters(threshold);
+    });
+
+  handle.call(drag);
+  sliderLine.call(drag);
+
+  // Distance axis
+  svg.append('g')
+    .attr('transform', `translate(0,${h + 5})`)
+    .call(d3.axisBottom(xScale).ticks(6))
+    .selectAll('text').style('font-size','8px');
+  svg.append('text').attr('x',w/2).attr('y',h+28).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('Distance');
+
+  // Initial cluster update
+  updateClusters(initialThreshold);
+}
+
+// ─── Companion cluster map ──────────────────────────────────
+const CLUSTER_COLORS = ['#5b9bd5','#ed7d31','#70ad47','#ffc000','#9b59b6','#e74c3c','#1abc9c','#95a5a6'];
+let clusterMapPaths = null;
+
+function renderClusterMap() {
+  const container = document.getElementById('cluster-map-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  // Reuse geoData fetched by the main map if available; otherwise wait
+  if (!geoData) {
+    // Retry once geoData is loaded (initMap sets it)
+    const check = setInterval(() => {
+      if (geoData) { clearInterval(check); renderClusterMap(); }
+    }, 200);
+    return;
+  }
+
+  const africa = geoData.features;
+  const w = 380, h = 400;
+  const projection = d3.geoMercator().center([20, 3]).scale(w * 0.65).translate([w/2, h/2]);
+  const path = d3.geoPath().projection(projection);
+
+  const svg = d3.select(container).append('svg')
+    .attr('viewBox', `0 0 ${w} ${h}`);
+
+  clusterMapPaths = svg.selectAll('path')
+    .data(africa)
+    .enter().append('path')
+    .attr('d', path)
+    .attr('fill', '#eee')
+    .attr('stroke', 'white')
+    .attr('stroke-width', 0.5);
+}
+
+function updateClusters(threshold) {
+  if (!DATA.linkage_data) return;
+
+  // Cut the linkage tree at the given threshold to get cluster labels
+  const linkage = DATA.linkage_data.linkage;
+  const countries = DATA.linkage_data.countries;
+  const n = countries.length;
+
+  // Union-Find for cutting
+  const parent = new Array(2 * n - 1);
+  for (let i = 0; i < parent.length; i++) parent[i] = i;
+  function find(x) { return parent[x] === x ? x : (parent[x] = find(parent[x])); }
+
+  // Merge clusters up to threshold
+  linkage.forEach((row, idx) => {
+    const [left, right, dist] = row;
+    if (dist <= threshold) {
+      parent[find(left)] = find(n + idx);
+      parent[find(right)] = find(n + idx);
+    }
+  });
+
+  // Assign cluster IDs
+  const clusterMap = {};
+  const rootToId = {};
+  let nextId = 0;
+  for (let i = 0; i < n; i++) {
+    const root = find(i);
+    if (!(root in rootToId)) rootToId[root] = nextId++;
+    clusterMap[countries[i]] = rootToId[root];
+  }
+
+  // Update companion map
+  if (clusterMapPaths) {
+    clusterMapPaths.attr('fill', d => {
+      const iso = d.properties.ISO_A3;
+      // Also check ADM0_A3 for countries where ISO_A3 is -99
+      const isoCheck = iso !== '-99' ? iso : d.properties.ADM0_A3;
+      const name = Object.entries(DATA.name_to_iso).find(([n, i]) => i === isoCheck);
+      if (!name) return '#eee';
+      const clusterId = clusterMap[name[0]];
+      return clusterId !== undefined ? CLUSTER_COLORS[clusterId % CLUSTER_COLORS.length] : '#eee';
+    });
+  }
+
+  // Update dendrogram link colors based on clusters
+  d3.selectAll('.dendro-link').attr('stroke', '#999');
+}
+
 // ─── Init ──────────────────────────────────────────────────
 renderScale();
 buildDimBtns();
@@ -1189,3 +1492,6 @@ initHeatmapFilters();
 renderDivergence();
 renderScatter();
 renderConflictChart();
+renderUMAP();
+renderDendrogram();
+renderClusterMap();

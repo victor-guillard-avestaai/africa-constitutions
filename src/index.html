@@ -256,34 +256,31 @@
 </div><!-- end tab-textes -->
 
 <!-- ═══════ TAB: CLUSTERS ═══════ -->
-<div class="tab-panel" id="tab-clusters" role="tabpanel" aria-label="Clustering sémantique">
+<div id="tab-clusters" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-clusters">
 
 <div class="section">
   <div class="card">
-    <h2>Modèles constitutionnels — proximité textuelle</h2>
-    <div class="sub">Deux constitutions sont-elles « proches » parce qu'elles viennent de la même tradition coloniale, ou parce qu'elles traitent les mêmes sujets ?</div>
+    <h2>Clustering constitutionnel</h2>
     <div class="explainer">
-      <strong>Qu'avons-nous fait ?</strong> Nous avons demandé à un modèle d'intelligence artificielle spécialisé en droit (<em>Voyage AI, voyage-law-2</em>) de « lire » chacune des 54 constitutions et de la résumer en une empreinte numérique de 1024 chiffres. Deux constitutions dont les empreintes se ressemblent sont textuellement proches — elles utilisent un vocabulaire, une structure et des formulations juridiques similaires.<br><br>
-      <strong>Résultat clé</strong> : les constitutions <em>francophones</em> se ressemblent entre elles, et les <em>anglophones</em> se ressemblent entre elles. Le modèle juridique colonial a laissé une empreinte textuelle forte. Mais lorsque l'on mesure la reconnaissance des droits (les 10 dimensions codées), les groupements sont différents : c'est le contexte post-conflit, et non l'héritage, qui détermine le contenu substantiel. <strong>L'héritage colonial a façonné la forme des constitutions, mais pas leur substance.</strong>
+      <strong>Méthode</strong> : les 54 constitutions sont plongées dans un espace sémantique (embeddings voyage-law-2, 1024 dimensions) puis projetées en 2D (UMAP).
+      Le clustering hiérarchique (Ward) sur les 10 dimensions codées révèle des groupes qui ne reproduisent PAS l'héritage colonial (ARI = 0,033).
     </div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Carte de proximité (UMAP)</h3>
+    <h3>Carte de proximité sémantique</h3>
     <div class="sub">Chaque point représente une constitution. Les points proches sont textuellement similaires. Les couleurs indiquent l'héritage colonial.</div>
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/clusters_umap_constitutions.png" alt="UMAP constitutions" style="max-width:100%"><a href="figures/clusters_umap_constitutions.pdf" download class="fig-dl">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/clusters_umap_preambles.png" alt="UMAP préambules" style="max-width:100%"><a href="figures/clusters_umap_preambles.pdf" download class="fig-dl">⬇ PDF</a></div>
+    <div class="umap-controls">
+      <button class="mode-btn active" data-umap="constitutions">Constitutions</button>
+      <button class="mode-btn" data-umap="preambles">Préambules</button>
     </div>
+    <div id="umap-container"></div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Matrice de similarité</h3>
-    <div class="sub">Plus la case est foncée, plus les deux constitutions se ressemblent. Les noms sont colorés par héritage.</div>
-    <div style="display:flex;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/clusters_similarity_heatmap.png" alt="Similarité constitutionnelle" style="max-width:100%"><a href="figures/clusters_similarity_heatmap.pdf" download class="fig-dl">⬇ PDF</a></div>
+    <h3>Classification hiérarchique interactive</h3>
+    <div class="explainer">
+      Déplacez le curseur de droite à gauche. À droite, toute l'Afrique forme un seul groupe. En déplaçant vers la gauche, les constitutions différentes se séparent en groupes distincts. La carte montre quels pays restent ensemble.
     </div>
-
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Classification hiérarchique</h3>
-    <div class="sub">Dendrogramme basé sur les 10 dimensions codées (pas les embeddings). Les noms sont colorés par héritage.</div>
-    <div style="display:flex;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/clusters_dendrogram_dimensions.png" alt="Dendrogramme" style="max-width:100%"><a href="figures/clusters_dendrogram_dimensions.pdf" download class="fig-dl">⬇ PDF</a></div>
+    <div class="cluster-layout">
+      <div id="dendrogram-container"></div>
+      <div id="cluster-map-container"></div>
     </div>
   </div>
 </div>
