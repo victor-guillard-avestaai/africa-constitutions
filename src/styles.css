@@ -911,6 +911,14 @@ footer {
 .cluster-composition .cc-group-countries {
   color: var(--muted);
 }
+.cluster-composition .cc-groups-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem 1.2rem;
+}
+@media (max-width: 600px) {
+  .cluster-composition .cc-groups-grid { grid-template-columns: 1fr; }
+}
 
 /* ─── Figure Cards ───────────────────────────────────────── */
 .fig-card {
@@ -944,6 +952,10 @@ footer {
 }
 
 /* ─── Post-Conflit Tab ───────────────────────────────────── */
+.conflit-map-modes { display: flex; gap: 0.3rem; margin-bottom: 0.4rem; }
+.conflit-map-modes .mode-btn { font-size: 0.72rem; padding: 0.2rem 0.6rem; border: 1px solid var(--border); border-radius: 4px; background: var(--card); color: var(--muted); cursor: pointer; font-family: var(--font); transition: all 0.15s; }
+.conflit-map-modes .mode-btn.active { background: var(--text); color: var(--card); border-color: var(--text); }
+.conflit-map-modes .mode-btn:hover:not(.active) { background: var(--bg); color: var(--text); }
 .conflit-overview { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin: 1rem auto; align-items: start; max-width: 800px; }
 #conflit-map { min-width: 400px; }
 #conflit-map svg { width: 100%; display: block; }

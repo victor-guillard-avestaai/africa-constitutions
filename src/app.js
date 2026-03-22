@@ -233,6 +233,10 @@ const I18N = {
     conflit_eta_heritage: "η² héritage seul",
     conflit_eta_combined: "η² héritage + post-conflit",
     conflit_ref_mean: "Moyenne non-conflit",
+    conflit_map_mode_pc: "Post-conflit",
+    conflit_map_mode_combined: "Combiné",
+    conflit_map_mode_score: "Score",
+    conflit_eta_note: "part de variance expliquée",
 
     // Divergence annotations
     div_events: [['Démocratisation'],['UA créée']],
@@ -500,6 +504,10 @@ const I18N = {
     conflit_eta_heritage: "η² heritage alone",
     conflit_eta_combined: "η² heritage + post-conflict",
     conflit_ref_mean: "Non-conflict mean",
+    conflit_map_mode_pc: "Post-conflict",
+    conflit_map_mode_combined: "Combined",
+    conflit_map_mode_score: "Score",
+    conflit_eta_note: "share of explained variance",
 
     // Divergence annotations
     div_events: [['Democratization'],['AU created']],
@@ -1657,11 +1665,31 @@ function renderConflictTab() {
   renderConflictLift(allCountries);
 }
 
+let conflitMapMode = 'pc'; // 'pc' | 'combined' | 'score'
+
 function renderConflictMap(pcCountries) {
   const cont = document.getElementById('conflit-map');
   if (!cont) return;
   cont.innerHTML = '';
   if (!geoData) return;
+
+  // Mode switch buttons above the map
+  const modeBar = document.createElement('div');
+  modeBar.className = 'conflit-map-modes';
+  ['pc', 'combined', 'score'].forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'mode-btn' + (m === conflitMapMode ? ' active' : '');
+    btn.dataset.cmode = m;
+    btn.textContent = tr('conflit_map_mode_' + m);
+    btn.addEventListener('click', () => {
+      conflitMapMode = m;
+      modeBar.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyMapMode();
+    });
+    modeBar.appendChild(btn);
+  });
+  cont.appendChild(modeBar);
 
   const W = 420, H = 400;
   const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
@@ -1677,11 +1705,38 @@ function renderConflictMap(pcCountries) {
     allLookup[c] = { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null };
   });
 
-  // Warm gradient for score (thesis_cmap)
+  // Color scales
   const conflitScoreScale = d3.scaleLinear()
     .domain([0, 10, 20])
     .range(['#f5e6d0', '#d4785a', '#8a2a0a'])
     .interpolate(d3.interpolateRgb.gamma(2.2));
+
+  const pcTypeColors = { peace: '#c0392b', authoritarian: '#e67e22' };
+  const nonConflictColor = '#d5d0c8';
+
+  function getFill(info) {
+    if (!info) return '#eae6df';
+    if (conflitMapMode === 'pc') {
+      if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
+      return nonConflictColor;
+    }
+    if (conflitMapMode === 'score') return conflitScoreScale(info.total);
+    // combined: heritage + score with PC borders
+    return (HERITAGE_SCALES[info.heritage] || HERITAGE_SCALES.other)(info.total / 20 * 2);
+  }
+
+  function getOpacity(info) {
+    if (!info) return 0.25;
+    if (conflitMapMode === 'pc') return info.pc ? 1.0 : 0.5;
+    return info.pc ? 1.0 : 0.7;
+  }
+
+  function pcBorder(info) {
+    if (!info) return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
+    if (info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 1.8, dash: null };
+    if (info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.2, dash: '4,2' };
+    return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
+  }
 
   const scTT = d3.select('#scatter-tooltip');
 
@@ -1692,13 +1747,6 @@ function renderConflictMap(pcCountries) {
     return entry ? entry[0] : null;
   }
 
-  function conflitStyle(info) {
-    if (!info) return { opacity: 0.25, strokeW: 0.3, dash: null };
-    if (info.pc && info.pcType === 'peace') return { opacity: 1.0, strokeW: 1.8, dash: null };
-    if (info.pc && info.pcType === 'authoritarian') return { opacity: 0.75, strokeW: 1.2, dash: '4,2' };
-    return { opacity: 0.35, strokeW: 0.3, dash: null };
-  }
-
   function showTooltip(ev, info) {
     if (!info) return;
     const typeLabel = info.pc
@@ -1706,45 +1754,30 @@ function renderConflictMap(pcCountries) {
       : tr('conflit_nonconflict');
     scTT.html(
       `<div class="tt-name">${info.name}</div>` +
-      `<div style="font-size:0.8rem">${HL(info.heritage)} · ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
+      `<div style="font-size:0.8rem">${HL(info.heritage)} \u00b7 ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
       `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}</div>`
     ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
   }
 
-  svg.selectAll('path.cm-country').data(geoData.features).join('path')
+  const paths = svg.selectAll('path.cm-country').data(geoData.features).join('path')
     .attr('class','cm-country')
     .attr('d', pathGen)
-    .each(function(d) {
-      const countryName = geoToCountry(d);
-      const info = countryName ? allLookup[countryName] : null;
-      const fill = info ? conflitScoreScale(info.total) : '#eae6df';
-      const style = conflitStyle(info);
-      d3.select(this)
-        .attr('fill', fill)
-        .attr('opacity', style.opacity)
-        .attr('stroke', info && info.pc ? '#333' : CSS.strokeDefault)
-        .attr('stroke-width', style.strokeW)
-        .attr('stroke-dasharray', style.dash);
-    })
+    .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
-      const countryName = geoToCountry(d);
-      const info = countryName ? allLookup[countryName] : null;
+      const info = allLookup[geoToCountry(d)];
       d3.select(this).attr('stroke', '#333').attr('stroke-width', 1.5);
       showTooltip(ev, info);
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
     .on('mouseleave', function(ev, d) {
-      const countryName = geoToCountry(d);
-      const info = countryName ? allLookup[countryName] : null;
-      const style = conflitStyle(info);
-      d3.select(this)
-        .attr('stroke', info && info.pc ? '#333' : CSS.strokeDefault)
-        .attr('stroke-width', style.strokeW);
+      const info = allLookup[geoToCountry(d)];
+      const bdr = pcBorder(info);
+      d3.select(this).attr('stroke', bdr.stroke).attr('stroke-width', bdr.strokeW);
       scTT.style('opacity','0');
     })
     .on('click', function(ev, d) {
-      const countryName = geoToCountry(d);
-      if (countryName && allLookup[countryName]) openBio(countryName);
+      const cn = geoToCountry(d);
+      if (cn && allLookup[cn]) openBio(cn);
     });
 
   // Island circles
@@ -1757,16 +1790,13 @@ function renderConflictMap(pcCountries) {
   ].map(d => ({ ...d, projected: proj([d.lon, d.lat]) }))
    .filter(d => d.projected);
 
+  const islandCircles = [];
   islandData.forEach(d => {
     const info = allLookup[d.name];
-    const fill = info ? conflitScoreScale(info.total) : '#eae6df';
-    const style = conflitStyle(info);
-    svg.append('circle')
+    const circle = svg.append('circle')
+      .attr('class', 'cm-island')
       .attr('cx', d.projected[0]).attr('cy', d.projected[1]).attr('r', 8)
-      .attr('fill', fill).attr('opacity', style.opacity)
-      .attr('stroke', info && info.pc ? '#333' : 'white')
-      .attr('stroke-width', info && info.pc ? style.strokeW : 1)
-      .attr('stroke-dasharray', style.dash)
+      .attr('data-country', d.name)
       .style('cursor', 'pointer')
       .on('mouseenter', function(ev) {
         d3.select(this).attr('r', 10);
@@ -1778,35 +1808,77 @@ function renderConflictMap(pcCountries) {
         scTT.style('opacity','0');
       })
       .on('click', function() { if (info) openBio(d.name); });
+    islandCircles.push({ circle, info });
   });
 
-  // Legend: score gradient + border styles
+  // Legend group
   const legY = H - 42;
-  const legG = svg.append('g').attr('transform', `translate(5,${legY})`);
-  const gradW = 120, gradH = 8;
-  const gradId = 'conflit-score-grad';
-  const defs = svg.append('defs');
-  const lg = defs.append('linearGradient').attr('id', gradId);
-  lg.append('stop').attr('offset','0%').attr('stop-color', conflitScoreScale(0));
-  lg.append('stop').attr('offset','50%').attr('stop-color', conflitScoreScale(10));
-  lg.append('stop').attr('offset','100%').attr('stop-color', conflitScoreScale(20));
-  legG.append('rect').attr('width', gradW).attr('height', gradH).attr('rx', 2).attr('fill', `url(#${gradId})`);
-  legG.append('text').attr('x', 0).attr('y', gradH + 10).attr('font-size', '7px').attr('fill', CSS.dim).text('0');
-  legG.append('text').attr('x', gradW).attr('y', gradH + 10).attr('text-anchor', 'end').attr('font-size', '7px').attr('fill', CSS.dim).text('20');
-  legG.append('text').attr('x', gradW / 2).attr('y', gradH + 10).attr('text-anchor', 'middle').attr('font-size', '7px').attr('fill', CSS.dim).text(tr('score_label'));
+  const legG = svg.append('g').attr('class', 'conflit-legend').attr('transform', `translate(5,${legY})`);
 
-  const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 16})`);
-  const bLegData = [
-    { label: tr('conflit_peace_title'), strokeW: 1.8, dash: null },
-    { label: tr('conflit_auth_title'), strokeW: 1.2, dash: '4,2' },
-    { label: tr('conflit_nonconflict'), strokeW: 0.3, dash: null },
-  ];
-  bLegData.forEach((d, i) => {
-    const g = bLegG.append('g').attr('transform', `translate(${i * 140}, 0)`);
-    g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 18).attr('y2', 5)
-      .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
-    g.append('text').attr('x', 22).attr('y', 8).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
-  });
+  function renderLegend() {
+    legG.selectAll('*').remove();
+    svg.select('defs').remove();
+    if (conflitMapMode === 'pc') {
+      const items = [
+        { label: tr('conflit_peace_title'), color: pcTypeColors.peace },
+        { label: tr('conflit_auth_title'), color: pcTypeColors.authoritarian },
+        { label: tr('conflit_nonconflict'), color: nonConflictColor },
+      ];
+      items.forEach((d, i) => {
+        const g = legG.append('g').attr('transform', `translate(${i * 140}, 0)`);
+        g.append('rect').attr('width', 12).attr('height', 12).attr('rx', 2).attr('fill', d.color);
+        g.append('text').attr('x', 16).attr('y', 9).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
+      });
+    } else {
+      const gradW = 120, gradH = 8;
+      const gradId = 'conflit-score-grad';
+      const defs = svg.append('defs');
+      const lg = defs.append('linearGradient').attr('id', gradId);
+      lg.append('stop').attr('offset','0%').attr('stop-color', conflitScoreScale(0));
+      lg.append('stop').attr('offset','50%').attr('stop-color', conflitScoreScale(10));
+      lg.append('stop').attr('offset','100%').attr('stop-color', conflitScoreScale(20));
+      legG.append('rect').attr('width', gradW).attr('height', gradH).attr('rx', 2).attr('fill', `url(#${gradId})`);
+      legG.append('text').attr('x', 0).attr('y', gradH + 10).attr('font-size', '7px').attr('fill', CSS.dim).text('0');
+      legG.append('text').attr('x', gradW).attr('y', gradH + 10).attr('text-anchor', 'end').attr('font-size', '7px').attr('fill', CSS.dim).text('20');
+      legG.append('text').attr('x', gradW / 2).attr('y', gradH + 10).attr('text-anchor', 'middle').attr('font-size', '7px').attr('fill', CSS.dim).text(tr('score_label'));
+      const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 16})`);
+      [
+        { label: tr('conflit_peace_title'), strokeW: 1.8, dash: null },
+        { label: tr('conflit_auth_title'), strokeW: 1.2, dash: '4,2' },
+      ].forEach((d, i) => {
+        const g = bLegG.append('g').attr('transform', `translate(${i * 140}, 0)`);
+        g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 18).attr('y2', 5)
+          .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
+        g.append('text').attr('x', 22).attr('y', 8).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
+      });
+    }
+  }
+
+  function applyMapMode() {
+    paths.each(function(d) {
+      const cn = geoToCountry(d);
+      const info = cn ? allLookup[cn] : null;
+      const bdr = pcBorder(info);
+      d3.select(this)
+        .attr('fill', getFill(info))
+        .attr('opacity', getOpacity(info))
+        .attr('stroke', bdr.stroke)
+        .attr('stroke-width', bdr.strokeW)
+        .attr('stroke-dasharray', bdr.dash);
+    });
+    islandCircles.forEach(({ circle, info }) => {
+      const bdr = pcBorder(info);
+      circle
+        .attr('fill', getFill(info))
+        .attr('opacity', getOpacity(info))
+        .attr('stroke', info && info.pc ? '#333' : 'white')
+        .attr('stroke-width', info && info.pc ? bdr.strokeW : 1)
+        .attr('stroke-dasharray', bdr.dash);
+    });
+    renderLegend();
+  }
+
+  applyMapMode();
 }
 
 function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean, npcMean) {
@@ -1829,7 +1901,7 @@ function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean,
     <hr class="stat-divider">
     <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_heritage')}</span><span class="stat-val">22,3 %</span></div>
     <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_combined')}</span><span class="stat-val">63,2 %</span></div>
-    <div class="stat-small" style="margin-top:0.4rem;font-style:italic">(η² = part de variance expliquée / share of explained variance)</div>
+    <div class="stat-small" style="margin-top:0.4rem;font-style:italic">(η² = ${tr('conflit_eta_note')})</div>
   `;
 }
 
@@ -1885,70 +1957,85 @@ function renderConflictLift(allCountries) {
   if (!cont) return;
   cont.innerHTML = '';
 
-  const dimOrder = ['Dpa','Dau','Drc','Drm','Id','La','PJ','F','Dc','Dis'];
+  // Sort dimensions by effect size (largest first)
   const pcAll = allCountries.filter(d => d.pc);
   const npcAll = allCountries.filter(d => !d.pc);
 
   const sigLevels = { Dpa:'***', Dau:'***', Drc:'***', Drm:'***', Id:'*', La:'ns', PJ:'ns', F:'ns', Dc:'ns', Dis:'ns' };
 
-  const liftData = dimOrder.map(dim => {
+  const liftData = DATA.features.map(dim => {
     const pcVals = pcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
     const npcVals = npcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
     const pcMean = pcVals.length ? d3.mean(pcVals) : 0;
     const npcMean = npcVals.length ? d3.mean(npcVals) : 0;
     return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns' };
-  });
+  }).sort((a, b) => Math.abs(b.lift) - Math.abs(a.lift));
 
-  const M = { top: 25, right: 30, bottom: 40, left: 180 };
-  const barH = 22, gapH = 4;
-  const chartH = dimOrder.length * (barH + gapH);
-  const w = 360;
+  const M = { top: 30, right: 50, bottom: 30, left: 160 };
+  const rowH = 28;
+  const chartH = liftData.length * rowH;
+  const w = 350;
   const maxAbs = d3.max(liftData, d => Math.abs(d.lift));
-  const xDomain = Math.max(maxAbs * 1.2, 0.5);
+  const xDomain = Math.max(maxAbs * 1.3, 0.3);
 
+  // Lollipop chart
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
-    .style('max-width', '700px');
+    .style('max-width', '600px');
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
-  const xS = d3.scaleLinear().domain([-xDomain * 0.3, xDomain]).range([0, w]);
 
-  g.append('g').call(d3.axisTop(xS).ticks(5).tickSize(-chartH).tickFormat(d => d.toFixed(1)))
+  const xS = d3.scaleLinear().domain([-xDomain * 0.15, xDomain]).range([0, w]);
+  const yS = d3.scaleBand().domain(liftData.map(d => d.dim)).range([0, chartH]).padding(0.3);
+
+  // X axis
+  g.append('g').attr('transform', `translate(0,${chartH})`)
+    .call(d3.axisBottom(xS).ticks(5).tickFormat(d => d.toFixed(1)))
     .selectAll('text').attr('fill', CSS.dim).attr('font-size', '9px');
-  g.selectAll('.domain').remove();
-  g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
+  g.selectAll('.domain').attr('stroke', CSS.border);
 
-  g.append('line').attr('x1', xS(0)).attr('x2', xS(0)).attr('y1', 0).attr('y2', chartH)
+  // Vertical reference at x=0
+  g.append('line')
+    .attr('x1', xS(0)).attr('x2', xS(0))
+    .attr('y1', -5).attr('y2', chartH)
     .attr('stroke', CSS.muted).attr('stroke-width', 1).attr('stroke-dasharray', '3,2');
 
+  // Title
   g.append('text').attr('x', w / 2).attr('y', -15)
     .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '10px')
-    .text(lang === 'fr' ? 'Boost post-conflit (\u0394 score moyen, 0\u20132)' : 'Post-conflict boost (\u0394 mean score, 0\u20132)');
+    .text(lang === 'fr' ? 'Effet post-conflit (\u0394 score moyen)' : 'Post-conflict effect (\u0394 mean score)');
 
   const scTT = d3.select('#scatter-tooltip');
+  const sigColor = '#c0392b';
+  const nsColor = CSS.border;
 
-  liftData.forEach((d, i) => {
-    const y = i * (barH + gapH);
+  liftData.forEach(d => {
     const dimLabel = DATA.feature_labels[d.dim];
     const isSig = d.sig.includes('*');
+    const color = isSig ? sigColor : nsColor;
+    const cy = yS(d.dim) + yS.bandwidth() / 2;
 
+    // Dimension label (left)
     g.append('text')
-      .attr('x', -8).attr('y', y + barH / 2)
+      .attr('x', -10).attr('y', cy)
       .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
       .attr('fill', isSig ? CSS.text : CSS.dim)
       .attr('font-size', '11px').attr('font-weight', isSig ? '600' : '400')
       .text(dimLabel + (d.sig !== 'ns' ? ' ' + d.sig : ''));
 
-    const x0 = xS(Math.min(0, d.lift));
-    const x1 = xS(Math.max(0, d.lift));
-    const barColor = isSig ? '#d4785a' : CSS.border;
+    // Lollipop stem (thin line from 0 to value)
+    g.append('line')
+      .attr('x1', xS(0)).attr('x2', xS(d.lift))
+      .attr('y1', cy).attr('y2', cy)
+      .attr('stroke', color).attr('stroke-width', 2)
+      .attr('opacity', isSig ? 0.8 : 0.35);
 
-    g.append('rect')
-      .attr('x', x0).attr('y', y + 2)
-      .attr('width', Math.max(x1 - x0, 1)).attr('height', barH - 4)
-      .attr('fill', barColor).attr('opacity', isSig ? 0.85 : 0.4)
-      .attr('rx', 3)
+    // Lollipop circle at the end
+    g.append('circle')
+      .attr('cx', xS(d.lift)).attr('cy', cy).attr('r', 5)
+      .attr('fill', color).attr('opacity', isSig ? 0.9 : 0.35)
       .style('cursor', 'pointer')
       .on('mouseenter', function(ev) {
+        d3.select(this).attr('r', 7);
         scTT.html(
           `<div class="tt-name">${dimLabel}</div>` +
           `<div style="font-size:0.8rem">\u0394 = <b>${d.lift >= 0 ? '+' : ''}${d.lift.toFixed(2)}</b> (${d.sig})</div>` +
@@ -1956,19 +2043,24 @@ function renderConflictLift(allCountries) {
         ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
       })
       .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-      .on('mouseleave', function() { scTT.style('opacity','0'); });
+      .on('mouseleave', function() {
+        d3.select(this).attr('r', 5);
+        scTT.style('opacity','0');
+      });
 
-    const labelX = d.lift >= 0 ? xS(d.lift) + 4 : xS(d.lift) - 4;
+    // Value label to the right of the circle
+    const labelX = xS(d.lift) + (d.lift >= 0 ? 10 : -10);
     g.append('text')
-      .attr('x', labelX).attr('y', y + barH / 2)
+      .attr('x', labelX).attr('y', cy)
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', d.lift >= 0 ? 'start' : 'end')
       .attr('fill', isSig ? CSS.text : CSS.dim).attr('font-size', '9px')
       .text((d.lift >= 0 ? '+' : '') + d.lift.toFixed(2));
   });
 
-  g.append('text').attr('x', 0).attr('y', chartH + 18).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
-    .text('*** p < 0,001 (Mann-Whitney) | * p < 0,05 | ns = non significatif');
+  // Significance footnote
+  g.append('text').attr('x', 0).attr('y', chartH + 20).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
+    .text(lang === 'fr' ? '*** p < 0,001 (Mann-Whitney) | * p < 0,05 | ns = non significatif' : '*** p < 0.001 (Mann-Whitney) | * p < 0.05 | ns = not significant');
 }
 
 // Backward-compatible wrapper for init and switchLang
@@ -2180,7 +2272,7 @@ function renderDendrogram() {
   });
 
   // Threshold slider line (draggable vertical line)
-  const initialThreshold = maxDist * 0.5;
+  const initialThreshold = maxDist;
   const sliderLine = svg.append('line')
     .attr('class', 'threshold-line')
     .attr('x1', xScale(initialThreshold))
@@ -2257,12 +2349,12 @@ function renderClusterMap() {
   }
 
   const africa = geoData.features;
-  const w = 500, h = 460;
-  const projection = d3.geoMercator().center([20, 2]).scale(w * 0.65).translate([w/2, h/2]);
+  const w = 520, h = 480;
+  const projection = d3.geoMercator().center([20, 2]).scale((w - 20) * 0.65).translate([w/2, h/2]);
   const path = d3.geoPath().projection(projection);
 
   const svg = d3.select(container).append('svg')
-    .attr('viewBox', `0 0 ${w} ${h}`);
+    .attr('viewBox', `-10 -10 ${w} ${h}`);
 
   clusterMapPaths = svg.selectAll('path')
     .data(africa)
@@ -2359,17 +2451,30 @@ function updateClusters(threshold) {
     }
   });
 
-  // Assign cluster IDs
-  const clusterMap = {};
-  const rootToId = {};
-  let nextId = 0;
+  // Group countries by union-find root
+  const rootGroups = {};
   for (let i = 0; i < n; i++) {
     const root = find(i);
-    if (!(root in rootToId)) rootToId[root] = nextId++;
-    clusterMap[countries[i]] = rootToId[root];
+    if (!rootGroups[root]) rootGroups[root] = [];
+    rootGroups[root].push(i);
   }
+
+  // Sort clusters by average leaf position (dendrogram order) for color coherence
+  const sortedRoots = Object.keys(rootGroups).sort((a, b) => {
+    const avgA = rootGroups[a].reduce((s, i) => s + i, 0) / rootGroups[a].length;
+    const avgB = rootGroups[b].reduce((s, i) => s + i, 0) / rootGroups[b].length;
+    return avgA - avgB;
+  });
+
+  // Assign cluster IDs based on sorted dendrogram position
+  const clusterMap = {};
+  sortedRoots.forEach((root, idx) => {
+    rootGroups[root].forEach(i => {
+      clusterMap[countries[i]] = idx;
+    });
+  });
   currentClusterMap = clusterMap;
-  const totalClusters = nextId;
+  const totalClusters = sortedRoots.length;
 
   // Update companion map
   if (clusterMapPaths) {
@@ -2405,6 +2510,7 @@ function updateClusters(threshold) {
 
     const maxVisible = 6;
     let html = `<div class="cc-header">${tr('clusters_threshold')} : ${threshold.toFixed(1)} — ${totalClusters} ${tr('clusters_groups')}</div>`;
+    html += '<div class="cc-groups-grid">';
     sortedIds.forEach((cid, idx) => {
       const members = groups[cid];
       const colorSwatch = clusterColor(cid, totalClusters);
@@ -2412,6 +2518,7 @@ function updateClusters(threshold) {
       const hidden = sortedIds.length > maxVisible && idx >= maxVisible ? ' style="display:none" data-cc-extra' : '';
       html += `<div class="cc-group"${hidden}><span class="cc-group-label" style="color:${colorSwatch}">${tr('clusters_group')} ${cid + 1}</span> (${members.length} ${tr('clusters_countries')}) : <span class="cc-group-countries">${shortNames.join(', ')}</span></div>`;
     });
+    html += '</div>';
     if (sortedIds.length > maxVisible) {
       html += `<button class="cc-show-all" style="margin-top:0.3rem;font-size:0.75rem;color:var(--c2);background:none;border:1px solid var(--border);border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-family:var(--font)" onclick="this.style.display='none';this.parentElement.querySelectorAll('[data-cc-extra]').forEach(e=>e.style.display='')">${lang === 'fr' ? 'Afficher tout' : 'Show all'} (${sortedIds.length - maxVisible} ${lang === 'fr' ? 'de plus' : 'more'})</button>`;
     }
