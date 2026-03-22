@@ -205,12 +205,12 @@ LABELS = {
         'topics_cbar': '% des paragraphes du groupe héritage',
 
         # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
-        'ch7_title': 'Ch.7 : Provisions territoriales et environnementales',
+        'ch7_title': "Les francophones mentionnent davantage\nl'environnement que les anglophones",
         'ch7_right_title': 'Effet post-conflit sur les droits territoriaux',
         'ch7_xlabel': 'Pour 1000 mots',
         'ch7_right_xlabel': 'Provisions totales (moyenne)',
         'ch7_land_cats': ['Droits fonciers', 'Ressources naturelles', 'Environnement', 'Terres ancestrales', 'Droits hydriques'],
-        'ch8_title': 'Profondeur des droits culturels par héritage',
+        'ch8_title': 'Seule la protection du patrimoine varie\nentre traditions juridiques',
         'ch8_cbar': 'Occurrences moyennes',
         'ch8_cats': ['Droits linguistiques', 'Pratiques culturelles', 'Institutions culturelles', 'Protection du patrimoine'],
         'ch8_zero_note': 'Les 0,0 reflètent une absence quasi-totale de ces provisions dans le corpus constitutionnel.',
@@ -393,12 +393,12 @@ LABELS = {
         'topics_cbar': '% of paragraphs in heritage group',
 
         # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
-        'ch7_title': 'Ch.7: Territorial and environmental provisions',
+        'ch7_title': 'Francophone constitutions mention the environment\nmore than anglophone',
         'ch7_right_title': 'Post-conflict effect on territorial rights',
         'ch7_xlabel': 'Per 1000 words',
         'ch7_right_xlabel': 'Total provisions (mean)',
         'ch7_land_cats': ['Land rights', 'Natural resources', 'Environment', 'Ancestral land', 'Water rights'],
-        'ch8_title': 'Cultural rights depth by heritage',
+        'ch8_title': 'Only heritage protection varies\nacross legal traditions',
         'ch8_cbar': 'Mean occurrences',
         'ch8_cats': ['Linguistic rights', 'Cultural practices', 'Cultural institutions', 'Heritage protection'],
         'ch8_zero_note': 'The 0.0 values reflect a near-total absence of these provisions in the constitutional corpus.',
