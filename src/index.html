@@ -218,15 +218,26 @@
   <div class="card">
     <h2 data-tr="conflit_title">Le moment constitutionnel post-conflit</h2>
     <div class="sub" data-tr="conflit_sub">Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.</div>
+
+    <div class="conflit-overview">
+      <div id="conflit-map"></div>
+      <div class="conflit-stats" id="conflit-stats"></div>
+    </div>
+
     <div class="explainer" id="conflit-explainer" data-tr="conflit_method_result_thesis" data-tr-html="true">
       <strong>Variable</strong> : la <em>constitution actuelle</em> a-t-elle été adoptée dans le cadre d'un processus de paix, d'une transition post-guerre ou d'une construction nationale post-libération ? 13/54 constitutions codées post-conflit.<br>
       <strong>Résultat</strong> : parmi les 42 pays francophones et anglophones, les constitutions post-conflit obtiennent un score moyen de 14,1/20 contre 7,5 (p = 0,0001). L'héritage seul explique 22,3 % de la variance ; héritage + post-conflit en explique 63,2 %. L'effet est concentré sur les dimensions identitaires (Dpa, Dau, Drc, Drm : p &lt; 0,001).<br>
       <strong>Implication pour la thèse</strong> : la reconnaissance des peuples infra-étatiques est motivée par la nécessité politique (le critère fonctionnel), pas par la tradition juridique héritée seule.
     </div>
-    <div id="conflict-chart-container" role="img" aria-label="Graphique d'interaction héritage × post-conflit"></div>
-    <div class="explainer" style="margin-top:1rem" data-tr="conflit_read" data-tr-html="true">
-      <strong>Comment lire ce graphique ?</strong> Chaque barre représente le score moyen d'un groupe de pays. Le groupe est défini par deux variables : l'héritage colonial (francophone ou anglophone) et le contexte de la constitution actuelle (post-conflit ou non). Si l'héritage était le seul facteur, les deux barres bleues seraient au même niveau. L'écart entre « conflit » et « non-conflit » <em>au sein du même héritage</em> montre que le contexte de rédaction de la constitution compte autant, sinon plus, que la tradition juridique héritée.
+
+    <h3 class="conflit-section-title" data-tr="conflit_comparison_title">Comparaison par type</h3>
+    <div class="conflit-comparison">
+      <div id="conflit-peace-panel"></div>
+      <div id="conflit-auth-panel"></div>
     </div>
+
+    <h3 class="conflit-section-title" data-tr="conflit_dimensions_title">Effet par dimension</h3>
+    <div id="conflit-dimensions-chart" role="img" aria-label="Graphique d'interaction héritage × post-conflit par dimension"></div>
   </div>
 </div>
 

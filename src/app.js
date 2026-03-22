@@ -185,6 +185,20 @@ const I18N = {
     // Conflict chart
     conflict_ylabel: "Score moyen (sur 20)",
     conflict_labels: ['Francophone\nnon-conflit','Francophone\npost-conflit','Anglophone\nnon-conflit','Anglophone\npost-conflit'],
+    conflit_comparison_title: "Comparaison par type",
+    conflit_dimensions_title: "Effet par dimension",
+    conflit_peace_title: "Processus de paix",
+    conflit_auth_title: "Transition autoritaire",
+    conflit_nonconflict: "Non-conflit",
+    conflit_stat_count: "constitutions post-conflit",
+    conflit_peace_count: "pays (processus de paix)",
+    conflit_auth_count: "pays (transition autoritaire)",
+    conflit_mean_pc: "Score moyen post-conflit",
+    conflit_mean_npc: "Score moyen non-conflit",
+    conflit_mannwhitney: "Mann-Whitney",
+    conflit_eta_heritage: "η² héritage seul",
+    conflit_eta_combined: "η² héritage + post-conflit",
+    conflit_ref_mean: "Moyenne non-conflit",
 
     // Divergence annotations
     div_events: [['Démocratisation'],['UA créée']],
@@ -404,6 +418,20 @@ const I18N = {
     // Conflict chart
     conflict_ylabel: "Mean score (out of 20)",
     conflict_labels: ['Francophone\nnon-conflict','Francophone\npost-conflict','Anglophone\nnon-conflict','Anglophone\npost-conflict'],
+    conflit_comparison_title: "Comparison by type",
+    conflit_dimensions_title: "Effect by dimension",
+    conflit_peace_title: "Peace process",
+    conflit_auth_title: "Authoritarian transition",
+    conflit_nonconflict: "Non-conflict",
+    conflit_stat_count: "post-conflict constitutions",
+    conflit_peace_count: "countries (peace process)",
+    conflit_auth_count: "countries (authoritarian transition)",
+    conflit_mean_pc: "Mean score post-conflict",
+    conflit_mean_npc: "Mean score non-conflict",
+    conflit_mannwhitney: "Mann-Whitney",
+    conflit_eta_heritage: "η² heritage alone",
+    conflit_eta_combined: "η² heritage + post-conflict",
+    conflit_ref_mean: "Non-conflict mean",
 
     // Divergence annotations
     div_events: [['Democratization'],['AU created']],
@@ -487,8 +515,7 @@ function switchLang() {
   renderDivergence();
   document.getElementById('scatter-container').innerHTML = '';
   renderScatter();
-  document.getElementById('conflict-chart-container').innerHTML = '';
-  renderConflictChart();
+  renderConflictTab();
   document.getElementById('figures-gallery').innerHTML = '';
   document.getElementById('figures-gallery').classList.remove('figures-gallery');
   renderFigures();
@@ -1511,101 +1538,307 @@ function renderScatter() {
 
 }
 
-// ─── Post-Conflict Interaction Chart ──────────────────────
-function renderConflictChart() {
+// ─── Post-Conflict Tab (multi-component) ─────────────────
+function renderConflictTab() {
   if (!DATA.post_conflict) return;
-  const cont = document.getElementById('conflict-chart-container');
-  if (!cont) return;
 
-  const cLabels = tr('conflict_labels');
-  const groups = [
-    { label: cLabels[0], heritage: 'francophone', pc: false },
-    { label: cLabels[1], heritage: 'francophone', pc: true },
-    { label: cLabels[2], heritage: 'anglophone', pc: false },
-    { label: cLabels[3], heritage: 'anglophone', pc: true },
-  ];
-
-  groups.forEach(g => {
-    const countries = DATA.feature_matrix.filter(r => {
-      const h = DATA.colonial_heritage[r.PAYS] || 'other';
-      const pc = DATA.post_conflict[r.PAYS] || false;
-      return h === g.heritage && pc === g.pc;
-    });
-    g.scores = countries.map(r => DATA.features.reduce((s, f) => s + r[f], 0));
-    g.mean = g.scores.length ? d3.mean(g.scores) : 0;
-    g.n = countries.length;
-    g.countries = countries.map(r => r.PAYS);
+  // ── Compute shared data ────────────────────────────────
+  const allCountries = DATA.feature_matrix.map(r => {
+    const c = r.PAYS;
+    const total = DATA.features.reduce((s, f) => s + r[f], 0);
+    return { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null };
   });
+  const pcCountries = allCountries.filter(d => d.pc);
+  const npcCountries = allCountries.filter(d => !d.pc);
+  const peaceCountries = pcCountries.filter(d => d.pcType === 'peace').sort((a, b) => b.total - a.total);
+  const authCountries = pcCountries.filter(d => d.pcType === 'authoritarian').sort((a, b) => b.total - a.total);
+  const pcMean = pcCountries.length ? d3.mean(pcCountries, d => d.total) : 0;
+  const npcMean = npcCountries.length ? d3.mean(npcCountries, d => d.total) : 0;
 
-  const M = { top: 30, right: 20, bottom: 60, left: 50 };
-  const w = 500, h = 320;
+  // ── 1. Mini-map ────────────────────────────────────────
+  renderConflictMap(pcCountries);
 
-  const svg = d3.select(cont).append('svg')
-    .attr('viewBox', `0 0 ${w + M.left + M.right} ${h + M.top + M.bottom}`)
-    .style('max-width', '650px');
+  // ── 2. Stats panel ─────────────────────────────────────
+  renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean, npcMean);
 
-  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
-  const yS = d3.scaleLinear().domain([0, 20]).range([h, 0]);
-  const xS = d3.scaleBand().domain(groups.map(gr => gr.label)).range([0, w]).padding(0.25);
+  // ── 3. Comparison panels ───────────────────────────────
+  renderConflictComparison(peaceCountries, authCountries, npcMean);
 
-  g.append('g').call(d3.axisLeft(yS).ticks(10).tickSize(-w))
-    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '11px');
-  g.selectAll('.domain').remove();
-  g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
+  // ── 4. Dimension breakdown chart ───────────────────────
+  renderConflictDimensions(allCountries);
+}
 
-  g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -38)
-    .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '11px')
-    .text(tr('conflict_ylabel'));
+function renderConflictMap(pcCountries) {
+  const cont = document.getElementById('conflit-map');
+  if (!cont) return;
+  cont.innerHTML = '';
+  if (!geoData) return; // not loaded yet
+
+  const W = 250, H = 250;
+  const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+
+  const defs = svg.append('defs');
+  // Hatching for peace process
+  const pat1 = defs.append('pattern').attr('id','hatch-peace').attr('width',5).attr('height',5).attr('patternUnits','userSpaceOnUse').attr('patternTransform','rotate(45)');
+  pat1.append('rect').attr('width',5).attr('height',5).attr('fill','#d4785a');
+  pat1.append('line').attr('x1',0).attr('y1',0).attr('x2',0).attr('y2',5).attr('stroke','#a85535').attr('stroke-width',1.2);
+  // Cross-hatching for authoritarian
+  const pat2 = defs.append('pattern').attr('id','hatch-auth').attr('width',5).attr('height',5).attr('patternUnits','userSpaceOnUse');
+  pat2.append('rect').attr('width',5).attr('height',5).attr('fill','#c4956a');
+  pat2.append('line').attr('x1',0).attr('y1',0).attr('x2',5).attr('y2',5).attr('stroke','#8a6540').attr('stroke-width',0.8);
+  pat2.append('line').attr('x1',5).attr('y1',0).attr('x2',0).attr('y2',5).attr('stroke','#8a6540').attr('stroke-width',0.8);
+
+  const proj = d3.geoMercator().fitSize([W, H], geoData);
+  const path = d3.geoPath(proj);
+
+  // Build lookup for pc countries
+  const pcLookup = {};
+  pcCountries.forEach(d => { pcLookup[d.name] = d; });
+
+  // Score color scale for post-conflict countries
+  const scoreScale = d3.scaleLinear().domain([0, 10, 20]).range(['#e8c4a0','#d4785a','#a83020']).interpolate(d3.interpolateRgb);
 
   const scTT = d3.select('#scatter-tooltip');
 
-  g.selectAll('rect.conflict-bar').data(groups).join('rect')
-    .attr('class', 'conflict-bar')
-    .attr('x', d => xS(d.label))
-    .attr('y', d => yS(d.mean))
-    .attr('width', xS.bandwidth())
-    .attr('height', d => h - yS(d.mean))
-    .attr('fill', d => HC[d.heritage] || HC.other)
-    .attr('opacity', d => d.pc ? 1 : 0.5)
-    .attr('rx', 3)
-    .style('cursor', 'pointer')
-    .on('mouseenter', function(ev, d) {
-      scTT.html(
-        `<div class="tt-name">${d.label.replace('\n', ' ')}</div>` +
-        `<div style="font-size:0.8rem">${tr('mean_score')} : <b>${d.mean.toFixed(1)}</b>/20 (n=${d.n})</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.2rem">${d.countries.join(', ')}</div>`
-      ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
+  svg.selectAll('path.cm-country').data(geoData.features).join('path')
+    .attr('class','cm-country')
+    .attr('d', path)
+    .attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3)
+    .attr('fill', d => {
+      const name = DATA.name_to_iso ? Object.entries(DATA.name_to_iso).find(([n, iso]) => {
+        const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+        return iso === geoIso;
+      }) : null;
+      const countryName = name ? name[0] : null;
+      if (!countryName) return '#eae6df';
+      const pc = pcLookup[countryName];
+      if (!pc) return '#eae6df';
+      if (pc.pcType === 'peace') return 'url(#hatch-peace)';
+      return 'url(#hatch-auth)';
     })
-    .on('mousemove', function(ev) { scTT.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px'); })
-    .on('mouseleave', function() { scTT.style('opacity', '0'); });
+    .on('mouseenter', function(ev, d) {
+      const name = DATA.name_to_iso ? Object.entries(DATA.name_to_iso).find(([n, iso]) => {
+        const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+        return iso === geoIso;
+      }) : null;
+      const countryName = name ? name[0] : null;
+      if (!countryName) return;
+      const pc = pcLookup[countryName];
+      if (!pc) return;
+      scTT.html(
+        `<div class="tt-name">${pc.name}</div>` +
+        `<div style="font-size:0.8rem">${tr('total_score')} : <b>${pc.total}</b>/20</div>` +
+        `<div style="font-size:0.72rem;color:var(--dim)">${pc.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
+      ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+    })
+    .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+    .on('mouseleave', function() { scTT.style('opacity','0'); });
 
-  // Value labels on bars
-  g.selectAll('text.bar-val').data(groups).join('text')
-    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
-    .attr('y', d => yS(d.mean) - 6)
-    .attr('text-anchor', 'middle').attr('fill', CSS.text).attr('font-size', '12px').attr('font-weight', '600')
-    .text(d => d.mean.toFixed(1));
-
-  // n= labels
-  g.selectAll('text.bar-n').data(groups).join('text')
-    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
-    .attr('y', h + 16)
-    .attr('text-anchor', 'middle').attr('fill', CSS.dim).attr('font-size', '9px')
-    .text(d => `n=${d.n}`);
-
-  // X-axis labels (multi-line)
-  g.selectAll('text.bar-label').data(groups).join('text')
-    .attr('x', d => xS(d.label) + xS.bandwidth() / 2)
-    .attr('y', h + 35)
-    .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '10px')
-    .each(function(d) {
-      const lines = d.label.split('\n');
-      d3.select(this).selectAll('tspan').data(lines).join('tspan')
-        .attr('x', xS(d.label) + xS.bandwidth() / 2)
-        .attr('dy', (_, i) => i === 0 ? 0 : '1.1em')
-        .text(t => t);
-    });
+  // Small legend below the map
+  const legY = H - 22;
+  const legData = [
+    { label: tr('conflit_peace_title'), fill: 'url(#hatch-peace)' },
+    { label: tr('conflit_auth_title'), fill: 'url(#hatch-auth)' },
+  ];
+  const legG = svg.append('g').attr('transform', `translate(5,${legY})`);
+  legData.forEach((d, i) => {
+    const g = legG.append('g').attr('transform', `translate(${i * 125}, 0)`);
+    g.append('rect').attr('width',12).attr('height',10).attr('rx',2).attr('fill',d.fill).attr('stroke',CSS.border).attr('stroke-width',0.5);
+    g.append('text').attr('x',16).attr('y',8).attr('font-size','7.5px').attr('fill',CSS.muted).text(d.label);
+  });
 }
+
+function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean, npcMean) {
+  const cont = document.getElementById('conflit-stats');
+  if (!cont) return;
+
+  cont.innerHTML = `
+    <div class="stat-row">
+      <span class="stat-big">${pcCountries.length}/54</span>
+      <span class="stat-label">${tr('conflit_stat_count')}</span>
+    </div>
+    <div class="stat-detail">
+      <div class="stat-bullet"><span class="stat-dot" style="background:#d4785a"></span>${peaceCountries.length} ${tr('conflit_peace_count')}</div>
+      <div class="stat-bullet"><span class="stat-dot" style="background:#c4956a"></span>${authCountries.length} ${tr('conflit_auth_count')}</div>
+    </div>
+    <hr class="stat-divider">
+    <div class="stat-pair"><span class="stat-key">${tr('conflit_mean_pc')}</span><span class="stat-val">${pcMean.toFixed(1)}/20</span></div>
+    <div class="stat-pair"><span class="stat-key">${tr('conflit_mean_npc')}</span><span class="stat-val">${npcMean.toFixed(1)}/20</span></div>
+    <div class="stat-small">${tr('conflit_mannwhitney')} p = 0,0001</div>
+    <hr class="stat-divider">
+    <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_heritage')}</span><span class="stat-val">22,3 %</span></div>
+    <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_combined')}</span><span class="stat-val">63,2 %</span></div>
+  `;
+}
+
+function renderConflictComparison(peaceCountries, authCountries, npcMean) {
+  const scTT = d3.select('#scatter-tooltip');
+
+  function renderPanel(containerId, title, countries) {
+    const cont = document.getElementById(containerId);
+    if (!cont) return;
+    cont.innerHTML = '';
+
+    const box = document.createElement('div');
+    box.className = 'conflit-panel-box';
+    const h4 = document.createElement('h4');
+    h4.textContent = title;
+    box.appendChild(h4);
+
+    countries.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'conflit-country-card';
+      const color = HC[d.heritage] || HC.other;
+      card.innerHTML = `
+        <span class="cc-dot" style="background:${color}"></span>
+        <span class="cc-name">${d.name}</span>
+        <span class="cc-score">${d.total}</span>
+        <span class="cc-bar-bg"><span class="cc-bar" style="width:${(d.total / 20) * 100}%;background:${color}"></span></span>
+      `;
+      card.addEventListener('click', () => openBio(d.name));
+      card.addEventListener('mouseenter', (ev) => {
+        scTT.html(
+          `<div class="tt-name">${d.name}</div>` +
+          `<div style="font-size:0.8rem">${tr('total_score')} : <b>${d.total}</b>/20</div>` +
+          `<div style="font-size:0.72rem;color:var(--dim)">${HL(d.heritage)} · ${d.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
+        ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+      });
+      card.addEventListener('mouseleave', () => { scTT.style('opacity','0'); });
+      box.appendChild(card);
+    });
+
+    // Reference line
+    const ref = document.createElement('div');
+    ref.className = 'conflit-ref-line';
+    ref.innerHTML = `<span class="ref-label">${tr('conflit_ref_mean')}</span><span class="ref-val">${npcMean.toFixed(1)}/20</span>`;
+    box.appendChild(ref);
+
+    cont.appendChild(box);
+  }
+
+  renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries);
+  renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries);
+}
+
+function renderConflictDimensions(allCountries) {
+  const cont = document.getElementById('conflit-dimensions-chart');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  // Dimension order: identity-first
+  const dimOrder = ['Dpa','Dau','Drc','Drm','Id','La','PJ','F','Dc','Dis'];
+
+  // 4 groups: Franco non-conflict, Franco post-conflict(peace), Anglo non-conflict, Anglo post-conflict(peace)
+  const groupDefs = [
+    { key: 'franco-nc', heritage: 'francophone', pc: false, label: tr('h_francophone') + ' ' + tr('conflit_nonconflict'), color: CSS.francophone, opacity: 0.4 },
+    { key: 'franco-pc', heritage: 'francophone', pc: true, label: tr('h_francophone') + ' post-conflit', color: CSS.francophone, opacity: 1 },
+    { key: 'anglo-nc', heritage: 'anglophone', pc: false, label: tr('h_anglophone') + ' ' + tr('conflit_nonconflict'), color: CSS.anglophone, opacity: 0.4 },
+    { key: 'anglo-pc', heritage: 'anglophone', pc: true, label: tr('h_anglophone') + ' post-conflit', color: CSS.anglophone, opacity: 1 },
+  ];
+
+  // Compute means per dim per group
+  const groupData = groupDefs.map(gd => {
+    const countries = allCountries.filter(d => d.heritage === gd.heritage && d.pc === gd.pc);
+    const means = {};
+    dimOrder.forEach(dim => {
+      const vals = countries.map(d => {
+        const row = DATA.feature_matrix.find(r => r.PAYS === d.name);
+        return row ? row[dim] : 0;
+      });
+      means[dim] = vals.length ? d3.mean(vals) : 0;
+    });
+    return { ...gd, means, n: countries.length };
+  });
+
+  // Significance markers per dimension (from thesis: Dpa, Dau, Drc, Drm p < 0.001)
+  const sigDims = new Set(['Dpa','Dau','Drc','Drm']);
+
+  const M = { top: 30, right: 20, bottom: 80, left: 130 };
+  const barH = 14, gapBetweenDims = 8, groupGap = 2;
+  const dimH = groupDefs.length * (barH + groupGap) + gapBetweenDims;
+  const chartH = dimOrder.length * dimH;
+  const w = 450;
+
+  const svg = d3.select(cont).append('svg')
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
+    .style('max-width', '800px');
+
+  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
+
+  const xS = d3.scaleLinear().domain([0, 2]).range([0, w]);
+
+  // Grid lines
+  g.append('g').call(d3.axisTop(xS).ticks(4).tickSize(-chartH).tickFormat(d => d.toFixed(0)))
+    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '10px');
+  g.selectAll('.domain').remove();
+  g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
+
+  // X-axis label
+  g.append('text').attr('x', w / 2).attr('y', -20)
+    .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '10px')
+    .text(tr('conflict_ylabel').replace(/\(.*\)/, '(0–2)'));
+
+  const scTT = d3.select('#scatter-tooltip');
+
+  dimOrder.forEach((dim, di) => {
+    const yBase = di * dimH;
+    const dimLabel = DATA.feature_labels[dim];
+
+    // Dim label on left
+    g.append('text')
+      .attr('x', -8).attr('y', yBase + dimH / 2)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', sigDims.has(dim) ? CSS.text : CSS.muted)
+      .attr('font-size', '11px')
+      .attr('font-weight', sigDims.has(dim) ? '600' : '400')
+      .text(dimLabel + (sigDims.has(dim) ? ' ***' : ''));
+
+    // Bars for each group
+    groupData.forEach((gd, gi) => {
+      const y = yBase + gi * (barH + groupGap);
+      const val = gd.means[dim];
+
+      g.append('rect')
+        .attr('x', 0).attr('y', y)
+        .attr('width', Math.max(xS(val), 1)).attr('height', barH)
+        .attr('fill', gd.color).attr('opacity', gd.opacity)
+        .attr('rx', 2)
+        .style('cursor', 'pointer')
+        .on('mouseenter', function(ev) {
+          scTT.html(
+            `<div class="tt-name">${gd.label}</div>` +
+            `<div style="font-size:0.8rem">${dimLabel} : <b>${val.toFixed(2)}</b>/2 (n=${gd.n})</div>`
+          ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+        })
+        .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+        .on('mouseleave', function() { scTT.style('opacity','0'); });
+
+      // Value label
+      g.append('text')
+        .attr('x', xS(val) + 4).attr('y', y + barH / 2)
+        .attr('dominant-baseline', 'middle')
+        .attr('fill', CSS.dim).attr('font-size', '8px')
+        .text(val.toFixed(1));
+    });
+  });
+
+  // Legend at bottom
+  const legY = chartH + 20;
+  const legG = g.append('g').attr('transform', `translate(0,${legY})`);
+  groupDefs.forEach((gd, i) => {
+    const x = (i % 2) * (w / 2);
+    const y = Math.floor(i / 2) * 18;
+    const lg = legG.append('g').attr('transform', `translate(${x},${y})`);
+    lg.append('rect').attr('width', 14).attr('height', 10).attr('rx', 2).attr('fill', gd.color).attr('opacity', gd.opacity);
+    lg.append('text').attr('x', 18).attr('y', 8).attr('font-size', '9px').attr('fill', CSS.muted).text(`${gd.label} (n=${groupData[i].n})`);
+  });
+  // Significance note
+  legG.append('text').attr('x', 0).attr('y', 48).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
+    .text('*** p < 0,001 (Mann-Whitney)');
+}
+
+// Backward-compatible wrapper for init and switchLang
+function renderConflictChart() { renderConflictTab(); }
 
 // ─── CSV Download ─────────────────────────────────────────
 document.getElementById('download-csv')?.addEventListener('click', () => {
@@ -2059,6 +2292,8 @@ initMap().then(() => {
   renderDendrogram();
   renderClusterMap();
   renderFigures();
+  // Re-render conflict mini-map now that geoData is available
+  renderConflictTab();
 }).catch(err => {
   document.getElementById('loading').innerHTML = `<span style="color:${CSS.anglophone}">${tr('error_prefix')} : ${err.message}</span>`;
 });
@@ -2067,4 +2302,4 @@ initHeatmapFilters();
 renderDivergence();
 renderScatter();
 initScatterFilters();
-renderConflictChart();
+renderConflictTab();
