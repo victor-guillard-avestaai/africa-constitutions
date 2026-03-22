@@ -44,7 +44,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 /* ─── Global centering utility ───────────────────────────── */
-.content-center { max-width: 960px; margin-left: auto; margin-right: auto; }
+.content-center { max-width: 800px; margin-left: auto; margin-right: auto; }
 
 body {
   background: var(--bg);
@@ -88,11 +88,11 @@ body {
   border-bottom-color: var(--text);
 }
 
-.tab-panel { display: none; padding: 0 1rem; }
+.tab-panel { display: none; padding: 0 2rem; }
 .tab-panel.active { display: block; }
 
 .tab-panel > h2, .tab-panel > h3, .tab-panel > .sub, .tab-panel > .explainer,
-.tab-panel > .method-note { max-width: 960px; margin-left: auto; margin-right: auto; }
+.tab-panel > .method-note { max-width: 800px; margin-left: auto; margin-right: auto; }
 
 .tab-panel h3 { margin-top: 2rem; }
 .tab-panel .sub { margin-bottom: 1rem; }
@@ -459,16 +459,31 @@ header .lead {
   position: absolute;
   top: 0;
   right: 0;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   background: none;
   border: none;
   cursor: pointer;
   color: var(--muted);
   line-height: 1;
-  padding: 0;
+  padding: 0.5rem;
 }
 
 .bio-close:hover { color: var(--text); }
+
+.bio-back {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.4rem 1.2rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.bio-back:hover { background: var(--hover-light); color: var(--text); border-color: var(--muted); }
 
 #bio-timeline-container { width: 100%; overflow-x: auto; }
 
@@ -664,7 +679,7 @@ header .lead {
 .div-tt .dtt-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .div-tt .dtt-note { font-size: 0.68rem; color: var(--dim); font-style: italic; margin-top: 0.3rem; border-top: 1px solid var(--border); padding-top: 0.3rem; line-height: 1.4; }
 /* ─── Scatter ───────────────────────────────────────────── */
-#scatter-container { width: 100%; max-width: 960px; margin: 0 auto; }
+#scatter-container { width: 100%; max-width: 700px; margin: 0 auto; }
 
 .scatter-dot { cursor: pointer; transition: opacity 0.25s; }
 
@@ -720,6 +735,8 @@ header .lead {
 }
 .scatter-tous:hover { background: var(--muted); color: #fff; }
 
+.filter-note { font-size: 0.7rem; color: var(--dim); font-style: italic; margin-top: 0.2rem; }
+
 /* ─── Footer ────────────────────────────────────────────── */
 footer {
   text-align: center;
@@ -739,21 +756,20 @@ footer {
 
 /* ─── Figures Gallery ─────────────────────────────────────── */
 .figures-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 1rem;
-  max-width: 960px;
+  column-count: 3;
+  column-gap: 1rem;
+  max-width: 800px;
   margin: 0 auto;
 }
 .figures-gallery h3, .figures-gallery .chapter-desc,
 .figures-gallery .method-detail {
-  width: 100%;
-  flex-basis: 100%;
+  column-span: all;
 }
 .figures-gallery h3 { margin-top: 1rem; font-family: var(--font-heading); font-size: 1rem; }
 .fig-gallery-card {
-  width: calc(33.333% - 0.67rem);
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  width: 100%;
   box-sizing: border-box;
   background: var(--card);
   border: 1px solid var(--border);
@@ -806,7 +822,7 @@ footer {
   .cluster-layout { grid-template-columns: 1fr; }
 
   /* Figures gallery */
-  .fig-gallery-card { width: calc(50% - 0.5rem); }
+  .figures-gallery { column-count: 2; }
 }
 
 @media (max-width: 600px) {
@@ -847,20 +863,23 @@ footer {
   .tt, .div-tt { max-width: calc(100vw - 2rem); }
 
   /* Figures gallery */
-  .fig-gallery-card { width: 100%; }
+  .figures-gallery { column-count: 1; }
 }
 
 /* ─── Clusters Tab ───────────────────────────────────────── */
 .umap-controls {
-  display: flex;
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 0.5rem 0;
-  width: fit-content;
+  display: none;
 }
-.cluster-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 0.5rem; align-items: start; max-width: 960px; margin: 0 auto; }
+.umap-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+.umap-grid .umap-panel { text-align: center; }
+.umap-grid .umap-panel-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; font-family: var(--font-heading); }
+.cluster-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 0.5rem; align-items: start; max-width: 800px; margin: 0 auto; }
 #umap-container svg { width: 100%; }
 #dendrogram-container svg { width: 100%; }
 #cluster-map-container svg { width: 100%; max-width: 520px; }
@@ -925,7 +944,7 @@ footer {
 }
 
 /* ─── Post-Conflit Tab ───────────────────────────────────── */
-.conflit-overview { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin: 1rem auto; align-items: start; max-width: 960px; }
+.conflit-overview { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1rem; margin: 1rem auto; align-items: start; max-width: 800px; }
 #conflit-map { min-width: 400px; }
 #conflit-map svg { width: 100%; display: block; }
 #conflit-map path { cursor: pointer; }
@@ -944,10 +963,10 @@ footer {
 
 .conflit-section-title { font-family: var(--font-heading); font-size: 1rem; font-weight: 600; margin: 1.5rem 0 0.6rem; }
 
-.conflit-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; max-width: 960px; margin: 0 auto; align-items: start; }
+.conflit-comparison { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1rem; max-width: 800px; margin: 0 auto; align-items: start; }
 .conflit-panel-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem; }
 .conflit-panel-box h4 { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; font-family: var(--font-heading); }
-.conflit-ref-mean { text-align: center; font-size: 0.85rem; color: var(--muted); padding: 0.8rem 0.4rem; font-style: italic; writing-mode: vertical-lr; white-space: nowrap; align-self: center; border-left: 1px dashed var(--border); border-right: 1px dashed var(--border); }
+.conflit-ref-mean { text-align: center; font-size: 0.85rem; color: var(--muted); padding: 0.5rem 1rem; font-style: italic; writing-mode: horizontal-tb; white-space: normal; align-self: center; border-left: 1px dashed var(--border); border-right: 1px dashed var(--border); }
 
 .conflit-country-card { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.5rem; cursor: pointer; border-radius: 4px; transition: background 0.12s; }
 .conflit-country-card:hover { background: var(--hover-light); }
@@ -956,7 +975,7 @@ footer {
 .conflit-country-card .cc-score { font-size: 0.78rem; font-weight: 700; color: var(--muted); min-width: 30px; text-align: right; }
 .conflit-country-card .cc-bar-bg { flex: 0 0 80px; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
 .conflit-country-card .cc-bar { height: 100%; border-radius: 4px; transition: width 0.3s; }
-#conflit-dimensions-chart { width: 100%; max-width: 960px; margin: 0.5rem auto 0; text-align: center; }
+#conflit-dimensions-chart { width: 100%; max-width: 700px; margin: 0.5rem auto 0; text-align: center; }
 #conflit-dimensions-chart svg { display: block; margin: 0 auto; }
 
 @media (max-width: 768px) {
@@ -980,21 +999,21 @@ footer {
   font-weight: 600;
 }
 
-#sovereignty-chart { width: 100%; max-width: 960px; margin: 0.8rem auto; }
+#sovereignty-chart { width: 100%; max-width: 700px; margin: 0.8rem auto; }
 #sovereignty-chart svg { width: 100%; display: block; }
 
-#peoples-chart { width: 100%; max-width: 960px; margin: 0.8rem auto; }
+#peoples-chart { width: 100%; max-width: 700px; margin: 0.8rem auto; }
 #peoples-chart svg { width: 100%; display: block; }
 
 .peoples-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; margin-top: 0.5rem; justify-content: center; }
 .peoples-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; color: var(--muted); }
 .peoples-legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
 
-#sd-posture-chart { width: 100%; max-width: 960px; margin: 0.8rem auto; }
+#sd-posture-chart { width: 100%; max-width: 700px; margin: 0.8rem auto; }
 #sd-posture-chart svg { width: 100%; display: block; }
 
 .sd-posture-detail {
-  max-width: 960px;
+  max-width: 700px;
   margin: 0.5rem auto;
   font-size: 0.8rem;
   color: var(--muted);

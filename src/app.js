@@ -51,7 +51,7 @@ const I18N = {
 
     // Carte tab
     carte_title: "Carte de la reconnaissance constitutionnelle",
-    carte_sub: "Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.",
+    carte_sub: "Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. Cliquez sur les dimensions pour les activer ou désactiver.",
     carte_year: "Année",
     carte_animate: "Animer",
     carte_dims: "Dimensions",
@@ -64,6 +64,7 @@ const I18N = {
     carte_colonial: "Territoire colonial",
     carte_disputed: "Territoire disputé",
     bio_close: "Fermer",
+    bio_back: "← Retour à la carte",
 
     // Matrice tab
     matrice_title: "Matrice comparative — 54 pays × 10 dimensions",
@@ -77,6 +78,10 @@ const I18N = {
     conflit_filter_label: "Conflit",
     filter_peace: "Paix",
     filter_auth: "Autoritaire",
+    filter_peace_long: "Paix (processus de paix négocié)",
+    filter_auth_long: "Autoritaire (transition post-guerre ou post-libération)",
+    filter_nonconflict_long: "Non-conflit (constitution hors contexte de conflit)",
+    filter_note: "Paix = processus négocié · Autoritaire = transition post-guerre/libération · Non-conflit = hors contexte de conflit",
 
     // Heritage tab
     heritage_title: "Divergence par héritage colonial",
@@ -313,7 +318,7 @@ const I18N = {
 
     // Carte tab
     carte_title: "Map of constitutional recognition",
-    carte_sub: "Each country is colored by the average score of the selected dimensions for the chosen year. Click a country to explore its constitutional history. <b>Shift+click</b> dimensions to select several.",
+    carte_sub: "Each country is colored by the average score of the selected dimensions for the chosen year. Click a country to explore its constitutional history. Click dimensions to toggle them on or off.",
     carte_year: "Year",
     carte_animate: "Animate",
     carte_dims: "Dimensions",
@@ -326,6 +331,7 @@ const I18N = {
     carte_colonial: "Colonial territory",
     carte_disputed: "Disputed territory",
     bio_close: "Close",
+    bio_back: "← Back to map",
 
     // Matrice tab
     matrice_title: "Comparative matrix — 54 countries × 10 dimensions",
@@ -339,6 +345,10 @@ const I18N = {
     conflit_filter_label: "Conflict",
     filter_peace: "Peace",
     filter_auth: "Authoritarian",
+    filter_peace_long: "Peace (negotiated peace process)",
+    filter_auth_long: "Authoritarian (post-war or post-liberation transition)",
+    filter_nonconflict_long: "Non-conflict (constitution outside conflict context)",
+    filter_note: "Peace = negotiated process · Authoritarian = post-war/liberation transition · Non-conflict = outside conflict context",
 
     // Heritage tab
     heritage_title: "Divergence by colonial heritage",
@@ -607,6 +617,10 @@ function updateAllText() {
     if (gName === 'all') b.textContent = tr('grp_all');
     else if (gName) b.textContent = tr('grp_' + gName);
   });
+  // Update title attributes on conflict filter buttons
+  document.querySelectorAll('[data-cf="peace"], [data-sc="peace"]').forEach(b => b.title = tr('filter_peace_long'));
+  document.querySelectorAll('[data-cf="authoritarian"], [data-sc="authoritarian"]').forEach(b => b.title = tr('filter_auth_long'));
+  document.querySelectorAll('[data-cf="non-conflict"], [data-sc="non-conflict"]').forEach(b => b.title = tr('filter_nonconflict_long'));
 }
 
 // ─── Constants & Color Scales ─────────────────────────────
@@ -660,7 +674,7 @@ let hmSort = { col: '_total', dir: -1 };
 let hmHeritageFilter = 'all';
 let hmConflictFilter = 'all';
 const scatterActiveHeritage = new Set(['francophone','anglophone','lusophone','other']);
-const scatterActiveConflict = new Set(['peace','authoritarian','non-conflict']);
+const scatterActiveConflict = new Set(['post-conflict','peace','authoritarian','non-conflict']);
 
 const GROUPS = {
   'identity': ['Drm','La','Drc','Id'],
@@ -711,7 +725,7 @@ function renderLegend2D() {
 }
 
 function renderCombinedLegend(cont) {
-  const heritages = ['francophone','anglophone','lusophone','other','mixed'];
+  const heritages = ['francophone','anglophone','lusophone','other'];
   const scores = ['X','P','V'];
   const scoreLabels = { X:tr('legend_absent'), P:tr('legend_partial'), V:tr('legend_recognized') };
   const hLabels = { francophone:tr('h_francophone'), anglophone:tr('h_anglophone'), lusophone:tr('h_lusophone'), other:tr('h_other'), mixed:tr('h_mixed') };
@@ -764,15 +778,12 @@ function buildDimBtns() {
     const b = document.createElement('button');
     b.className = 'dim-btn'; b.dataset.dim = f;
     b.innerHTML = `<span class="cb"></span>${DATA.feature_labels[f]}`;
-    b.addEventListener('click', e => {
-      if (e.shiftKey || e.ctrlKey || e.metaKey) {
-        if (selDims.has(f)) {
-          if (selDims.size > 1) selDims.delete(f);
-          else { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); return; }
-        } else selDims.add(f);
-      } else {
-        selDims.clear(); selDims.add(f);
-      }
+    b.addEventListener('click', () => {
+      // Simple click toggles dimension on/off
+      if (selDims.has(f)) {
+        if (selDims.size > 1) selDims.delete(f);
+        else { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); return; }
+      } else selDims.add(f);
       syncDims(); updateMap();
     });
     cont.appendChild(b);
@@ -921,6 +932,16 @@ function renderMap() {
     .attr('d', d => path(d.geo))
     .attr('data-country', d => d.name)
     .on('mouseenter', onHover).on('mousemove', onMove).on('mouseleave', onLeave).on('click', onClick);
+
+  // Click on map background (not on a country) closes the bio panel
+  svg.on('click', function(ev) {
+    const target = ev.target;
+    // If click was on a country path or island marker, let the country click handler handle it
+    if (target.classList.contains('country-path') || target.classList.contains('island-marker')) return;
+    if (document.getElementById('bio-panel').classList.contains('open')) {
+      closeBio();
+    }
+  });
 
   updateMap();
 }
@@ -1078,6 +1099,15 @@ function openBio(c) {
   document.getElementById('commentary-pane').classList.remove('open');
   document.getElementById('commentary-pane').innerHTML = '';
   renderBio(c, evs);
+  // Add "back to map" button at bottom of bio panel
+  let backBtn = p.querySelector('.bio-back');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.className = 'bio-back';
+    backBtn.addEventListener('click', closeBio);
+    p.appendChild(backBtn);
+  }
+  backBtn.textContent = tr('bio_back');
   p.scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
 
@@ -1342,17 +1372,15 @@ function renderDivergence() {
     g.append('text').attr('x',-4).attr('y',yS(1)+3).attr('text-anchor','end').attr('fill',CSS.dim).attr('font-size','7.5px').text('P');
     g.append('text').attr('x',-4).attr('y',yS(2)+3).attr('text-anchor','end').attr('fill',CSS.dim).attr('font-size','7.5px').text('V');
 
-    // Key event lines
+    // Key event dashed lines (rendered before data paths so curves sit on top)
     const divEvts = tr('div_events');
     const events = [
       [1990, divEvts[0][0]],
       [2002, divEvts[1][0]],
     ];
-    events.forEach(([yr, lbl]) => {
+    events.forEach(([yr]) => {
       g.append('line').attr('x1',xS(yr)).attr('x2',xS(yr)).attr('y1',0).attr('y2',h)
         .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',1).attr('stroke-dasharray','4,3');
-      g.append('text').attr('x',xS(yr)+3).attr('y',10).attr('fill',CSS.muted).attr('font-size','8.5px').attr('font-weight','600')
-        .style('paint-order','stroke').style('stroke','#f6f3ee').style('stroke-width','4px').text(lbl);
     });
 
     const line = d3.line().x(d => xS(d[0])).y(d => yS(d[1])).curve(d3.curveBasis);
@@ -1364,6 +1392,12 @@ function renderDivergence() {
       g.append('path').datum(series).attr('d',area).attr('fill',color).attr('opacity',0.1);
       g.append('path').datum(series).attr('d',line).attr('fill','none').attr('stroke',color).attr('stroke-width',2.5).attr('opacity',0.85);
     }
+
+    // Event text labels rendered AFTER data paths so they sit on top of curves
+    events.forEach(([yr, lbl]) => {
+      g.append('text').attr('x',xS(yr)+3).attr('y',10).attr('fill',CSS.muted).attr('font-size','8.5px').attr('font-weight','600')
+        .style('paint-order','stroke').style('stroke','#f6f3ee').style('stroke-width','5px').style('stroke-linejoin','round').text(lbl);
+    });
 
     // Interactive overlay with tooltip
     const crossG = g.append('g').style('display','none');
@@ -1411,10 +1445,18 @@ function scatterConflictCat(d) {
   return (DATA.post_conflict_type && DATA.post_conflict_type[d.name]) || 'peace';
 }
 
+function scatterConflictVisible(d) {
+  const cat = scatterConflictCat(d);
+  if (scatterActiveConflict.has(cat)) return true;
+  // 'post-conflict' is a meta-category covering both 'peace' and 'authoritarian'
+  if (cat === 'peace' || cat === 'authoritarian') return scatterActiveConflict.has('post-conflict');
+  return false;
+}
+
 function updateScatterOpacity() {
   d3.selectAll('circle.scatter-dot')
     .transition().duration(250)
-    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterActiveConflict.has(scatterConflictCat(d))) ? 0.85 : 0.08);
+    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterConflictVisible(d)) ? 0.85 : 0.08);
 }
 
 function initScatterFilters() {
@@ -1482,7 +1524,7 @@ function renderScatter() {
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
-    .style('max-width','650px');
+    .style('max-width','700px');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
@@ -1566,7 +1608,7 @@ function renderScatter() {
     .attr('class','scatter-dot')
     .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', R)
     .attr('fill', d => HC[d.heritage] || HC.other)
-    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterActiveConflict.has(scatterConflictCat(d))) ? 0.85 : 0.08)
+    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterConflictVisible(d)) ? 0.85 : 0.08)
     .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',0.5)
     .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
@@ -1612,37 +1654,22 @@ function renderConflictTab() {
   renderConflictComparison(peaceCountries, authCountries, npcMean);
 
   // ── 4. Dimension breakdown chart ───────────────────────
-  renderConflictDimensions(allCountries);
+  renderConflictLift(allCountries);
 }
 
 function renderConflictMap(pcCountries) {
   const cont = document.getElementById('conflit-map');
   if (!cont) return;
   cont.innerHTML = '';
-  if (!geoData) return; // not loaded yet
+  if (!geoData) return;
 
   const W = 420, H = 400;
   const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
 
-  const defs = svg.append('defs');
-  // Hatching for peace process
-  const pat1 = defs.append('pattern').attr('id','hatch-peace').attr('width',5).attr('height',5).attr('patternUnits','userSpaceOnUse').attr('patternTransform','rotate(45)');
-  pat1.append('rect').attr('width',5).attr('height',5).attr('fill','#d4785a');
-  pat1.append('line').attr('x1',0).attr('y1',0).attr('x2',0).attr('y2',5).attr('stroke','#a85535').attr('stroke-width',1.2);
-  // Cross-hatching for authoritarian
-  const pat2 = defs.append('pattern').attr('id','hatch-auth').attr('width',5).attr('height',5).attr('patternUnits','userSpaceOnUse');
-  pat2.append('rect').attr('width',5).attr('height',5).attr('fill','#c4956a');
-  pat2.append('line').attr('x1',0).attr('y1',0).attr('x2',5).attr('y2',5).attr('stroke','#8a6540').attr('stroke-width',0.8);
-  pat2.append('line').attr('x1',5).attr('y1',0).attr('x2',0).attr('y2',5).attr('stroke','#8a6540').attr('stroke-width',0.8);
+  const proj = d3.geoMercator().fitSize([W, H - 50], geoData);
+  const pathGen = d3.geoPath(proj);
 
-  const proj = d3.geoMercator().fitSize([W, H], geoData);
-  const path = d3.geoPath(proj);
-
-  // Build lookup for pc countries
-  const pcLookup = {};
-  pcCountries.forEach(d => { pcLookup[d.name] = d; });
-
-  // Build lookup for ALL countries (for interactive tooltips)
+  // Build lookup for ALL countries
   const allLookup = {};
   DATA.feature_matrix.forEach(r => {
     const c = r.PAYS;
@@ -1650,9 +1677,14 @@ function renderConflictMap(pcCountries) {
     allLookup[c] = { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null };
   });
 
+  // Warm gradient for score (thesis_cmap)
+  const conflitScoreScale = d3.scaleLinear()
+    .domain([0, 10, 20])
+    .range(['#f5e6d0', '#d4785a', '#8a2a0a'])
+    .interpolate(d3.interpolateRgb.gamma(2.2));
+
   const scTT = d3.select('#scatter-tooltip');
 
-  // Helper to resolve country name from geo feature
   function geoToCountry(d) {
     if (!DATA.name_to_iso) return null;
     const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
@@ -1660,36 +1692,54 @@ function renderConflictMap(pcCountries) {
     return entry ? entry[0] : null;
   }
 
+  function conflitStyle(info) {
+    if (!info) return { opacity: 0.25, strokeW: 0.3, dash: null };
+    if (info.pc && info.pcType === 'peace') return { opacity: 1.0, strokeW: 1.8, dash: null };
+    if (info.pc && info.pcType === 'authoritarian') return { opacity: 0.75, strokeW: 1.2, dash: '4,2' };
+    return { opacity: 0.35, strokeW: 0.3, dash: null };
+  }
+
+  function showTooltip(ev, info) {
+    if (!info) return;
+    const typeLabel = info.pc
+      ? (info.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title'))
+      : tr('conflit_nonconflict');
+    scTT.html(
+      `<div class="tt-name">${info.name}</div>` +
+      `<div style="font-size:0.8rem">${HL(info.heritage)} · ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
+      `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}</div>`
+    ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+  }
+
   svg.selectAll('path.cm-country').data(geoData.features).join('path')
     .attr('class','cm-country')
-    .attr('d', path)
-    .attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3)
-    .attr('fill', d => {
+    .attr('d', pathGen)
+    .each(function(d) {
       const countryName = geoToCountry(d);
-      if (!countryName) return '#eae6df';
-      const pc = pcLookup[countryName];
-      if (!pc) return '#eae6df';
-      if (pc.pcType === 'peace') return 'url(#hatch-peace)';
-      return 'url(#hatch-auth)';
+      const info = countryName ? allLookup[countryName] : null;
+      const fill = info ? conflitScoreScale(info.total) : '#eae6df';
+      const style = conflitStyle(info);
+      d3.select(this)
+        .attr('fill', fill)
+        .attr('opacity', style.opacity)
+        .attr('stroke', info && info.pc ? '#333' : CSS.strokeDefault)
+        .attr('stroke-width', style.strokeW)
+        .attr('stroke-dasharray', style.dash);
     })
     .on('mouseenter', function(ev, d) {
       const countryName = geoToCountry(d);
-      if (!countryName) return;
-      const info = allLookup[countryName];
-      if (!info) return;
-      const typeLabel = info.pc
-        ? (info.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title'))
-        : tr('conflit_nonconflict');
-      d3.select(this).attr('stroke', '#333').attr('stroke-width', 1.2);
-      scTT.html(
-        `<div class="tt-name">${info.name}</div>` +
-        `<div style="font-size:0.8rem">${HL(info.heritage)} · ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}</div>`
-      ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+      const info = countryName ? allLookup[countryName] : null;
+      d3.select(this).attr('stroke', '#333').attr('stroke-width', 1.5);
+      showTooltip(ev, info);
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function() {
-      d3.select(this).attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3);
+    .on('mouseleave', function(ev, d) {
+      const countryName = geoToCountry(d);
+      const info = countryName ? allLookup[countryName] : null;
+      const style = conflitStyle(info);
+      d3.select(this)
+        .attr('stroke', info && info.pc ? '#333' : CSS.strokeDefault)
+        .attr('stroke-width', style.strokeW);
       scTT.style('opacity','0');
     })
     .on('click', function(ev, d) {
@@ -1697,18 +1747,65 @@ function renderConflictMap(pcCountries) {
       if (countryName && allLookup[countryName]) openBio(countryName);
     });
 
-  // Small legend below the map
-  const legY = H - 22;
-  const legData = [
-    { label: tr('conflit_peace_title'), fill: 'url(#hatch-peace)' },
-    { label: tr('conflit_auth_title'), fill: 'url(#hatch-auth)' },
-    { label: tr('conflit_nonconflict'), fill: '#eae6df' },
-  ];
+  // Island circles
+  const islandData = [
+    { name: 'Cap-Vert', lon: -23.64, lat: 15.07 },
+    { name: 'Sao Tomé-et-Príncipe', lon: 7.02, lat: 0.97 },
+    { name: 'Comores', lon: 43.32, lat: -11.73 },
+    { name: 'Maurice', lon: 57.57, lat: -20.30 },
+    { name: 'Seychelles', lon: 55.48, lat: -4.68 },
+  ].map(d => ({ ...d, projected: proj([d.lon, d.lat]) }))
+   .filter(d => d.projected);
+
+  islandData.forEach(d => {
+    const info = allLookup[d.name];
+    const fill = info ? conflitScoreScale(info.total) : '#eae6df';
+    const style = conflitStyle(info);
+    svg.append('circle')
+      .attr('cx', d.projected[0]).attr('cy', d.projected[1]).attr('r', 8)
+      .attr('fill', fill).attr('opacity', style.opacity)
+      .attr('stroke', info && info.pc ? '#333' : 'white')
+      .attr('stroke-width', info && info.pc ? style.strokeW : 1)
+      .attr('stroke-dasharray', style.dash)
+      .style('cursor', 'pointer')
+      .on('mouseenter', function(ev) {
+        d3.select(this).attr('r', 10);
+        showTooltip(ev, info);
+      })
+      .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+      .on('mouseleave', function() {
+        d3.select(this).attr('r', 8);
+        scTT.style('opacity','0');
+      })
+      .on('click', function() { if (info) openBio(d.name); });
+  });
+
+  // Legend: score gradient + border styles
+  const legY = H - 42;
   const legG = svg.append('g').attr('transform', `translate(5,${legY})`);
-  legData.forEach((d, i) => {
-    const g = legG.append('g').attr('transform', `translate(${i * 140}, 0)`);
-    g.append('rect').attr('width',12).attr('height',10).attr('rx',2).attr('fill',d.fill).attr('stroke',CSS.border).attr('stroke-width',0.5);
-    g.append('text').attr('x',16).attr('y',8).attr('font-size','7.5px').attr('fill',CSS.muted).text(d.label);
+  const gradW = 120, gradH = 8;
+  const gradId = 'conflit-score-grad';
+  const defs = svg.append('defs');
+  const lg = defs.append('linearGradient').attr('id', gradId);
+  lg.append('stop').attr('offset','0%').attr('stop-color', conflitScoreScale(0));
+  lg.append('stop').attr('offset','50%').attr('stop-color', conflitScoreScale(10));
+  lg.append('stop').attr('offset','100%').attr('stop-color', conflitScoreScale(20));
+  legG.append('rect').attr('width', gradW).attr('height', gradH).attr('rx', 2).attr('fill', `url(#${gradId})`);
+  legG.append('text').attr('x', 0).attr('y', gradH + 10).attr('font-size', '7px').attr('fill', CSS.dim).text('0');
+  legG.append('text').attr('x', gradW).attr('y', gradH + 10).attr('text-anchor', 'end').attr('font-size', '7px').attr('fill', CSS.dim).text('20');
+  legG.append('text').attr('x', gradW / 2).attr('y', gradH + 10).attr('text-anchor', 'middle').attr('font-size', '7px').attr('fill', CSS.dim).text(tr('score_label'));
+
+  const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 16})`);
+  const bLegData = [
+    { label: tr('conflit_peace_title'), strokeW: 1.8, dash: null },
+    { label: tr('conflit_auth_title'), strokeW: 1.2, dash: '4,2' },
+    { label: tr('conflit_nonconflict'), strokeW: 0.3, dash: null },
+  ];
+  bLegData.forEach((d, i) => {
+    const g = bLegG.append('g').attr('transform', `translate(${i * 140}, 0)`);
+    g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 18).attr('y2', 5)
+      .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
+    g.append('text').attr('x', 22).attr('y', 8).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
   });
 }
 
@@ -1732,6 +1829,7 @@ function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean,
     <hr class="stat-divider">
     <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_heritage')}</span><span class="stat-val">22,3 %</span></div>
     <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_combined')}</span><span class="stat-val">63,2 %</span></div>
+    <div class="stat-small" style="margin-top:0.4rem;font-style:italic">(η² = part de variance expliquée / share of explained variance)</div>
   `;
 }
 
@@ -1782,121 +1880,95 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
   if (refEl) refEl.innerHTML = `${tr('conflit_ref_mean')}<br>${npcMean.toFixed(1)}/20`;
 }
 
-function renderConflictDimensions(allCountries) {
+function renderConflictLift(allCountries) {
   const cont = document.getElementById('conflit-dimensions-chart');
   if (!cont) return;
   cont.innerHTML = '';
 
-  // Dimension order: identity-first
   const dimOrder = ['Dpa','Dau','Drc','Drm','Id','La','PJ','F','Dc','Dis'];
+  const pcAll = allCountries.filter(d => d.pc);
+  const npcAll = allCountries.filter(d => !d.pc);
 
-  // 4 groups: Franco non-conflict, Franco post-conflict(peace), Anglo non-conflict, Anglo post-conflict(peace)
-  const groupDefs = [
-    { key: 'franco-nc', heritage: 'francophone', pc: false, label: tr('h_francophone') + ' ' + tr('conflit_nonconflict'), color: CSS.francophone, opacity: 0.4 },
-    { key: 'franco-pc', heritage: 'francophone', pc: true, label: tr('h_francophone') + ' post-conflit', color: CSS.francophone, opacity: 1 },
-    { key: 'anglo-nc', heritage: 'anglophone', pc: false, label: tr('h_anglophone') + ' ' + tr('conflit_nonconflict'), color: CSS.anglophone, opacity: 0.4 },
-    { key: 'anglo-pc', heritage: 'anglophone', pc: true, label: tr('h_anglophone') + ' post-conflit', color: CSS.anglophone, opacity: 1 },
-  ];
+  const sigLevels = { Dpa:'***', Dau:'***', Drc:'***', Drm:'***', Id:'*', La:'ns', PJ:'ns', F:'ns', Dc:'ns', Dis:'ns' };
 
-  // Compute means per dim per group
-  const groupData = groupDefs.map(gd => {
-    const countries = allCountries.filter(d => d.heritage === gd.heritage && d.pc === gd.pc);
-    const means = {};
-    dimOrder.forEach(dim => {
-      const vals = countries.map(d => {
-        const row = DATA.feature_matrix.find(r => r.PAYS === d.name);
-        return row ? row[dim] : 0;
-      });
-      means[dim] = vals.length ? d3.mean(vals) : 0;
-    });
-    return { ...gd, means, n: countries.length };
+  const liftData = dimOrder.map(dim => {
+    const pcVals = pcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
+    const npcVals = npcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
+    const pcMean = pcVals.length ? d3.mean(pcVals) : 0;
+    const npcMean = npcVals.length ? d3.mean(npcVals) : 0;
+    return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns' };
   });
 
-  // Significance markers per dimension (from thesis: Dpa, Dau, Drc, Drm p < 0.001)
-  const sigDims = new Set(['Dpa','Dau','Drc','Drm']);
-
-  const M = { top: 30, right: 20, bottom: 80, left: 180 };
-  const barH = 12, gapBetweenDims = 4, groupGap = 1;
-  const dimH = groupDefs.length * (barH + groupGap) + gapBetweenDims;
-  const chartH = dimOrder.length * dimH;
-  const w = 400;
+  const M = { top: 25, right: 30, bottom: 40, left: 180 };
+  const barH = 22, gapH = 4;
+  const chartH = dimOrder.length * (barH + gapH);
+  const w = 360;
+  const maxAbs = d3.max(liftData, d => Math.abs(d.lift));
+  const xDomain = Math.max(maxAbs * 1.2, 0.5);
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
-    .style('max-width', '800px');
-
+    .style('max-width', '700px');
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
+  const xS = d3.scaleLinear().domain([-xDomain * 0.3, xDomain]).range([0, w]);
 
-  const xS = d3.scaleLinear().domain([0, 2]).range([0, w]);
-
-  // Grid lines
-  g.append('g').call(d3.axisTop(xS).ticks(4).tickSize(-chartH).tickFormat(d => d.toFixed(0)))
-    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '10px');
+  g.append('g').call(d3.axisTop(xS).ticks(5).tickSize(-chartH).tickFormat(d => d.toFixed(1)))
+    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '9px');
   g.selectAll('.domain').remove();
   g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
 
-  // X-axis label
-  g.append('text').attr('x', w / 2).attr('y', -20)
+  g.append('line').attr('x1', xS(0)).attr('x2', xS(0)).attr('y1', 0).attr('y2', chartH)
+    .attr('stroke', CSS.muted).attr('stroke-width', 1).attr('stroke-dasharray', '3,2');
+
+  g.append('text').attr('x', w / 2).attr('y', -15)
     .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '10px')
-    .text(tr('conflict_ylabel').replace(/\(.*\)/, '(0–2)'));
+    .text(lang === 'fr' ? 'Boost post-conflit (\u0394 score moyen, 0\u20132)' : 'Post-conflict boost (\u0394 mean score, 0\u20132)');
 
   const scTT = d3.select('#scatter-tooltip');
 
-  dimOrder.forEach((dim, di) => {
-    const yBase = di * dimH;
-    const dimLabel = DATA.feature_labels[dim];
+  liftData.forEach((d, i) => {
+    const y = i * (barH + gapH);
+    const dimLabel = DATA.feature_labels[d.dim];
+    const isSig = d.sig.includes('*');
 
-    // Dim label on left
     g.append('text')
-      .attr('x', -8).attr('y', yBase + dimH / 2)
+      .attr('x', -8).attr('y', y + barH / 2)
       .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
-      .attr('fill', sigDims.has(dim) ? CSS.text : CSS.muted)
-      .attr('font-size', '11px')
-      .attr('font-weight', sigDims.has(dim) ? '600' : '400')
-      .text(dimLabel + (sigDims.has(dim) ? ' ***' : ''));
+      .attr('fill', isSig ? CSS.text : CSS.dim)
+      .attr('font-size', '11px').attr('font-weight', isSig ? '600' : '400')
+      .text(dimLabel + (d.sig !== 'ns' ? ' ' + d.sig : ''));
 
-    // Bars for each group
-    groupData.forEach((gd, gi) => {
-      const y = yBase + gi * (barH + groupGap);
-      const val = gd.means[dim];
+    const x0 = xS(Math.min(0, d.lift));
+    const x1 = xS(Math.max(0, d.lift));
+    const barColor = isSig ? '#d4785a' : CSS.border;
 
-      g.append('rect')
-        .attr('x', 0).attr('y', y)
-        .attr('width', Math.max(xS(val), 1)).attr('height', barH)
-        .attr('fill', gd.color).attr('opacity', gd.opacity)
-        .attr('rx', 2)
-        .style('cursor', 'pointer')
-        .on('mouseenter', function(ev) {
-          scTT.html(
-            `<div class="tt-name">${gd.label}</div>` +
-            `<div style="font-size:0.8rem">${dimLabel} : <b>${val.toFixed(2)}</b>/2 (n=${gd.n})</div>`
-          ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
-        })
-        .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-        .on('mouseleave', function() { scTT.style('opacity','0'); });
+    g.append('rect')
+      .attr('x', x0).attr('y', y + 2)
+      .attr('width', Math.max(x1 - x0, 1)).attr('height', barH - 4)
+      .attr('fill', barColor).attr('opacity', isSig ? 0.85 : 0.4)
+      .attr('rx', 3)
+      .style('cursor', 'pointer')
+      .on('mouseenter', function(ev) {
+        scTT.html(
+          `<div class="tt-name">${dimLabel}</div>` +
+          `<div style="font-size:0.8rem">\u0394 = <b>${d.lift >= 0 ? '+' : ''}${d.lift.toFixed(2)}</b> (${d.sig})</div>` +
+          `<div style="font-size:0.72rem;color:var(--dim)">Post-conflit : ${d.pcMean.toFixed(2)} | Non-conflit : ${d.npcMean.toFixed(2)}</div>`
+        ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+      })
+      .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+      .on('mouseleave', function() { scTT.style('opacity','0'); });
 
-      // Value label
-      g.append('text')
-        .attr('x', xS(val) + 4).attr('y', y + barH / 2)
-        .attr('dominant-baseline', 'middle')
-        .attr('fill', CSS.dim).attr('font-size', '8px')
-        .text(val.toFixed(1));
-    });
+    const labelX = d.lift >= 0 ? xS(d.lift) + 4 : xS(d.lift) - 4;
+    g.append('text')
+      .attr('x', labelX).attr('y', y + barH / 2)
+      .attr('dominant-baseline', 'middle')
+      .attr('text-anchor', d.lift >= 0 ? 'start' : 'end')
+      .attr('fill', isSig ? CSS.text : CSS.dim).attr('font-size', '9px')
+      .text((d.lift >= 0 ? '+' : '') + d.lift.toFixed(2));
   });
 
-  // Legend at bottom
-  const legY = chartH + 20;
-  const legG = g.append('g').attr('transform', `translate(0,${legY})`);
-  groupDefs.forEach((gd, i) => {
-    const x = (i % 2) * (w / 2);
-    const y = Math.floor(i / 2) * 18;
-    const lg = legG.append('g').attr('transform', `translate(${x},${y})`);
-    lg.append('rect').attr('width', 14).attr('height', 10).attr('rx', 2).attr('fill', gd.color).attr('opacity', gd.opacity);
-    lg.append('text').attr('x', 18).attr('y', 8).attr('font-size', '9px').attr('fill', CSS.muted).text(`${gd.label} (n=${groupData[i].n})`);
-  });
-  // Significance note
-  legG.append('text').attr('x', 0).attr('y', 48).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
-    .text('*** p < 0,001 (Mann-Whitney)');
+  g.append('text').attr('x', 0).attr('y', chartH + 18).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
+    .text('*** p < 0,001 (Mann-Whitney) | * p < 0,05 | ns = non significatif');
 }
 
 // Backward-compatible wrapper for init and switchLang
@@ -1930,30 +2002,6 @@ function renderUMAP() {
   if (!container || !DATA.umap_coords) return;
   container.innerHTML = '';
 
-  const coords = umapMode === 'preambles' ? DATA.umap_preamble_coords : DATA.umap_coords;
-  if (!coords || Object.keys(coords).length === 0) return;
-
-  const margin = {top: 20, right: 20, bottom: 40, left: 40};
-  const w = 600, h = 400;
-
-  const svg = d3.select(container).append('svg')
-    .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
-    .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-
-  // Get extent
-  const points = Object.entries(coords).map(([name, [x, y]]) => ({name, x, y}));
-  const xExt = d3.extent(points, d => d.x);
-  const yExt = d3.extent(points, d => d.y);
-  const xScale = d3.scaleLinear().domain([xExt[0]-1, xExt[1]+1]).range([0, w]);
-  const yScale = d3.scaleLinear().domain([yExt[0]-1, yExt[1]+1]).range([h, 0]);
-
-  // Axes
-  svg.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(xScale).ticks(5)).selectAll('text').style('font-size','8px');
-  svg.append('g').call(d3.axisLeft(yScale).ticks(5)).selectAll('text').style('font-size','8px');
-  svg.append('text').attr('x',w/2).attr('y',h+35).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 1');
-  svg.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-30).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 2');
-
-  // Compute total score lookup for tooltip
   const scoreLookup = {};
   if (DATA.feature_matrix) {
     for (const row of DATA.feature_matrix) {
@@ -1961,46 +2009,82 @@ function renderUMAP() {
     }
   }
 
-  // Draw points
-  points.forEach(p => {
-    const heritage = DATA.colonial_heritage[p.name] || 'other';
-    const pc = DATA.post_conflict && DATA.post_conflict[p.name];
-    const color = HC[heritage] || HC.other;
+  const grid = document.createElement('div');
+  grid.className = 'umap-grid';
+  container.appendChild(grid);
 
-    const g = svg.append('g').style('cursor','pointer');
+  const datasets = [
+    { key: 'constitutions', title: tr('btn_constitutions'), coords: DATA.umap_coords },
+    { key: 'preambles', title: tr('btn_preambles'), coords: DATA.umap_preamble_coords },
+  ];
 
-    g.append('circle')
-      .attr('cx', xScale(p.x)).attr('cy', yScale(p.y)).attr('r', 5)
-      .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
+  datasets.forEach(ds => {
+    if (!ds.coords || Object.keys(ds.coords).length === 0) return;
 
-    // Label for notable countries only
-    const notable = ['RDC','Éthiopie','Afrique du Sud','Kenya','Cameroun','Tunisie','Somalie','Nigéria'];
-    const shortName = p.name.replace('République démocratique du Congo','RDC');
-    if (notable.includes(shortName) || notable.includes(p.name)) {
-      g.append('text').attr('x',xScale(p.x)+8).attr('y',yScale(p.y)+3)
-        .style('font-size','7px').style('fill',color).text(shortName);
-    }
+    const panel = document.createElement('div');
+    panel.className = 'umap-panel';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'umap-panel-title';
+    titleEl.textContent = ds.title;
+    panel.appendChild(titleEl);
+    grid.appendChild(panel);
 
-    // Hover tooltip — all countries
-    const totalScore = scoreLookup[p.name];
-    g.on('mouseover', (event) => {
-      const tt = document.getElementById('tooltip');
-      tt.style.display = 'block';
-      tt.style.opacity = '1';
-      const scoreStr = totalScore !== undefined ? ` &middot; ${tr('score_label')} : ${totalScore}/20` : '';
-      tt.innerHTML = `<strong>${p.name}</strong><br>${HL(heritage)}${scoreStr}${pc ? ' &middot; ' + tr('postconflict_label') : ''}`;
-    })
-    .on('mousemove', (event) => {
-      const tt = document.getElementById('tooltip');
-      tt.style.left = (event.pageX + 10) + 'px';
-      tt.style.top = (event.pageY + 10) + 'px';
-    })
-    .on('mouseout', () => {
-      const tt = document.getElementById('tooltip');
-      tt.style.opacity = '0';
-      tt.style.display = '';
-    })
-    .on('click', () => { openBio(p.name); });
+    const margin = {top: 15, right: 15, bottom: 35, left: 35};
+    const w = 350, h = 300;
+
+    const svg = d3.select(panel).append('svg')
+      .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
+      .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const points = Object.entries(ds.coords).map(([name, [x, y]]) => ({name, x, y}));
+    const xExt = d3.extent(points, d => d.x);
+    const yExt = d3.extent(points, d => d.y);
+    const xScale = d3.scaleLinear().domain([xExt[0]-1, xExt[1]+1]).range([0, w]);
+    const yScale = d3.scaleLinear().domain([yExt[0]-1, yExt[1]+1]).range([h, 0]);
+
+    svg.append('g').attr('transform', `translate(0,${h})`).call(d3.axisBottom(xScale).ticks(4)).selectAll('text').style('font-size','7px');
+    svg.append('g').call(d3.axisLeft(yScale).ticks(4)).selectAll('text').style('font-size','7px');
+    svg.append('text').attr('x',w/2).attr('y',h+30).attr('text-anchor','middle').style('font-size','9px').style('fill',CSS.muted).text('UMAP 1');
+    svg.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-25).attr('text-anchor','middle').style('font-size','9px').style('fill',CSS.muted).text('UMAP 2');
+
+    points.forEach(p => {
+      const heritage = DATA.colonial_heritage[p.name] || 'other';
+      const pc = DATA.post_conflict && DATA.post_conflict[p.name];
+      const color = HC[heritage] || HC.other;
+
+      const g = svg.append('g').style('cursor','pointer');
+
+      g.append('circle')
+        .attr('cx', xScale(p.x)).attr('cy', yScale(p.y)).attr('r', 4)
+        .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
+
+      const notable = ['RDC','Éthiopie','Afrique du Sud','Kenya','Cameroun','Tunisie','Somalie','Nigéria'];
+      const shortName = p.name.replace('République démocratique du Congo','RDC');
+      if (notable.includes(shortName) || notable.includes(p.name)) {
+        g.append('text').attr('x',xScale(p.x)+6).attr('y',yScale(p.y)+3)
+          .style('font-size','6px').style('fill',color).text(shortName);
+      }
+
+      const totalScore = scoreLookup[p.name];
+      g.on('mouseover', (event) => {
+        const tt = document.getElementById('tooltip');
+        tt.style.display = 'block';
+        tt.style.opacity = '1';
+        const scoreStr = totalScore !== undefined ? ` &middot; ${tr('score_label')} : ${totalScore}/20` : '';
+        tt.innerHTML = `<strong>${p.name}</strong><br>${HL(heritage)}${scoreStr}${pc ? ' &middot; ' + tr('postconflict_label') : ''}`;
+      })
+      .on('mousemove', (event) => {
+        const tt = document.getElementById('tooltip');
+        tt.style.left = (event.pageX + 10) + 'px';
+        tt.style.top = (event.pageY + 10) + 'px';
+      })
+      .on('mouseout', () => {
+        const tt = document.getElementById('tooltip');
+        tt.style.opacity = '0';
+        tt.style.display = '';
+      })
+      .on('click', () => { openBio(p.name); });
+    });
   });
 }
 
@@ -2173,8 +2257,8 @@ function renderClusterMap() {
   }
 
   const africa = geoData.features;
-  const w = 500, h = 420;
-  const projection = d3.geoMercator().center([20, 3]).scale(w * 0.65).translate([w/2, h/2]);
+  const w = 500, h = 460;
+  const projection = d3.geoMercator().center([20, 2]).scale(w * 0.65).translate([w/2, h/2]);
   const path = d3.geoPath().projection(projection);
 
   const svg = d3.select(container).append('svg')
@@ -2211,6 +2295,44 @@ function renderClusterMap() {
       tt.style.opacity = '0';
       tt.style.display = '';
     });
+
+  // Island circles
+  const clIslandData = [
+    { name: 'Cap-Vert', lon: -23.64, lat: 15.07 },
+    { name: 'Sao Tomé-et-Príncipe', lon: 7.02, lat: 0.97 },
+    { name: 'Comores', lon: 43.32, lat: -11.73 },
+    { name: 'Maurice', lon: 57.57, lat: -20.30 },
+    { name: 'Seychelles', lon: 55.48, lat: -4.68 },
+  ].map(d => ({ ...d, projected: projection([d.lon, d.lat]) }))
+   .filter(d => d.projected);
+
+  clIslandData.forEach(d => {
+    svg.append('circle')
+      .attr('class', 'cluster-island')
+      .attr('cx', d.projected[0]).attr('cy', d.projected[1]).attr('r', 8)
+      .attr('fill', '#eee').attr('stroke', 'white').attr('stroke-width', 1)
+      .attr('data-country', d.name)
+      .style('cursor', 'pointer')
+      .on('mouseover', (event) => {
+        const heritage = DATA.colonial_heritage[d.name] || 'other';
+        const clusterId = currentClusterMap[d.name];
+        const clusterLabel = clusterId !== undefined ? `${tr('clusters_group')} ${clusterId + 1}` : '—';
+        const tt = document.getElementById('tooltip');
+        tt.style.display = 'block';
+        tt.style.opacity = '1';
+        tt.innerHTML = `<strong>${d.name}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
+      })
+      .on('mousemove', (event) => {
+        const tt = document.getElementById('tooltip');
+        tt.style.left = (event.pageX + 10) + 'px';
+        tt.style.top = (event.pageY + 10) + 'px';
+      })
+      .on('mouseout', () => {
+        const tt = document.getElementById('tooltip');
+        tt.style.opacity = '0';
+        tt.style.display = '';
+      });
+  });
 }
 
 let currentClusterMap = {}; // shared for tooltip lookup
@@ -2259,6 +2381,12 @@ function updateClusters(threshold) {
       const clusterId = clusterMap[name[0]];
       return clusterId !== undefined ? clusterColor(clusterId, totalClusters) : '#eee';
     });
+    // Update island circles
+    d3.selectAll('circle.cluster-island').each(function() {
+      const name = d3.select(this).attr('data-country');
+      const clusterId = clusterMap[name];
+      d3.select(this).attr('fill', clusterId !== undefined ? clusterColor(clusterId, totalClusters) : '#eee');
+    });
   }
 
   // Update dendrogram link colors based on clusters
@@ -2275,12 +2403,17 @@ function updateClusters(threshold) {
     }
     const sortedIds = Object.keys(groups).map(Number).sort((a, b) => a - b);
 
+    const maxVisible = 6;
     let html = `<div class="cc-header">${tr('clusters_threshold')} : ${threshold.toFixed(1)} — ${totalClusters} ${tr('clusters_groups')}</div>`;
-    for (const cid of sortedIds) {
+    sortedIds.forEach((cid, idx) => {
       const members = groups[cid];
       const colorSwatch = clusterColor(cid, totalClusters);
       const shortNames = members.map(c => c.replace('République démocratique du Congo','RDC').replace('République centrafricaine','Centrafrique'));
-      html += `<div class="cc-group"><span class="cc-group-label" style="color:${colorSwatch}">${tr('clusters_group')} ${cid + 1}</span> (${members.length} ${tr('clusters_countries')}) : <span class="cc-group-countries">${shortNames.join(', ')}</span></div>`;
+      const hidden = sortedIds.length > maxVisible && idx >= maxVisible ? ' style="display:none" data-cc-extra' : '';
+      html += `<div class="cc-group"${hidden}><span class="cc-group-label" style="color:${colorSwatch}">${tr('clusters_group')} ${cid + 1}</span> (${members.length} ${tr('clusters_countries')}) : <span class="cc-group-countries">${shortNames.join(', ')}</span></div>`;
+    });
+    if (sortedIds.length > maxVisible) {
+      html += `<button class="cc-show-all" style="margin-top:0.3rem;font-size:0.75rem;color:var(--c2);background:none;border:1px solid var(--border);border-radius:4px;padding:0.2rem 0.6rem;cursor:pointer;font-family:var(--font)" onclick="this.style.display='none';this.parentElement.querySelectorAll('[data-cc-extra]').forEach(e=>e.style.display='')">${lang === 'fr' ? 'Afficher tout' : 'Show all'} (${sortedIds.length - maxVisible} ${lang === 'fr' ? 'de plus' : 'more'})</button>`;
     }
     compPanel.innerHTML = html;
   }
