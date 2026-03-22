@@ -1479,6 +1479,116 @@ function updateClusters(threshold) {
   d3.selectAll('.dendro-link').attr('stroke', '#999');
 }
 
+// ═══════════════════════════════════════════════════════════
+// Figures Gallery
+// ═══════════════════════════════════════════════════════════
+const FIGURE_INDEX = [
+  // Ch.1 S1
+  {id:'1.1', file:'ch1s1_preamble_sovereignty_identity', ch:'Ch.1 S1', caption_fr:'Préambules : souveraineté vs. identité', caption_en:'Preambles: sovereignty vs. identity'},
+  {id:'1.2', file:'ch1s1_preamble_balance', ch:'Ch.1 S1', caption_fr:'Équilibre rhétorique des préambules', caption_en:'Rhetorical balance of preambles'},
+  {id:'1.3', file:'ch1s1_sovereignty_markers', ch:'Ch.1 S1', caption_fr:'Marqueurs de souveraineté par héritage', caption_en:'Sovereignty markers by heritage'},
+  {id:'1.4', file:'sov_vs_id_choropleth', ch:'Ch.1 S1', caption_fr:'Souveraineté ou identité : carte', caption_en:'Sovereignty vs identity: map'},
+  // Ch.1 S2
+  {id:'1.5', file:'ch1s2_naming_heatmap', ch:'Ch.1 S2', caption_fr:'Terminologie de nomination', caption_en:'Naming terminology'},
+  {id:'1.6', file:'ch1s2_peoples_context', ch:'Ch.1 S2', caption_fr:'Contexte de « peoples »', caption_en:'"peoples" context'},
+  {id:'1.7', file:'ch1s2_people_vs_peoples', ch:'Ch.1 S2', caption_fr:'Distribution sémantique de « peoples »', caption_en:'Semantic distribution of "peoples"'},
+  // Ch.2 S1
+  {id:'2.1', file:'ch2s1_treaty_beeswarm', ch:'Ch.2 S1', caption_fr:'Ratifier n\'est pas reconnaître', caption_en:'Ratification ≠ recognition'},
+  // Ch.2 S2
+  {id:'2.2', file:'ch2s2_heritage_divergence', ch:'Ch.2 S2', caption_fr:'Divergence héritage (10 dimensions)', caption_en:'Heritage divergence (10 dimensions)'},
+  {id:'2.3', file:'ch2s2_correlation_matrix', ch:'Ch.2 S2', caption_fr:'Matrice de corrélation', caption_en:'Correlation matrix'},
+  {id:'2.4', file:'ch2s2_score_distribution', ch:'Ch.2 S2', caption_fr:'Écart de reconnaissance', caption_en:'Recognition gap'},
+  {id:'2.5', file:'ch2s2_dual_choropleth', ch:'Ch.2 S2', caption_fr:'Carte : identitaire vs institutionnel', caption_en:'Map: identity vs institutional'},
+  {id:'2.6', file:'ch2s2_heritage_dumbbell', ch:'Ch.2 S2', caption_fr:'Le fossé identitaire (dumbbell)', caption_en:'The identity gap (dumbbell)'},
+  {id:'2.7', file:'ch2s2_heritage_radar', ch:'Ch.2 S2', caption_fr:'Profil constitutionnel (radar)', caption_en:'Constitutional profile (radar)'},
+  // Ch.3
+  {id:'3.1', file:'ch3_case_law_timeline', ch:'Ch.3', caption_fr:'Chronologie des décisions CADHP', caption_en:'ACHPR decision timeline'},
+  {id:'3.2', file:'ch3_article_frequency', ch:'Ch.3', caption_fr:'Fréquence d\'invocation des articles', caption_en:'Article invocation frequency'},
+  {id:'3.3', file:'ch3_functional_criterion_emergence', ch:'Ch.3', caption_fr:'Émergence du critère fonctionnel', caption_en:'Functional criterion emergence'},
+  // Ch.4
+  {id:'4.1', file:'ch4s1_doctrinal_concepts', ch:'Ch.4', caption_fr:'Vocabulaire doctrinal', caption_en:'Doctrinal vocabulary'},
+  {id:'4.2', file:'ch4s2_cross_system_citations', ch:'Ch.4', caption_fr:'Citations inter-systémiques', caption_en:'Cross-system citations'},
+  {id:'4.3', file:'ch4_landmark_citations', ch:'Ch.4', caption_fr:'Citations de décisions emblématiques', caption_en:'Landmark case citations'},
+  // Ch.5
+  {id:'5.1', file:'ch5_self_determination_posture', ch:'Ch.5', caption_fr:'Posture d\'autodétermination', caption_en:'Self-determination posture'},
+  {id:'5.2', file:'ch5_sd_flags_heatmap', ch:'Ch.5', caption_fr:'Marqueurs d\'autodétermination', caption_en:'Self-determination markers'},
+  {id:'5.3', file:'ch5_pre_post_ogiek', ch:'Ch.5', caption_fr:'Avant/après Ogiek (2017)', caption_en:'Before/after Ogiek (2017)'},
+  // Ch.7
+  {id:'7.1', file:'ch7_land_resources', ch:'Ch.7', caption_fr:'Provisions territoriales', caption_en:'Territorial provisions'},
+  // Ch.8
+  {id:'8.1', file:'ch8_cultural_rights_depth', ch:'Ch.8', caption_fr:'Profondeur des droits culturels', caption_en:'Cultural rights depth'},
+  // Post-conflict
+  {id:'T.1', file:'post_conflict_interaction', ch:'Post-conflit', caption_fr:'Interaction héritage × post-conflit', caption_en:'Heritage × post-conflict interaction'},
+  {id:'T.2', file:'post_conflict_dimensions', ch:'Post-conflit', caption_fr:'Dimensions × post-conflit', caption_en:'Dimensions × post-conflict'},
+  {id:'T.3', file:'post_conflict_outliers_explained', ch:'Post-conflit', caption_fr:'Les anomalies expliquées', caption_en:'Outliers explained'},
+  {id:'T.4', file:'post_conflict_mechanism', ch:'Post-conflit', caption_fr:'Mécanisme post-conflit', caption_en:'Post-conflict mechanism'},
+  {id:'T.5', file:'overview_choropleth_score', ch:'Post-conflit', caption_fr:'Carte : score + post-conflit', caption_en:'Map: score + post-conflict'},
+  // Clustering
+  {id:'C.1', file:'clusters_umap_constitutions', ch:'Clustering', caption_fr:'UMAP des constitutions', caption_en:'Constitution UMAP'},
+  {id:'C.2', file:'clusters_umap_preambles', ch:'Clustering', caption_fr:'UMAP des préambules', caption_en:'Preamble UMAP'},
+  {id:'C.3', file:'clusters_similarity_heatmap', ch:'Clustering', caption_fr:'Matrice de similarité', caption_en:'Similarity matrix'},
+  {id:'C.4', file:'clusters_dendrogram_dimensions', ch:'Clustering', caption_fr:'Dendrogramme hiérarchique', caption_en:'Hierarchical dendrogram'},
+  // NLP
+  {id:'N.1', file:'kwic_customary_context', ch:'NLP', caption_fr:'Contexte de « customary »', caption_en:'"customary" context'},
+  {id:'N.2', file:'topics_heritage_heatmap', ch:'NLP', caption_fr:'Topics × héritage', caption_en:'Topics × heritage'},
+];
+
+function renderFigures() {
+  const container = document.getElementById('figures-gallery');
+  if (!container) return;
+
+  // Group figures by chapter
+  const groups = [];
+  const groupMap = new Map();
+  for (const fig of FIGURE_INDEX) {
+    if (!groupMap.has(fig.ch)) {
+      const group = { ch: fig.ch, figures: [] };
+      groups.push(group);
+      groupMap.set(fig.ch, group);
+    }
+    groupMap.get(fig.ch).figures.push(fig);
+  }
+
+  container.classList.add('figures-gallery');
+
+  for (const group of groups) {
+    const h3 = document.createElement('h3');
+    h3.textContent = group.ch;
+    container.appendChild(h3);
+
+    for (const fig of group.figures) {
+      const card = document.createElement('div');
+      card.className = 'fig-gallery-card';
+
+      const img = document.createElement('img');
+      img.src = `figures/${fig.file}.png`;
+      img.alt = fig.caption_fr;
+      img.loading = 'lazy';
+      img.addEventListener('click', () => window.open(img.src, '_blank'));
+
+      const num = document.createElement('div');
+      num.className = 'fig-num';
+      num.textContent = `Figure ${fig.id}`;
+
+      const caption = document.createElement('div');
+      caption.className = 'fig-caption';
+      caption.textContent = fig.caption_fr;
+
+      const dl = document.createElement('a');
+      dl.className = 'fig-dl';
+      dl.href = `figures/${fig.file}.pdf`;
+      dl.download = '';
+      dl.textContent = '\u2B07 PDF';
+
+      card.appendChild(img);
+      card.appendChild(num);
+      card.appendChild(caption);
+      card.appendChild(dl);
+      container.appendChild(card);
+    }
+  }
+}
+
 // ─── Init ──────────────────────────────────────────────────
 renderScale();
 buildDimBtns();
@@ -1495,3 +1605,4 @@ renderConflictChart();
 renderUMAP();
 renderDendrogram();
 renderClusterMap();
+renderFigures();

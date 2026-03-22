@@ -635,6 +635,15 @@ footer {
 @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
 #loading span { animation: pulse 1.5s infinite; }
 
+/* ─── Figures Gallery ─────────────────────────────────────── */
+.figures-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.figures-gallery h3 { grid-column: 1 / -1; margin-top: 1rem; font-family: var(--font-heading); font-size: 1rem; }
+.fig-gallery-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; }
+.fig-gallery-card img { width: 100%; border-radius: 4px; cursor: pointer; }
+.fig-gallery-card .fig-num { font-size: 0.75rem; color: var(--muted); }
+.fig-gallery-card .fig-caption { font-size: 0.8rem; margin-top: 0.25rem; }
+.fig-gallery-card .fig-dl { font-size: 0.75rem; color: var(--c2); text-decoration: none; }
+
 @media (max-width: 1000px) {
   .map-row { grid-template-columns: 1fr; }
   .map-sidebar { flex-direction: row; flex-wrap: wrap; }
@@ -671,6 +680,9 @@ footer {
 
   /* Clusters */
   .cluster-layout { grid-template-columns: 1fr; }
+
+  /* Figures gallery */
+  .figures-gallery { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
@@ -705,6 +717,9 @@ footer {
 
   /* Tooltips wider to avoid clipping */
   .tt, .div-tt { max-width: calc(100vw - 2rem); }
+
+  /* Figures gallery */
+  .figures-gallery { grid-template-columns: 1fr; }
 }
 
 /* ─── Clusters Tab ───────────────────────────────────────── */
