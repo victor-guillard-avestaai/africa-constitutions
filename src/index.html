@@ -59,10 +59,12 @@
           <div style="text-align:center"><span id="year-display">2026</span></div>
         </div>
 
-        <div>
-          <div class="ctrl-label" data-tr="carte_dims">Dimensions (multi-sélection)</div>
-          <div class="grp-row" id="grp-buttons"></div>
-          <div class="dim-buttons" id="dim-buttons"></div>
+        <div class="dims-collapsible">
+          <button class="sidebar-toggle" onclick="this.parentElement.classList.toggle('collapsed')"><span data-tr="carte_dims">Dimensions</span> <span class="toggle-arrow">&#9660;</span></button>
+          <div class="dims-collapsible-body">
+            <div class="grp-row" id="grp-buttons"></div>
+            <div class="dim-buttons" id="dim-buttons"></div>
+          </div>
         </div>
 
         <div>
@@ -70,9 +72,8 @@
           <div class="mode-switch" id="mode-switch">
             <button class="mode-btn active" data-mode="score" data-tr="mode_score">Score seul</button>
             <button class="mode-btn" data-mode="combined" data-tr="mode_combined">Combiné</button>
-            <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage seul</button>
+            <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage</button>
           </div>
-          <label class="pc-toggle"><input type="checkbox" id="pc-overlay"> <span data-tr="pc_overlay">Overlay post-conflit</span></label>
           <div id="legend-2d"></div>
         </div>
       </div>
@@ -103,7 +104,7 @@
           <h3 id="bio-country-name"></h3>
           <div class="bio-meta" id="bio-meta"></div>
         </div>
-        <button class="bio-close" data-tr="bio_close" onclick="closeBio()">Fermer</button>
+        <button class="bio-close" onclick="closeBio()" aria-label="Fermer">&times;</button>
       </div>
       <div id="bio-timeline-container">
         <svg id="bio-timeline-svg"></svg>

@@ -54,12 +54,11 @@ const I18N = {
     carte_sub: "Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.",
     carte_year: "Année",
     carte_animate: "Animer",
-    carte_dims: "Dimensions (multi-sélection)",
+    carte_dims: "Dimensions",
     carte_mode: "Mode d'affichage",
     mode_score: "Score seul",
     mode_combined: "Combiné",
-    mode_heritage: "Héritage seul",
-    pc_overlay: "Overlay post-conflit",
+    mode_heritage: "Héritage",
     carte_loading: "Chargement de la carte...",
     carte_reset: "↺ Réinitialiser la vue",
     carte_colonial: "Territoire colonial",
@@ -184,8 +183,6 @@ const I18N = {
     legend_partial: "Partiel",
     legend_recognized: "Reconnu",
     legend_explain: "La <b>teinte</b> indique l'héritage colonial ; l'<b>intensité</b> indique le niveau de reconnaissance.",
-    legend_postconflict_border: "Bordure épaisse = constitution post-conflit",
-
     // Heritage names
     h_francophone: "Francophone",
     h_anglophone: "Anglophone",
@@ -319,12 +316,11 @@ const I18N = {
     carte_sub: "Each country is colored by the average score of the selected dimensions for the chosen year. Click a country to explore its constitutional history. <b>Shift+click</b> dimensions to select several.",
     carte_year: "Year",
     carte_animate: "Animate",
-    carte_dims: "Dimensions (multi-select)",
+    carte_dims: "Dimensions",
     carte_mode: "Display mode",
     mode_score: "Score only",
     mode_combined: "Combined",
-    mode_heritage: "Heritage only",
-    pc_overlay: "Post-conflict overlay",
+    mode_heritage: "Heritage",
     carte_loading: "Loading map...",
     carte_reset: "↺ Reset view",
     carte_colonial: "Colonial territory",
@@ -449,8 +445,6 @@ const I18N = {
     legend_partial: "Partial",
     legend_recognized: "Recognized",
     legend_explain: "<b>Hue</b> indicates colonial heritage; <b>intensity</b> indicates recognition level.",
-    legend_postconflict_border: "Thick border = post-conflict constitution",
-
     // Heritage names
     h_francophone: "Francophone",
     h_anglophone: "Anglophone",
@@ -659,7 +653,6 @@ let selDims = new Set(DATA.features);
 let selYear = 2026;
 let selCountry = null;
 let mapMode = 'score'; // 'score' | 'combined' | 'heritage'
-let pcOverlay = false;
 let geoData = null;
 let isoToGeo = {};
 let playInt = null;
@@ -715,12 +708,6 @@ function renderScale() {
 function renderLegend2D() {
   const cont = document.getElementById('legend-2d');
   renderCombinedLegend(cont);
-  // If post-conflict overlay is active, show border note
-  if (pcOverlay) {
-    cont.innerHTML += '<div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;display:flex;align-items:center;gap:0.35rem">'
-      + '<svg width="28" height="14"><rect x="1" y="1" width="26" height="12" fill="none" stroke="#333" stroke-width="2.5" stroke-dasharray="5,2.5" rx="2"/></svg>'
-      + ` ${tr('legend_postconflict_border')}</div>`;
-  }
 }
 
 function renderCombinedLegend(cont) {
@@ -816,34 +803,16 @@ function buildModeSwitch() {
       updateMap();
     });
   });
-  // Post-conflict overlay checkbox
-  const pcCb = document.getElementById('pc-overlay');
-  if (pcCb) {
-    pcCb.addEventListener('change', () => {
-      pcOverlay = pcCb.checked;
-      resetStrokes();
-      renderLegend2D();
-    });
-  }
 }
 
 function resetStrokes() {
   d3.selectAll('.country-path').each(function(d) {
     const el = d3.select(this);
     if (el.classed('selected')) return;
-    if (pcOverlay && DATA.post_conflict && DATA.post_conflict[d.name]) {
-      el.attr('stroke', '#333').attr('stroke-width', 3).attr('stroke-dasharray', '6,3');
-    } else {
-      el.attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.4).attr('stroke-dasharray', null);
-    }
+    el.attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.4).attr('stroke-dasharray', null);
   });
-  // Island markers with post-conflict overlay
   d3.selectAll('circle.island-marker').each(function(d) {
-    if (pcOverlay && DATA.post_conflict && DATA.post_conflict[d.name]) {
-      d3.select(this).attr('stroke', '#333').attr('stroke-width', 3).attr('stroke-dasharray', '6,3');
-    } else {
-      d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5).attr('stroke-dasharray', null);
-    }
+    d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5).attr('stroke-dasharray', null);
   });
 }
 
@@ -1069,17 +1038,10 @@ function onHover(ev, d) {
     }).join('') + '</div>';
   }
 
-  // Post-conflict label when overlay is active
-  let pcLine = '';
-  if (pcOverlay && DATA.post_conflict && DATA.post_conflict[d.name]) {
-    pcLine = `<div style="font-size:0.72rem;color:#555;margin-bottom:0.15rem;font-weight:600">${tr('postconflict_constitution')}</div>`;
-  }
-
   tooltip.innerHTML =
     `<div class="tt-name">${d.name}</div>` +
     `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
     statusLine +
-    pcLine +
     (indep && splitOk
       ? `<div class="tt-score"><div class="tt-swatch" style="background:${fillFor(sc, h)}"></div>${sc !== null ? `${tr('score_label')} : ${sc.toFixed(2)}/2 (${selDims.size} dim.)` : tr('no_data')}</div>` +
         (st ? `<div class="tt-const">${st.name} (${st.date_raw||st.year||'?'})</div>` : '')
@@ -1151,7 +1113,7 @@ function renderBio(country, events) {
   const minY = Math.min(...evY.map(e => e.year));
   const maxY = Math.max(2026, Math.max(...evY.map(e => e.year)));
 
-  const m = { top:28, right:18, bottom:32, left:150 };
+  const m = { top:28, right:18, bottom:42, left:150 };
   const lH = 19, lG = 2, nL = DATA.features.length;
   const iH = nL * (lH + lG);
   const W = Math.max(680, (maxY - minY) * 12);
@@ -1216,7 +1178,7 @@ function renderBio(country, events) {
   });
 
   // Instruction
-  g.append('text').attr('x', W/2).attr('y', iH + 26)
+  g.append('text').attr('x', W/2).attr('y', iH + 36)
     .attr('text-anchor','middle').attr('fill',CSS.dim).attr('font-size','9px')
     .text(tr('click_segment'));
 }
@@ -2921,6 +2883,11 @@ function renderFigures() {
 // ─── Init ──────────────────────────────────────────────────
 renderScale();
 buildDimBtns();
+// Collapse dimensions by default on mobile
+if (window.innerWidth <= 600) {
+  const dc = document.querySelector('.dims-collapsible');
+  if (dc) dc.classList.add('collapsed');
+}
 buildModeSwitch();
 initSlider();
 initMap().then(() => {

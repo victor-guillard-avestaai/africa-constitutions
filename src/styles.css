@@ -260,6 +260,43 @@ header .lead {
 
 
 
+/* Collapsible dimension section */
+.dims-collapsible { }
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  font-family: var(--font);
+  font-size: 0.68rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 0.3rem;
+}
+
+.sidebar-toggle .toggle-arrow {
+  font-size: 0.55rem;
+  transition: transform 0.2s;
+}
+
+.dims-collapsible.collapsed .toggle-arrow { transform: rotate(-90deg); }
+
+.dims-collapsible-body {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.25s ease;
+}
+
+.dims-collapsible.collapsed .dims-collapsible-body {
+  max-height: 0;
+}
+
 .grp-row { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-bottom: 0.3rem; }
 
 .grp-btn {
@@ -290,8 +327,8 @@ header .lead {
   background: transparent;
   border: none;
   color: var(--muted);
-  font-size: 0.72rem;
-  padding: 0.35rem 0.55rem;
+  font-size: 0.68rem;
+  padding: 0.3rem 0.4rem;
   cursor: pointer;
   font-family: var(--font);
   transition: all 0.15s;
@@ -303,18 +340,6 @@ header .lead {
 .mode-btn:not(:last-child) { border-right: 1px solid var(--border); }
 .mode-btn:hover { background: var(--hover-light); color: var(--text); }
 .mode-btn.active { background: var(--score-x); color: var(--text); font-weight: 600; }
-
-/* Post-conflict overlay checkbox */
-.pc-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
-  color: var(--muted);
-  cursor: pointer;
-  margin-top: 0.3rem;
-}
-.pc-toggle input { accent-color: var(--c2); cursor: pointer; }
 
 /* 2D legend grid */
 .legend-explain { font-size: 0.68rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.3rem; }
@@ -416,6 +441,7 @@ header .lead {
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 0.5rem;
+  position: relative;
 }
 
 .bio-head h3 { font-size: 1.1rem; font-weight: 700; }
@@ -430,17 +456,19 @@ header .lead {
 }
 
 .bio-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.5rem;
   background: none;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  color: var(--muted);
-  padding: 0.18rem 0.55rem;
+  border: none;
   cursor: pointer;
-  font-family: var(--font);
-  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1;
+  padding: 0;
 }
 
-.bio-close:hover { color: var(--text); border-color: var(--text); }
+.bio-close:hover { color: var(--text); }
 
 #bio-timeline-container { width: 100%; overflow-x: auto; }
 
