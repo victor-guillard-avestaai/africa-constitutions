@@ -255,26 +255,33 @@
       <strong>Limite</strong> : seules les 19 constitutions anglophones sont dans leur langue originale. Les 35 autres sont des traductions. Les termes techniques juridiques (« indivisible », « self-determination ») se traduisent fidèlement ; les termes courants (« people », « community ») sont plus ambigus.
     </div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_sov_title">Souveraineté vs identité dans les préambules</h3>
+    <h3 class="textes-section-title" data-tr="textes_sov_title">Souveraineté vs identité dans les préambules</h3>
     <div class="sub" data-tr="textes_sov_sub">70 % des constitutions francophones contiennent le mot « indivisible », contre 21 % des anglophones. Le modèle jacobin se lit dans le texte.</div>
-    <div id="textes-figures" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch1s1_sovereignty_markers.png" alt="Marqueurs de souveraineté" style="max-width:100%"><a href="figures/ch1s1_sovereignty_markers.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch1s1_preamble_sovereignty_identity.png" alt="Scatter souveraineté vs identité" style="max-width:100%"><a href="figures/ch1s1_preamble_sovereignty_identity.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
-    </div>
+    <div id="sovereignty-chart" role="img" aria-label="Marqueurs de souveraineté par héritage colonial"></div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_peoples_title">Le mot « peoples » : citation vs reconnaissance</h3>
+    <h3 class="textes-section-title" data-tr="textes_peoples_title">Le mot « peoples » : citation vs reconnaissance</h3>
     <div class="sub" data-tr="textes_peoples_sub">Les constitutions francophones utilisent le mot « peoples » (peuples) plus souvent que les anglophones — mais 61 % des occurrences sont des citations de la Charte africaine (24 %) ou des formules diplomatiques (37 %). Le mot « peuples » n'est pas traduit en droits domestiques.</div>
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch1s2_peoples_context.png" alt="Contexte peoples" style="max-width:100%"><a href="figures/ch1s2_peoples_context.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch1s2_naming_heatmap.png" alt="Terminologie de nomination" style="max-width:100%"><a href="figures/ch1s2_naming_heatmap.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
-    </div>
+    <div id="peoples-chart" role="img" aria-label="Contexte d'utilisation du mot peoples par héritage"></div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_sd_title">Autodétermination</h3>
+    <h3 class="textes-section-title" data-tr="textes_sd_title">Autodétermination</h3>
     <div class="sub" data-tr="textes_sd_sub">8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.</div>
-    <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch5_self_determination_posture.png" alt="Posture d'autodétermination" style="max-width:100%"><a href="figures/ch5_self_determination_posture.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch5_sd_flags_heatmap.png" alt="Marqueurs SD 54 pays" style="max-width:100%"><a href="figures/ch5_sd_flags_heatmap.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
+    <div class="sd-filters">
+      <div class="filter-group">
+        <span class="filter-label" data-tr="textes_sd_sort_label">Tri</span>
+        <button class="hm-btn active" data-sd-sort="heritage" data-tr="heritage_label">Héritage</button>
+        <button class="hm-btn" data-sd-sort="posture" data-tr="textes_sd_posture">Posture</button>
+        <button class="hm-btn" data-sd-sort="criteria" data-tr="textes_sd_criteria">Critères</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label" data-tr="heritage_label">Héritage</span>
+        <button class="hm-btn active" data-sd-hf="all" data-tr="filter_all">Tous</button>
+        <button class="hm-btn" data-sd-hf="francophone" data-tr="h_francophone">Francophone</button>
+        <button class="hm-btn" data-sd-hf="anglophone" data-tr="h_anglophone">Anglophone</button>
+        <button class="hm-btn" data-sd-hf="lusophone" data-tr="h_lusophone">Lusophone</button>
+        <button class="hm-btn" data-sd-hf="other" data-tr="h_other">Autre</button>
+      </div>
     </div>
+    <div id="sd-grid" role="table" aria-label="Marqueurs d'autodétermination par pays"></div>
   </div>
 </div>
 

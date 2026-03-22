@@ -865,6 +865,108 @@ footer {
   .conflit-section-title { font-size: 0.9rem; }
 }
 
+/* ─── Textes Tab ─────────────────────────────────────────── */
+.textes-section-title {
+  margin-top: 1.5rem;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+#sovereignty-chart { width: 100%; margin: 0.8rem 0; }
+#sovereignty-chart svg { width: 100%; display: block; max-width: 700px; }
+
+#peoples-chart { width: 100%; margin: 0.8rem 0; }
+#peoples-chart svg { width: 100%; display: block; max-width: 700px; }
+
+.peoples-legend { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; margin-top: 0.5rem; justify-content: center; }
+.peoples-legend-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; color: var(--muted); }
+.peoples-legend-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+.sd-filters { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem; }
+
+#sd-grid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+#sd-grid table {
+  border-collapse: separate;
+  border-spacing: 1.5px;
+  font-size: 0.78rem;
+  width: 100%;
+  table-layout: fixed;
+  min-width: 500px;
+}
+
+#sd-grid table th {
+  background: var(--bg);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.72rem;
+  padding: 0.4rem 0.3rem;
+  text-align: center;
+  cursor: pointer;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: nowrap;
+}
+
+#sd-grid table th:hover { color: var(--text); }
+#sd-grid table th:first-child { text-align: left; min-width: 160px; cursor: default; }
+
+#sd-grid table td {
+  text-align: center;
+  padding: 0.3rem;
+  border-radius: 3px;
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+#sd-grid table td:first-child {
+  text-align: left;
+  font-weight: 400;
+  color: var(--text);
+  font-size: 0.78rem;
+  background: var(--card) !important;
+  cursor: pointer;
+}
+
+#sd-grid table td:first-child:hover { color: var(--c2); }
+
+#sd-grid table td.sd-present {
+  background: var(--pill-bg-v);
+  color: var(--pill-c-v);
+}
+
+#sd-grid table td.sd-absent {
+  background: var(--pill-bg-x);
+  color: var(--pill-c-x);
+}
+
+#sd-grid table td.sd-posture {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--muted);
+  background: transparent !important;
+  text-align: left;
+  white-space: nowrap;
+}
+
+#sd-grid table tr { transition: background 0.12s; }
+#sd-grid table tbody tr:nth-child(even) { background: var(--stripe-bg); }
+#sd-grid table tbody tr:hover { background: var(--hover-light); }
+
+@media (max-width: 768px) {
+  #sd-grid table { min-width: 400px; font-size: 0.7rem; }
+  #sd-grid table th { font-size: 0.64rem; }
+  #sd-grid table td { font-size: 0.64rem; }
+}
+
+@media (max-width: 600px) {
+  .textes-section-title { font-size: 0.95rem; }
+  .peoples-legend { gap: 0.4rem 0.8rem; }
+  .peoples-legend-item { font-size: 0.68rem; }
+}
+
 /* ─── Print Stylesheet ───────────────────────────────────── */
 @media print {
   .tab-bar { display: none; }

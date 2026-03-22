@@ -108,6 +108,31 @@ const I18N = {
     textes_peoples_sub: "Les constitutions francophones utilisent le mot « peoples » (peuples) plus souvent que les anglophones — mais 61 % des occurrences sont des citations de la Charte africaine (24 %) ou des formules diplomatiques (37 %). Le mot « peuples » n'est pas traduit en droits domestiques.",
     textes_sd_title: "Autodétermination",
     textes_sd_sub: "8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.",
+    textes_sd_sort_label: "Tri",
+    textes_sd_posture: "Posture",
+    textes_sd_criteria: "Critères",
+    textes_sov_n_tooltip: "{n}/{total} constitutions ({pct} %)",
+    textes_peoples_mentions: "{n} mentions",
+    textes_peoples_pct: "{pct} % des mentions",
+    textes_sd_col_country: "Pays",
+    textes_sd_col_sd: "Autodét.",
+    textes_sd_col_indiv: "Indivisible",
+    textes_sd_col_auton: "Autonomie",
+    textes_sd_col_secess: "Sécession",
+    textes_sd_col_posture: "Posture",
+    textes_sd_posture_external: "externe (sécession)",
+    textes_sd_posture_internal: "interne (SD + autonomie)",
+    textes_sd_posture_mentioned: "mentionné",
+    textes_sd_posture_autonomy_only: "autonomie sans SD",
+    textes_sd_posture_indivisible_only: "indivisible seul",
+    textes_sd_posture_tension: "indivisible + autonomie",
+    textes_sd_posture_silent: "silencieux",
+    textes_peoples_ctx_charter: "Charte africaine",
+    textes_peoples_ctx_diplomatic: "Formule diplomatique",
+    textes_peoples_ctx_indigenous: "Peuples autochtones",
+    textes_peoples_ctx_self_determination: "Autodétermination",
+    textes_peoples_ctx_proper_noun: "Nom propre",
+    textes_peoples_ctx_national: "Peuple national",
 
     // Clusters tab
     clusters_title: "Clustering constitutionnel",
@@ -341,6 +366,31 @@ const I18N = {
     textes_peoples_sub: "Francophone constitutions use the word 'peoples' more often than anglophone — but 61% of occurrences are citations of the African Charter (24%) or diplomatic formulas (37%). The word 'peoples' is not translated into domestic law.",
     textes_sd_title: "Self-determination",
     textes_sd_sub: "8 out of 54 countries mention self-determination. Only Ethiopia allows secession. Preliminary keyword-based classification — requires legal validation.",
+    textes_sd_sort_label: "Sort",
+    textes_sd_posture: "Posture",
+    textes_sd_criteria: "Criteria",
+    textes_sov_n_tooltip: "{n}/{total} constitutions ({pct}%)",
+    textes_peoples_mentions: "{n} mentions",
+    textes_peoples_pct: "{pct}% of mentions",
+    textes_sd_col_country: "Country",
+    textes_sd_col_sd: "Self-det.",
+    textes_sd_col_indiv: "Indivisible",
+    textes_sd_col_auton: "Autonomy",
+    textes_sd_col_secess: "Secession",
+    textes_sd_col_posture: "Posture",
+    textes_sd_posture_external: "external (secession)",
+    textes_sd_posture_internal: "internal (SD + autonomy)",
+    textes_sd_posture_mentioned: "mentioned",
+    textes_sd_posture_autonomy_only: "autonomy without SD",
+    textes_sd_posture_indivisible_only: "indivisible only",
+    textes_sd_posture_tension: "indivisible + autonomy",
+    textes_sd_posture_silent: "silent",
+    textes_peoples_ctx_charter: "African Charter",
+    textes_peoples_ctx_diplomatic: "Diplomatic formula",
+    textes_peoples_ctx_indigenous: "Indigenous peoples",
+    textes_peoples_ctx_self_determination: "Self-determination",
+    textes_peoples_ctx_proper_noun: "Proper noun",
+    textes_peoples_ctx_national: "National people",
 
     // Clusters tab
     clusters_title: "Constitutional clustering",
@@ -521,6 +571,7 @@ function switchLang() {
   renderFigures();
   renderHeatmap();
   renderLegend2D();
+  renderTextesTab();
   // Re-render bio if open
   if (selCountry) {
     const evs = DATA.country_timelines[selCountry];
@@ -2173,6 +2224,372 @@ function updateClusters(threshold) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// Textes Tab — Interactive Charts
+// ═══════════════════════════════════════════════════════════
+
+// Static precomputed data from constitutional text analysis (54 constitutions)
+
+const SOVEREIGNTY_DATA = {
+  markers: ['indivisible', 'unity', 'sovereign'],
+  francophone: { pct: [70, 100, 87], n: [16, 23, 20], total: 23 },
+  anglophone:  { pct: [21, 95, 100], n: [4, 18, 19], total: 19 },
+};
+
+const PEOPLES_CONTEXT = {
+  francophone: { charter: 19, diplomatic: 21, indigenous: 0, self_determination: 0, proper_noun: 1, national: 10 },
+  anglophone:  { charter: 0, diplomatic: 2, indigenous: 0, self_determination: 0, proper_noun: 5, national: 20 },
+};
+
+const PEOPLES_CTX_ORDER = ['charter', 'diplomatic', 'indigenous', 'self_determination', 'proper_noun', 'national'];
+const PEOPLES_CTX_COLORS = {
+  charter: '#7a82b8', diplomatic: '#5a9a88', indigenous: '#c4956a',
+  self_determination: '#d4785a', proper_noun: '#98a0a8', national: '#b86878',
+};
+
+const SD_DATA = [
+  {country:'Afrique du Sud', heritage:'anglophone', has_sd:true, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'mentioned'},
+  {country:'Botswana', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Eswatini', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Gambie', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Ghana', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Kenya', heritage:'anglophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'Lesotho', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Malawi', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Maurice', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Namibie', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Nigéria', heritage:'anglophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'Ouganda', heritage:'anglophone', has_sd:true, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'internal'},
+  {country:'Sierra Leone', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Soudan', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Soudan du Sud', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Tanzanie', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Zambie', heritage:'anglophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Zimbabwe', heritage:'anglophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:true, posture:'silent'},
+  {country:'Égypte', heritage:'anglophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Algérie', heritage:'francophone', has_sd:true, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'internal'},
+  {country:'Burkina Faso', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Burundi', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Bénin', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Comores', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:"Côte d'Ivoire", heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'Djibouti', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:true, posture:'tension'},
+  {country:'Gabon', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Guinée', heritage:'francophone', has_sd:true, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'mentioned'},
+  {country:'Madagascar', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Mali', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'Maroc', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Mauritanie', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:true, posture:'indivisible_only'},
+  {country:'Niger', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Rwanda', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'République centrafricaine', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'République du Congo', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'République démocratique du Congo', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Seychelles', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Sénégal', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Tchad', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Togo', heritage:'francophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Tunisie', heritage:'francophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Angola', heritage:'lusophone', has_sd:true, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'internal'},
+  {country:'Cap-Vert', heritage:'lusophone', has_sd:true, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'internal'},
+  {country:'Guinée-Bissau', heritage:'lusophone', has_sd:true, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'internal'},
+  {country:'Mozambique', heritage:'lusophone', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Sao Tomé-et-Príncipe', heritage:'lusophone', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Cameroun', heritage:'mixed', has_sd:false, has_indivisible:true, has_autonomy:true, has_secession:false, posture:'tension'},
+  {country:'Guinée Équatoriale', heritage:'other', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Libye', heritage:'other', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Libéria', heritage:'other', has_sd:false, has_indivisible:false, has_autonomy:true, has_secession:false, posture:'autonomy_only'},
+  {country:'Somalie', heritage:'other', has_sd:false, has_indivisible:true, has_autonomy:false, has_secession:false, posture:'indivisible_only'},
+  {country:'Érythrée', heritage:'other', has_sd:false, has_indivisible:false, has_autonomy:false, has_secession:false, posture:'silent'},
+  {country:'Éthiopie', heritage:'other', has_sd:true, has_indivisible:false, has_autonomy:false, has_secession:true, posture:'external'},
+];
+
+const POSTURE_ORDER = ['external','internal','mentioned','tension','indivisible_only','autonomy_only','silent'];
+
+// ── Sovereignty chart: grouped horizontal bar chart ──────
+function renderSovereigntyChart() {
+  const cont = document.getElementById('sovereignty-chart');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  const markers = SOVEREIGNTY_DATA.markers;
+  const markerLabels = { indivisible: 'indivisible', unity: 'unity', sovereign: 'sovereign' };
+  const heritages = ['francophone', 'anglophone'];
+
+  const M = { top: 20, right: 60, bottom: 30, left: 100 };
+  const barH = 18, groupGap = 20, barGap = 3;
+  const chartH = markers.length * (heritages.length * (barH + barGap) + groupGap) - groupGap;
+  const w = 500;
+
+  const svg = d3.select(cont).append('svg')
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
+    .style('max-width', '700px');
+
+  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
+
+  const xS = d3.scaleLinear().domain([0, 100]).range([0, w]);
+
+  // Grid lines
+  g.append('g').call(d3.axisTop(xS).ticks(5).tickSize(-chartH).tickFormat(d => d + '%'))
+    .selectAll('text').attr('fill', CSS.dim).attr('font-size', '10px');
+  g.selectAll('.domain').remove();
+  g.selectAll('.tick line').attr('stroke', CSS.axisGrid);
+
+  const scTT = d3.select('#scatter-tooltip');
+
+  markers.forEach((marker, mi) => {
+    const yBase = mi * (heritages.length * (barH + barGap) + groupGap);
+
+    // Marker label on left
+    g.append('text')
+      .attr('x', -8).attr('y', yBase + (heritages.length * (barH + barGap)) / 2)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', CSS.text).attr('font-size', '12px').attr('font-weight', '600')
+      .attr('font-style', 'italic')
+      .text(markerLabels[marker]);
+
+    heritages.forEach((h, hi) => {
+      const y = yBase + hi * (barH + barGap);
+      const pct = SOVEREIGNTY_DATA[h].pct[mi];
+      const n = SOVEREIGNTY_DATA[h].n[mi];
+      const total = SOVEREIGNTY_DATA[h].total;
+
+      g.append('rect')
+        .attr('x', 0).attr('y', y)
+        .attr('width', Math.max(xS(pct), 1)).attr('height', barH)
+        .attr('fill', HC[h]).attr('opacity', 0.85).attr('rx', 3)
+        .style('cursor', 'pointer')
+        .on('mouseenter', function(ev) {
+          d3.select(this).attr('opacity', 1);
+          scTT.html(
+            `<div class="tt-name">${HL(h)}</div>` +
+            `<div style="font-size:0.85rem;margin-top:0.1rem"><b>${pct} %</b> — <i>${markerLabels[marker]}</i></div>` +
+            `<div style="font-size:0.78rem;color:var(--dim)">${tr('textes_sov_n_tooltip').replace('{n}', n).replace('{total}', total).replace('{pct}', pct)}</div>`
+          ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
+        })
+        .on('mousemove', function(ev) { scTT.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px'); })
+        .on('mouseleave', function() { d3.select(this).attr('opacity', 0.85); scTT.style('opacity', '0'); });
+
+      // Value label
+      g.append('text')
+        .attr('x', xS(pct) + 6).attr('y', y + barH / 2)
+        .attr('dominant-baseline', 'middle')
+        .attr('fill', CSS.muted).attr('font-size', '11px').attr('font-weight', '600')
+        .text(pct + '%');
+    });
+  });
+
+  // Legend
+  const legG = g.append('g').attr('transform', `translate(${w - 180},${chartH + 10})`);
+  heritages.forEach((h, i) => {
+    const lg = legG.append('g').attr('transform', `translate(${i * 100}, 0)`);
+    lg.append('rect').attr('width', 12).attr('height', 10).attr('rx', 2).attr('fill', HC[h]).attr('opacity', 0.85);
+    lg.append('text').attr('x', 16).attr('y', 8).attr('font-size', '10px').attr('fill', CSS.muted).text(HL(h));
+  });
+}
+
+// ── Peoples context: 100%-stacked horizontal bar chart ───
+function renderPeoplesChart() {
+  const cont = document.getElementById('peoples-chart');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  const heritages = ['francophone', 'anglophone'];
+
+  const M = { top: 10, right: 30, bottom: 10, left: 100 };
+  const barH = 30, barGap = 14;
+  const chartH = heritages.length * (barH + barGap) - barGap;
+  const w = 500;
+
+  const svg = d3.select(cont).append('svg')
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 10}`)
+    .style('max-width', '700px');
+
+  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
+
+  const xS = d3.scaleLinear().domain([0, 100]).range([0, w]);
+
+  const scTT = d3.select('#scatter-tooltip');
+
+  heritages.forEach((h, hi) => {
+    const y = hi * (barH + barGap);
+    const raw = PEOPLES_CONTEXT[h];
+    const total = PEOPLES_CTX_ORDER.reduce((s, k) => s + (raw[k] || 0), 0);
+
+    // Heritage label on left
+    g.append('text')
+      .attr('x', -8).attr('y', y + barH / 2)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', HC[h]).attr('font-size', '12px').attr('font-weight', '600')
+      .text(HL(h));
+
+    // Total count label
+    g.append('text')
+      .attr('x', -8).attr('y', y + barH / 2 + 13)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', CSS.dim).attr('font-size', '9px')
+      .text(tr('textes_peoples_mentions').replace('{n}', total));
+
+    // Stacked segments
+    let xOffset = 0;
+    PEOPLES_CTX_ORDER.forEach(ctx => {
+      const count = raw[ctx] || 0;
+      if (count === 0) return;
+      const pct = (count / total) * 100;
+      const segW = xS(pct);
+      const ctxLabel = tr('textes_peoples_ctx_' + ctx);
+
+      g.append('rect')
+        .attr('x', xOffset).attr('y', y)
+        .attr('width', Math.max(segW, 1)).attr('height', barH)
+        .attr('fill', PEOPLES_CTX_COLORS[ctx]).attr('opacity', 0.85)
+        .attr('rx', xOffset === 0 ? 3 : 0)
+        .style('cursor', 'pointer')
+        .on('mouseenter', function(ev) {
+          d3.select(this).attr('opacity', 1).attr('stroke', CSS.text).attr('stroke-width', 1);
+          scTT.html(
+            `<div class="tt-name">${ctxLabel}</div>` +
+            `<div style="font-size:0.85rem;margin-top:0.1rem">${HL(h)} : <b>${count}</b> ${tr('textes_peoples_mentions').replace('{n}', count).replace('mentions', '').trim()}</div>` +
+            `<div style="font-size:0.78rem;color:var(--dim)">${tr('textes_peoples_pct').replace('{pct}', Math.round(pct))}</div>`
+          ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
+        })
+        .on('mousemove', function(ev) { scTT.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px'); })
+        .on('mouseleave', function() { d3.select(this).attr('opacity', 0.85).attr('stroke', 'none'); scTT.style('opacity', '0'); });
+
+      // Inline label for segments wide enough
+      if (segW > 30) {
+        g.append('text')
+          .attr('x', xOffset + segW / 2).attr('y', y + barH / 2)
+          .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+          .attr('fill', '#fff').attr('font-size', '9px').attr('font-weight', '600')
+          .attr('pointer-events', 'none')
+          .text(Math.round(pct) + '%');
+      }
+
+      xOffset += segW;
+    });
+  });
+
+  // Legend below the chart
+  const legDiv = document.createElement('div');
+  legDiv.className = 'peoples-legend';
+  PEOPLES_CTX_ORDER.forEach(ctx => {
+    const totalAcross = (PEOPLES_CONTEXT.francophone[ctx] || 0) + (PEOPLES_CONTEXT.anglophone[ctx] || 0);
+    if (totalAcross === 0) return;
+    const item = document.createElement('span');
+    item.className = 'peoples-legend-item';
+    item.innerHTML = `<span class="peoples-legend-swatch" style="background:${PEOPLES_CTX_COLORS[ctx]}"></span>${tr('textes_peoples_ctx_' + ctx)}`;
+    legDiv.appendChild(item);
+  });
+  cont.appendChild(legDiv);
+}
+
+// ── SD Grid: sortable table ──────────────────────────────
+let sdSortMode = 'heritage';
+let sdHeritageFilter = 'all';
+
+function renderSDGrid() {
+  const cont = document.getElementById('sd-grid');
+  if (!cont) return;
+  cont.innerHTML = '';
+
+  const flagCols = ['has_sd', 'has_indivisible', 'has_autonomy', 'has_secession'];
+  const colHeaders = [
+    tr('textes_sd_col_country'),
+    tr('textes_sd_col_sd'),
+    tr('textes_sd_col_indiv'),
+    tr('textes_sd_col_auton'),
+    tr('textes_sd_col_secess'),
+    tr('textes_sd_col_posture'),
+  ];
+
+  // Filter
+  let rows = [...SD_DATA];
+  if (sdHeritageFilter !== 'all') {
+    if (sdHeritageFilter === 'other') {
+      rows = rows.filter(r => r.heritage === 'other' || r.heritage === 'mixed');
+    } else {
+      rows = rows.filter(r => r.heritage === sdHeritageFilter);
+    }
+  }
+
+  // Sort
+  if (sdSortMode === 'heritage') {
+    const hOrder = { francophone: 0, anglophone: 1, lusophone: 2, mixed: 3, other: 4 };
+    rows.sort((a, b) => (hOrder[a.heritage] || 9) - (hOrder[b.heritage] || 9) || a.country.localeCompare(b.country));
+  } else if (sdSortMode === 'posture') {
+    rows.sort((a, b) => POSTURE_ORDER.indexOf(a.posture) - POSTURE_ORDER.indexOf(b.posture) || a.country.localeCompare(b.country));
+  } else if (sdSortMode === 'criteria') {
+    rows.sort((a, b) => {
+      const sA = flagCols.reduce((s, f) => s + (a[f] ? 1 : 0), 0);
+      const sB = flagCols.reduce((s, f) => s + (b[f] ? 1 : 0), 0);
+      return sB - sA || a.country.localeCompare(b.country);
+    });
+  }
+
+  function postureLabel(p) { return tr('textes_sd_posture_' + p); }
+
+  // Build table
+  let html = '<table>';
+  html += '<colgroup><col style="width:180px">';
+  flagCols.forEach(() => { html += '<col style="width:70px">'; });
+  html += '<col style="width:160px"></colgroup>';
+
+  html += '<thead><tr>';
+  colHeaders.forEach((h, i) => { html += `<th>${h}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  rows.forEach(r => {
+    const hDot = `<span class="hm-heritage-dot" style="background:${HC[r.heritage] || HC.other}"></span>`;
+    html += `<tr><td data-country="${r.country}">${hDot}${r.country}</td>`;
+    flagCols.forEach(f => {
+      const present = r[f];
+      html += `<td class="${present ? 'sd-present' : 'sd-absent'}">${present ? 'V' : ''}</td>`;
+    });
+    html += `<td class="sd-posture">${postureLabel(r.posture)}</td>`;
+    html += '</tr>';
+  });
+
+  html += '</tbody></table>';
+  cont.innerHTML = html;
+
+  // Country click → open bio
+  cont.querySelectorAll('td[data-country]').forEach(td => {
+    td.addEventListener('click', () => {
+      openBio(td.dataset.country);
+      document.getElementById('bio-panel').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+}
+
+function initSDFilters() {
+  // Sort buttons
+  document.querySelectorAll('[data-sd-sort]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-sd-sort]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sdSortMode = btn.dataset.sdSort;
+      renderSDGrid();
+    });
+  });
+  // Heritage filter buttons
+  document.querySelectorAll('[data-sd-hf]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-sd-hf]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sdHeritageFilter = btn.dataset.sdHf;
+      renderSDGrid();
+    });
+  });
+}
+
+// ── Textes tab orchestrator ──────────────────────────────
+function renderTextesTab() {
+  renderSovereigntyChart();
+  renderPeoplesChart();
+  renderSDGrid();
+}
+
+// ═══════════════════════════════════════════════════════════
 // Figures Gallery
 // ═══════════════════════════════════════════════════════════
 const FIGURE_INDEX = [
@@ -2303,3 +2720,5 @@ renderDivergence();
 renderScatter();
 initScatterFilters();
 renderConflictTab();
+renderTextesTab();
+initSDFilters();
