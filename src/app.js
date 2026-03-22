@@ -75,6 +75,9 @@ const I18N = {
     filter_all: "Tous",
     filter_postconflict: "Post-conflit",
     filter_nonconflict: "Non-conflit",
+    conflit_filter_label: "Conflit",
+    filter_peace: "Paix",
+    filter_auth: "Autoritaire",
 
     // Heritage tab
     heritage_title: "Divergence par héritage colonial",
@@ -291,6 +294,9 @@ const I18N = {
     filter_all: "All",
     filter_postconflict: "Post-conflict",
     filter_nonconflict: "Non-conflict",
+    conflit_filter_label: "Conflict",
+    filter_peace: "Peace",
+    filter_auth: "Authoritarian",
 
     // Heritage tab
     heritage_title: "Divergence by colonial heritage",
@@ -561,7 +567,8 @@ let geoData = null;
 let isoToGeo = {};
 let playInt = null;
 let hmSort = { col: '_total', dir: -1 };
-let hmFilter = 'all';
+let hmHeritageFilter = 'all';
+let hmConflictFilter = 'all';
 
 const GROUPS = {
   'identity': ['Drm','La','Drc','Id'],
@@ -1153,10 +1160,11 @@ function renderHeatmap() {
     return { ...r, _total: total, _heritage: DATA.colonial_heritage[r.PAYS] || 'other', _postConflict: pc };
   });
 
-  // Filter
-  if (hmFilter === 'post-conflict') rows = rows.filter(r => r._postConflict);
-  else if (hmFilter === 'non-conflict') rows = rows.filter(r => !r._postConflict);
-  else if (hmFilter !== 'all') rows = rows.filter(r => r._heritage === hmFilter);
+  // Filter — heritage and conflict are independent (intersection)
+  if (hmHeritageFilter !== 'all') rows = rows.filter(r => r._heritage === hmHeritageFilter);
+  if (hmConflictFilter === 'peace') rows = rows.filter(r => DATA.post_conflict_type[r.PAYS] === 'peace');
+  else if (hmConflictFilter === 'authoritarian') rows = rows.filter(r => DATA.post_conflict_type[r.PAYS] === 'authoritarian');
+  else if (hmConflictFilter === 'non-conflict') rows = rows.filter(r => !DATA.post_conflict[r.PAYS]);
 
   // Sort
   rows.sort((a, b) => {
@@ -1213,11 +1221,21 @@ function renderHeatmap() {
 }
 
 function initHeatmapFilters() {
-  document.querySelectorAll('.hm-sort-btn').forEach(b => {
+  // Heritage filter group
+  document.querySelectorAll('.hm-btn[data-hf]').forEach(b => {
     b.addEventListener('click', () => {
-      document.querySelectorAll('.hm-sort-btn').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.hm-btn[data-hf]').forEach(x => x.classList.remove('active'));
       b.classList.add('active');
-      hmFilter = b.dataset.hf;
+      hmHeritageFilter = b.dataset.hf;
+      renderHeatmap();
+    });
+  });
+  // Conflict filter group
+  document.querySelectorAll('.hm-btn[data-cf]').forEach(b => {
+    b.addEventListener('click', () => {
+      document.querySelectorAll('.hm-btn[data-cf]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      hmConflictFilter = b.dataset.cf;
       renderHeatmap();
     });
   });

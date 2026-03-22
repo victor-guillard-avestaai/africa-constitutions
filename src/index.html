@@ -128,16 +128,22 @@
       <strong>P</strong> = reconnaissance partielle (mentionné mais sans garanties effectives) &nbsp;|&nbsp;
       <strong>V</strong> = pleinement reconnu (droits opposables, institutions dédiées)
     </div>
-    <div class="heatmap-controls">
-      <span class="hm-filter-label">Filtrer :</span>
-      <button class="hm-sort-btn active" data-hf="all" data-tr="filter_all">Tous</button>
-      <button class="hm-sort-btn" data-hf="francophone" data-tr="h_francophone">Francophone</button>
-      <button class="hm-sort-btn" data-hf="anglophone" data-tr="h_anglophone">Anglophone</button>
-      <button class="hm-sort-btn" data-hf="lusophone" data-tr="h_lusophone">Lusophone</button>
-      <button class="hm-sort-btn" data-hf="other" data-tr="h_other">Autre</button>
-      <span style="margin-left:0.5rem;color:var(--border)">|</span>
-      <button class="hm-sort-btn" data-hf="post-conflict" data-tr="filter_postconflict">Post-conflit</button>
-      <button class="hm-sort-btn" data-hf="non-conflict" data-tr="filter_nonconflict">Non-conflit</button>
+    <div class="hm-filters">
+      <div class="filter-group">
+        <span class="filter-label" data-tr="heritage_label">Héritage</span>
+        <button class="hm-btn active" data-hf="all" data-tr="filter_all">Tous</button>
+        <button class="hm-btn" data-hf="francophone" data-tr="h_francophone">Francophone</button>
+        <button class="hm-btn" data-hf="anglophone" data-tr="h_anglophone">Anglophone</button>
+        <button class="hm-btn" data-hf="lusophone" data-tr="h_lusophone">Lusophone</button>
+        <button class="hm-btn" data-hf="other" data-tr="h_other">Autre</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label" data-tr="conflit_filter_label">Conflit</span>
+        <button class="hm-btn active" data-cf="all" data-tr="filter_all">Tous</button>
+        <button class="hm-btn" data-cf="peace" data-tr="filter_peace">Paix</button>
+        <button class="hm-btn" data-cf="authoritarian" data-tr="filter_auth">Autoritaire</button>
+        <button class="hm-btn" data-cf="non-conflict" data-tr="filter_nonconflict">Non-conflit</button>
+      </div>
     </div>
     <div id="heatmap-container">
       <table id="heatmap-table" role="table" aria-label="Matrice comparative des 54 pays sur 10 dimensions"></table>

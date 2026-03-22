@@ -479,15 +479,11 @@ header .lead {
 
 
 /* ─── Heatmap Table ─────────────────────────────────────── */
-.heatmap-controls {
-  display: flex;
-  gap: 0.6rem;
-  margin-bottom: 0.8rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
+.hm-filters { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.5rem; }
+.filter-group { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+.filter-label { font-size: 0.75rem; font-weight: 600; color: var(--muted); min-width: 60px; }
 
-.hm-sort-btn {
+.hm-btn {
   font-size: 0.75rem;
   color: var(--muted);
   background: none;
@@ -498,10 +494,8 @@ header .lead {
   font-family: var(--font);
 }
 
-.hm-sort-btn:hover { border-color: var(--muted); color: var(--text); }
-.hm-sort-btn.active { border-color: var(--c1); color: var(--c1); }
-
-.hm-filter-label { font-size: 0.72rem; color: var(--dim); }
+.hm-btn:hover { border-color: var(--muted); color: var(--text); }
+.hm-btn.active { border-color: var(--c1); color: var(--c1); }
 
 #heatmap-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
@@ -803,7 +797,7 @@ footer {
   header { border-bottom: none; }
   footer button { display: none; }
   .bio-close { display: none; }
-  .mode-switch, .heatmap-controls { display: none; }
+  .mode-switch, .hm-filters { display: none; }
   .section { page-break-inside: avoid; }
   body { background: white; }
   .card { box-shadow: none; border: 1px solid #ddd; }
