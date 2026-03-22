@@ -42,6 +42,7 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: hidden; }
 
 /* ─── Global centering utility ───────────────────────────── */
 .content-center { max-width: 800px; margin-left: auto; margin-right: auto; }
@@ -792,18 +793,24 @@ footer {
 }
 
 @media (max-width: 768px) {
+  .tab-panel { padding: 0 0.8rem; }
   .section { padding: 0.7rem 0.8rem; }
   .card { padding: 0.9rem 1rem; }
   .card h2 { font-size: 0.95rem; }
   .card .sub { font-size: 0.75rem; }
   .explainer { font-size: 0.74rem; padding: 0.6rem 0.8rem; }
 
-  /* Map sidebar stacks vertically on tablets */
-  .map-sidebar { gap: 0.5rem; }
-  .map-sidebar .ctrl-label { font-size: 0.62rem; }
-  #map-container { height: 380px; }
+  /* Tab bar: horizontally scrollable */
+  .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding: 0 0.5rem; justify-content: flex-start; }
+  .tab-btn { flex-shrink: 0; font-size: 0.7rem; padding: 0.4rem 0.6rem; }
 
-  /* Bio panel */
+  /* Map layout: sidebar above map on mobile */
+  .map-sidebar { order: -1; gap: 0.5rem; }
+  .map-sidebar .ctrl-label { font-size: 0.62rem; }
+  #map-container { height: 350px; }
+
+  /* Bio panel: full width, static positioning */
+  #bio-panel { position: static; max-width: 100%; }
   .bio-head { flex-direction: column; gap: 0.4rem; }
   .bio-head h3 { font-size: 0.95rem; }
   #bio-timeline-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -814,12 +821,14 @@ footer {
   #heatmap-table td { font-size: 0.64rem; padding: 0.2rem; }
   #heatmap-table td:first-child { font-size: 0.7rem; min-width: 120px; }
 
-  /* Scatter */
-  .scatter-filters { gap: 0.3rem; }
+  /* Filter buttons: wrap */
+  .hm-filters { flex-wrap: wrap; }
+  .scatter-filters { gap: 0.3rem; flex-wrap: wrap; }
   .scatter-toggle, .scatter-tous { font-size: 0.68rem; padding: 0.18rem 0.4rem; }
 
-  /* Clusters */
+  /* Grids: stack to single column */
   .cluster-layout { grid-template-columns: 1fr; }
+  .umap-grid { grid-template-columns: 1fr; }
 
   /* Figures gallery */
   .figures-gallery { column-count: 2; }
@@ -916,7 +925,7 @@ footer {
   grid-template-columns: 1fr 1fr;
   gap: 0.15rem 1.2rem;
 }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .cluster-composition .cc-groups-grid { grid-template-columns: 1fr; }
 }
 
@@ -1066,6 +1075,31 @@ footer {
   .textes-section-title { font-size: 0.95rem; }
   .peoples-legend { gap: 0.4rem 0.8rem; }
   .peoples-legend-item { font-size: 0.68rem; }
+}
+
+/* ─── Narrow phone ──────────────────────────────────────── */
+@media (max-width: 480px) {
+  body { font-size: 0.85rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 0.95rem; }
+  .sub { font-size: 0.78rem; }
+  .explainer { font-size: 0.75rem; }
+
+  /* Tab bar even smaller */
+  .tab-btn { font-size: 0.65rem; padding: 0.35rem 0.5rem; }
+
+  /* Mode switch */
+  .mode-btn { font-size: 0.6rem; padding: 0.25rem 0.3rem; }
+
+  /* Map container shorter */
+  #map-container { height: 280px; }
+
+  /* Filter buttons smaller */
+  .hm-btn { font-size: 0.68rem; padding: 0.15rem 0.4rem; }
+  .scatter-toggle, .scatter-tous { font-size: 0.62rem; padding: 0.15rem 0.35rem; }
+
+  /* Conflit map modes */
+  .conflit-map-modes .mode-btn { font-size: 0.65rem; padding: 0.18rem 0.4rem; }
 }
 
 /* ─── Print Stylesheet ───────────────────────────────────── */
