@@ -1223,7 +1223,8 @@ function renderHeatmap() {
 
   // Filter — heritage and conflict are independent (intersection)
   if (hmHeritageFilter !== 'all') rows = rows.filter(r => r._heritage === hmHeritageFilter);
-  if (hmConflictFilter === 'peace') rows = rows.filter(r => DATA.post_conflict_type[r.PAYS] === 'peace');
+  if (hmConflictFilter === 'post-conflict') rows = rows.filter(r => DATA.post_conflict[r.PAYS]);
+  else if (hmConflictFilter === 'peace') rows = rows.filter(r => DATA.post_conflict_type[r.PAYS] === 'peace');
   else if (hmConflictFilter === 'authoritarian') rows = rows.filter(r => DATA.post_conflict_type[r.PAYS] === 'authoritarian');
   else if (hmConflictFilter === 'non-conflict') rows = rows.filter(r => !DATA.post_conflict[r.PAYS]);
 
@@ -1350,7 +1351,8 @@ function renderDivergence() {
     events.forEach(([yr, lbl]) => {
       g.append('line').attr('x1',xS(yr)).attr('x2',xS(yr)).attr('y1',0).attr('y2',h)
         .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',1).attr('stroke-dasharray','4,3');
-      g.append('text').attr('x',xS(yr)+3).attr('y',10).attr('fill',CSS.muted).attr('font-size','8.5px').attr('font-weight','600').text(lbl);
+      g.append('text').attr('x',xS(yr)+3).attr('y',10).attr('fill',CSS.muted).attr('font-size','8.5px').attr('font-weight','600')
+        .style('paint-order','stroke').style('stroke','#f6f3ee').style('stroke-width','4px').text(lbl);
     });
 
     const line = d3.line().x(d => xS(d[0])).y(d => yS(d[1])).curve(d3.curveBasis);
@@ -1416,6 +1418,19 @@ function updateScatterOpacity() {
 }
 
 function initScatterFilters() {
+  // "Tous" buttons — select all toggles in the group
+  document.querySelectorAll('.scatter-tous').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.dataset.tous; // 'sh' or 'sc'
+      document.querySelectorAll(`.scatter-toggle[data-${group}]`).forEach(t => {
+        t.classList.add('active');
+        if (group === 'sh') scatterActiveHeritage.add(t.dataset.sh);
+        else scatterActiveConflict.add(t.dataset.sc);
+      });
+      updateScatterOpacity();
+    });
+  });
+
   document.querySelectorAll('.scatter-toggle[data-sh]').forEach(btn => {
     btn.addEventListener('click', () => {
       const h = btn.dataset.sh;

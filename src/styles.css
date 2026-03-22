@@ -707,6 +707,19 @@ header .lead {
 
 .scatter-toggle:hover { opacity: 1; }
 
+.scatter-tous {
+  font-size: 0.75rem;
+  font-family: var(--font);
+  padding: 0.22rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted);
+  transition: all 0.15s;
+}
+.scatter-tous:hover { background: var(--muted); color: #fff; }
+
 /* ─── Footer ────────────────────────────────────────────── */
 footer {
   text-align: center;
@@ -772,7 +785,7 @@ footer {
 
   /* Scatter */
   .scatter-filters { gap: 0.3rem; }
-  .scatter-toggle { font-size: 0.68rem; padding: 0.18rem 0.4rem; }
+  .scatter-toggle, .scatter-tous { font-size: 0.68rem; padding: 0.18rem 0.4rem; }
 
   /* Clusters */
   .cluster-layout { grid-template-columns: 1fr; }
