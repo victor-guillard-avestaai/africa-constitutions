@@ -1621,7 +1621,7 @@ function renderConflictMap(pcCountries) {
   cont.innerHTML = '';
   if (!geoData) return; // not loaded yet
 
-  const W = 250, H = 250;
+  const W = 420, H = 400;
   const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
 
   const defs = svg.append('defs');
@@ -1642,21 +1642,30 @@ function renderConflictMap(pcCountries) {
   const pcLookup = {};
   pcCountries.forEach(d => { pcLookup[d.name] = d; });
 
-  // Score color scale for post-conflict countries
-  const scoreScale = d3.scaleLinear().domain([0, 10, 20]).range(['#e8c4a0','#d4785a','#a83020']).interpolate(d3.interpolateRgb);
+  // Build lookup for ALL countries (for interactive tooltips)
+  const allLookup = {};
+  DATA.feature_matrix.forEach(r => {
+    const c = r.PAYS;
+    const total = DATA.features.reduce((s, f) => s + r[f], 0);
+    allLookup[c] = { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null };
+  });
 
   const scTT = d3.select('#scatter-tooltip');
+
+  // Helper to resolve country name from geo feature
+  function geoToCountry(d) {
+    if (!DATA.name_to_iso) return null;
+    const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+    const entry = Object.entries(DATA.name_to_iso).find(([n, iso]) => iso === geoIso);
+    return entry ? entry[0] : null;
+  }
 
   svg.selectAll('path.cm-country').data(geoData.features).join('path')
     .attr('class','cm-country')
     .attr('d', path)
     .attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3)
     .attr('fill', d => {
-      const name = DATA.name_to_iso ? Object.entries(DATA.name_to_iso).find(([n, iso]) => {
-        const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
-        return iso === geoIso;
-      }) : null;
-      const countryName = name ? name[0] : null;
+      const countryName = geoToCountry(d);
       if (!countryName) return '#eae6df';
       const pc = pcLookup[countryName];
       if (!pc) return '#eae6df';
@@ -1664,32 +1673,40 @@ function renderConflictMap(pcCountries) {
       return 'url(#hatch-auth)';
     })
     .on('mouseenter', function(ev, d) {
-      const name = DATA.name_to_iso ? Object.entries(DATA.name_to_iso).find(([n, iso]) => {
-        const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
-        return iso === geoIso;
-      }) : null;
-      const countryName = name ? name[0] : null;
+      const countryName = geoToCountry(d);
       if (!countryName) return;
-      const pc = pcLookup[countryName];
-      if (!pc) return;
+      const info = allLookup[countryName];
+      if (!info) return;
+      const typeLabel = info.pc
+        ? (info.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title'))
+        : tr('conflit_nonconflict');
+      d3.select(this).attr('stroke', '#333').attr('stroke-width', 1.2);
       scTT.html(
-        `<div class="tt-name">${pc.name}</div>` +
-        `<div style="font-size:0.8rem">${tr('total_score')} : <b>${pc.total}</b>/20</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim)">${pc.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
+        `<div class="tt-name">${info.name}</div>` +
+        `<div style="font-size:0.8rem">${HL(info.heritage)} · ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
+        `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}</div>`
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function() { scTT.style('opacity','0'); });
+    .on('mouseleave', function() {
+      d3.select(this).attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.3);
+      scTT.style('opacity','0');
+    })
+    .on('click', function(ev, d) {
+      const countryName = geoToCountry(d);
+      if (countryName && allLookup[countryName]) openBio(countryName);
+    });
 
   // Small legend below the map
   const legY = H - 22;
   const legData = [
     { label: tr('conflit_peace_title'), fill: 'url(#hatch-peace)' },
     { label: tr('conflit_auth_title'), fill: 'url(#hatch-auth)' },
+    { label: tr('conflit_nonconflict'), fill: '#eae6df' },
   ];
   const legG = svg.append('g').attr('transform', `translate(5,${legY})`);
   legData.forEach((d, i) => {
-    const g = legG.append('g').attr('transform', `translate(${i * 125}, 0)`);
+    const g = legG.append('g').attr('transform', `translate(${i * 140}, 0)`);
     g.append('rect').attr('width',12).attr('height',10).attr('rx',2).attr('fill',d.fill).attr('stroke',CSS.border).attr('stroke-width',0.5);
     g.append('text').attr('x',16).attr('y',8).attr('font-size','7.5px').attr('fill',CSS.muted).text(d.label);
   });
@@ -1754,17 +1771,15 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
       box.appendChild(card);
     });
 
-    // Reference line
-    const ref = document.createElement('div');
-    ref.className = 'conflit-ref-line';
-    ref.innerHTML = `<span class="ref-label">${tr('conflit_ref_mean')}</span><span class="ref-val">${npcMean.toFixed(1)}/20</span>`;
-    box.appendChild(ref);
-
     cont.appendChild(box);
   }
 
   renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries);
   renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries);
+
+  // Single centered reference mean between the two panels
+  const refEl = document.getElementById('conflit-ref-mean');
+  if (refEl) refEl.innerHTML = `${tr('conflit_ref_mean')}<br>${npcMean.toFixed(1)}/20`;
 }
 
 function renderConflictDimensions(allCountries) {
@@ -1800,11 +1815,11 @@ function renderConflictDimensions(allCountries) {
   // Significance markers per dimension (from thesis: Dpa, Dau, Drc, Drm p < 0.001)
   const sigDims = new Set(['Dpa','Dau','Drc','Drm']);
 
-  const M = { top: 30, right: 20, bottom: 80, left: 130 };
-  const barH = 14, gapBetweenDims = 8, groupGap = 2;
+  const M = { top: 30, right: 20, bottom: 80, left: 180 };
+  const barH = 12, gapBetweenDims = 4, groupGap = 1;
   const dimH = groupDefs.length * (barH + groupGap) + gapBetweenDims;
   const chartH = dimOrder.length * dimH;
-  const w = 450;
+  const w = 400;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
