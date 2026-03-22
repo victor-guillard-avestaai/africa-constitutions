@@ -480,6 +480,7 @@ header .lead {
   border-spacing: 1.5px;
   font-size: 0.78rem;
   width: 100%;
+  table-layout: fixed;
   min-width: 700px;
 }
 

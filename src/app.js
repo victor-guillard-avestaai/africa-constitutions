@@ -641,7 +641,11 @@ function renderHeatmap() {
     return (vb - va) * hmSort.dir;
   });
 
-  let html = '<thead><tr><th>Pays</th>';
+  // Fixed column widths to prevent layout shift on filtering
+  let html = '<colgroup><col style="width:180px">';
+  feats.forEach(() => { html += '<col style="width:55px">'; });
+  html += '<col style="width:60px"></colgroup>';
+  html += '<thead><tr><th>Pays</th>';
   feats.forEach(f => {
     const sorted = hmSort.col === f ? ' sorted' : '';
     html += `<th class="${sorted}" data-col="${f}" title="${DATA.feature_labels[f]}">${HM_SHORT[f] || f}</th>`;
@@ -702,16 +706,56 @@ function renderDivergence() {
   const divTT = document.getElementById('div-tooltip');
 
   const divAnnotations = {
-    'F':   [{year:1990, text:'Le fédéralisme reste une spécificité anglophone — Nigéria, Éthiopie'}],
-    'Dc':  [{year:1990, text:'La vague démocratique pousse les francophones à décentraliser massivement'}],
-    'Drm': [{year:1990, text:'La démocratisation ne comble pas l\'écart anglophones–francophones sur les minorités'}],
-    'La':  [{year:1990, text:'Le multilinguisme officiel reste un marqueur anglophone malgré la démocratisation'}],
-    'Drc': [{year:2002, text:'Quelques anglophones inscrivent les droits culturels après la Charte de l\'UA'}],
-    'Dpa': [{year:2002, text:'Quasi-absent du continent — aucun État africain signataire de la C169'}],
-    'Dis': [{year:1990, text:'La vague démocratique entraîne une adoption quasi universelle'}],
-    'Id':  [{year:2002, text:'L\'identité émerge dans les constitutions de 3e génération post-UA'}],
-    'Dau': [{year:1990, text:'Rareté structurelle — seules les fédérations prévoient une autonomie réelle'}],
-    'PJ':  [{year:2002, text:'Les lusophones rejoignent les anglophones sur le pluralisme juridique'}],
+    'F': [
+      {year:1963, text:'Nigéria (1963) : première fédération africaine post-indépendance'},
+      {year:1990, text:'Le fédéralisme reste une spécificité anglophone — Nigéria, Éthiopie, Af. du Sud'},
+      {year:1995, text:'Éthiopie (1995) : fédéralisme ethnique avec droit de sécession (art. 39)'},
+    ],
+    'Dc': [
+      {year:1990, text:'Conférence de La Baule (1990) : la France conditionne l\'aide à la démocratisation'},
+      {year:1996, text:'Les constitutions francophones inscrivent massivement la décentralisation'},
+      {year:2010, text:'Convergence quasi-complète : 93% du continent reconnaît la décentralisation'},
+    ],
+    'Drm': [
+      {year:1990, text:'La démocratisation ne comble PAS l\'écart sur les droits des minorités'},
+      {year:1996, text:'Af. du Sud (1996) : Bill of Rights avec 11 langues officielles et droits des minorités'},
+      {year:2010, text:'Le silence francophone sur les minorités persiste malgré 20 ans de démocratie'},
+    ],
+    'La': [
+      {year:1990, text:'Le multilinguisme officiel reste un marqueur anglophone'},
+      {year:1996, text:'Af. du Sud reconnaît 11 langues ; Tanzanie ajoute le swahili et l\'anglais'},
+      {year:2010, text:'Les francophones restent monolingues constitutionnellement (français = langue officielle)'},
+    ],
+    'Drc': [
+      {year:1990, text:'Les droits culturels émergent dans les constitutions post-démocratisation'},
+      {year:2002, text:'Charte de l\'UA (2002) : le protocole de Maputo renforce les droits culturels'},
+      {year:2010, text:'Kenya (2010) et Zimbabwe (2013) inscrivent des droits culturels forts'},
+    ],
+    'Dpa': [
+      {year:1990, text:'Quasi-absent : le concept de « peuples autochtones » est un import occidental'},
+      {year:2007, text:'DNUDPA (2007) : 52/54 pays africains votent pour — mais ne légifèrent pas'},
+      {year:2010, text:'Seuls RDC (2006) et Kenya (2010) inscrivent les peuples autochtones'},
+    ],
+    'Dis': [
+      {year:1960, text:'Les premières constitutions post-indépendance inscrivent l\'anti-discrimination'},
+      {year:1990, text:'La vague démocratique entraîne une adoption quasi universelle (98%)'},
+      {year:2010, text:'Convergence totale — aucune différence entre héritages sur cette dimension'},
+    ],
+    'Id': [
+      {year:1990, text:'Pré-1990 : l\'identité constitutionnelle est quasi inexistante'},
+      {year:2002, text:'L\'identité émerge dans les constitutions de 3e génération post-UA'},
+      {year:2010, text:'L\'écart se creuse : les anglophones reconnaissent, les francophones restent silencieux'},
+    ],
+    'Dau': [
+      {year:1990, text:'L\'autonomie reste rare — seules les fédérations la prévoient'},
+      {year:1995, text:'Éthiopie (1995) : autonomie régionale maximale (nations, nationalités, peuples)'},
+      {year:2010, text:'RDC (2006) et Kenya (2010) inscrivent l\'autonomie post-conflit'},
+    ],
+    'PJ': [
+      {year:1990, text:'Le pluralisme juridique distingue nettement anglophones et francophones'},
+      {year:1996, text:'Af. du Sud (1996) : reconnaissance du droit coutumier dans la Constitution'},
+      {year:2010, text:'Les lusophones (Angola 2010, Mozambique 2004) rejoignent les anglophones'},
+    ],
   };
 
   DATA.features.forEach(feat => {
@@ -821,7 +865,7 @@ function renderScatter() {
 
   const cont = document.getElementById('scatter-container');
   const M = { top:30, right:30, bottom:55, left:60 };
-  const w = 480, h = 500;
+  const w = 480, h = 380;
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
