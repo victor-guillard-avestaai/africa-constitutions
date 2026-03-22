@@ -696,6 +696,10 @@ footer {
   .dim-btn { font-size: 0.68rem; padding: 0.2rem 0.35rem; }
   .grp-btn { font-size: 0.66rem; padding: 0.18rem 0.35rem; }
 
+  /* Mode switch: allow wrapping on narrow screens */
+  .mode-switch { flex-wrap: wrap; }
+  .mode-btn { font-size: 0.65rem; padding: 0.25rem 0.4rem; }
+
   /* Map smaller on phones */
   #map-container { height: 300px; }
   #year-display { font-size: 1.1rem; }

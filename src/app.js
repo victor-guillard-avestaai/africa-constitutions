@@ -476,7 +476,9 @@ function onHover(ev, d) {
   if (!splitOk) {
     const parent = getParentCountry(d.name);
     const splitInfo = DATA.border_splits[d.name];
-    statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">Fait partie de ${parent} jusqu'en ${splitInfo.split_year}</div>`;
+    if (splitInfo) {
+      statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">Fait partie de ${parent} jusqu'en ${splitInfo.split_year}</div>`;
+    }
   } else if (!indep) {
     const indepY = DATA.independence_dates[d.name];
     statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">Territoire colonial — indépendance en ${indepY}</div>`;
@@ -563,7 +565,7 @@ function openBio(c) {
   p.classList.add('open');
   document.getElementById('bio-country-name').textContent = c;
   const evs = DATA.country_timelines[c];
-  const h = DATA.colonial_heritage[c] || 'autre';
+  const h = DATA.colonial_heritage[c] || 'other';
   const reg = DATA.country_region[c] || '';
   const hL = { francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre', mixed:'Mixte' };
   document.getElementById('bio-meta').innerHTML =
@@ -1240,7 +1242,7 @@ function renderUMAP() {
       const tt = document.getElementById('tooltip');
       tt.style.display = 'block';
       tt.style.opacity = '1';
-      tt.innerHTML = `<strong>${p.name}</strong><br>${DATA.colonial_heritage[p.name] || 'autre'}${pc?' &middot; Post-conflit':''}`;
+      tt.innerHTML = `<strong>${p.name}</strong><br>${DATA.colonial_heritage[p.name] || 'other'}${pc?' &middot; Post-conflit':''}`;
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
@@ -1407,8 +1409,17 @@ function renderClusterMap() {
   // Reuse geoData fetched by the main map if available; otherwise wait
   if (!geoData) {
     // Retry once geoData is loaded (initMap sets it)
+    let retries = 0;
+    const maxRetries = 50; // 50 × 200ms = 10s max
     const check = setInterval(() => {
-      if (geoData) { clearInterval(check); renderClusterMap(); }
+      retries++;
+      if (geoData) {
+        clearInterval(check);
+        renderClusterMap();
+      } else if (retries >= maxRetries) {
+        clearInterval(check);
+        console.warn('renderClusterMap: gave up waiting for geoData after 10s');
+      }
     }, 200);
     return;
   }
@@ -1594,7 +1605,12 @@ renderScale();
 buildDimBtns();
 buildModeSwitch();
 initSlider();
-initMap().then(() => {}).catch(err => {
+initMap().then(() => {
+  renderUMAP();
+  renderDendrogram();
+  renderClusterMap();
+  renderFigures();
+}).catch(err => {
   document.getElementById('loading').innerHTML = `<span style="color:${CSS.anglophone}">Erreur : ${err.message}</span>`;
 });
 renderHeatmap();
@@ -1602,7 +1618,3 @@ initHeatmapFilters();
 renderDivergence();
 renderScatter();
 renderConflictChart();
-renderUMAP();
-renderDendrogram();
-renderClusterMap();
-renderFigures();
