@@ -1969,17 +1969,9 @@ function renderUMAP() {
 
     const g = svg.append('g').style('cursor','pointer');
 
-    if (pc) {
-      // Diamond for post-conflict
-      const size = 6;
-      g.append('path')
-        .attr('d', `M${xScale(p.x)},${yScale(p.y)-size} L${xScale(p.x)+size},${yScale(p.y)} L${xScale(p.x)},${yScale(p.y)+size} L${xScale(p.x)-size},${yScale(p.y)} Z`)
-        .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
-    } else {
-      g.append('circle')
-        .attr('cx', xScale(p.x)).attr('cy', yScale(p.y)).attr('r', 5)
-        .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
-    }
+    g.append('circle')
+      .attr('cx', xScale(p.x)).attr('cy', yScale(p.y)).attr('r', 5)
+      .attr('fill', color).attr('stroke','white').attr('stroke-width',0.5).attr('opacity',0.85);
 
     // Label for notable countries only
     const notable = ['RDC','Éthiopie','Afrique du Sud','Kenya','Cameroun','Tunisie','Somalie','Nigéria'];
@@ -2000,8 +1992,8 @@ function renderUMAP() {
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
-      tt.style.left = (event.pageX + 12) + 'px';
-      tt.style.top = (event.pageY - 20) + 'px';
+      tt.style.left = (event.pageX + 10) + 'px';
+      tt.style.top = (event.pageY + 10) + 'px';
     })
     .on('mouseout', () => {
       const tt = document.getElementById('tooltip');
@@ -2211,8 +2203,8 @@ function renderClusterMap() {
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
-      tt.style.left = (event.pageX + 12) + 'px';
-      tt.style.top = (event.pageY - 20) + 'px';
+      tt.style.left = (event.pageX + 10) + 'px';
+      tt.style.top = (event.pageY + 10) + 'px';
     })
     .on('mouseout', () => {
       const tt = document.getElementById('tooltip');
@@ -2554,102 +2546,156 @@ function renderPeoplesChart() {
   cont.appendChild(legDiv);
 }
 
-// ── SD Grid: sortable table ──────────────────────────────
-let sdSortMode = 'heritage';
-let sdHeritageFilter = 'all';
+// ── SD Posture: stacked bar chart by heritage ────────────
+const SD_POSTURE_COLORS = {
+  external: '#c0392b',
+  internal: '#d4785a',
+  mentioned: '#e8a838',
+  tension: '#7a82b8',
+  indivisible_only: '#4a5a9a',
+  autonomy_only: '#5a9a88',
+  silent: '#d0cbc2',
+};
 
-function renderSDGrid() {
-  const cont = document.getElementById('sd-grid');
+function renderSDPosture() {
+  const cont = document.getElementById('sd-posture-chart');
   if (!cont) return;
   cont.innerHTML = '';
 
-  const flagCols = ['has_sd', 'has_indivisible', 'has_autonomy', 'has_secession'];
-  const colHeaders = [
-    tr('textes_sd_col_country'),
-    tr('textes_sd_col_sd'),
-    tr('textes_sd_col_indiv'),
-    tr('textes_sd_col_auton'),
-    tr('textes_sd_col_secess'),
-    tr('textes_sd_col_posture'),
-  ];
+  const detailCont = document.getElementById('sd-posture-detail');
+  if (detailCont) detailCont.innerHTML = '';
 
-  // Filter
-  let rows = [...SD_DATA];
-  if (sdHeritageFilter !== 'all') {
-    if (sdHeritageFilter === 'other') {
-      rows = rows.filter(r => r.heritage === 'other' || r.heritage === 'mixed');
-    } else {
-      rows = rows.filter(r => r.heritage === sdHeritageFilter);
+  const heritages = ['francophone', 'anglophone'];
+  const postures = POSTURE_ORDER; // ['external','internal','mentioned','tension','indivisible_only','autonomy_only','silent']
+
+  // Compute counts per heritage × posture
+  const counts = {};
+  const countryLists = {};
+  for (const h of heritages) {
+    counts[h] = {};
+    countryLists[h] = {};
+    for (const p of postures) {
+      const matching = SD_DATA.filter(d => d.heritage === h && d.posture === p);
+      counts[h][p] = matching.length;
+      countryLists[h][p] = matching.map(d => d.country);
     }
   }
 
-  // Sort
-  if (sdSortMode === 'heritage') {
-    const hOrder = { francophone: 0, anglophone: 1, lusophone: 2, mixed: 3, other: 4 };
-    rows.sort((a, b) => (hOrder[a.heritage] || 9) - (hOrder[b.heritage] || 9) || a.country.localeCompare(b.country));
-  } else if (sdSortMode === 'posture') {
-    rows.sort((a, b) => POSTURE_ORDER.indexOf(a.posture) - POSTURE_ORDER.indexOf(b.posture) || a.country.localeCompare(b.country));
-  } else if (sdSortMode === 'criteria') {
-    rows.sort((a, b) => {
-      const sA = flagCols.reduce((s, f) => s + (a[f] ? 1 : 0), 0);
-      const sB = flagCols.reduce((s, f) => s + (b[f] ? 1 : 0), 0);
-      return sB - sA || a.country.localeCompare(b.country);
-    });
+  const hTotals = {};
+  for (const h of heritages) {
+    hTotals[h] = postures.reduce((s, p) => s + counts[h][p], 0);
   }
 
-  function postureLabel(p) { return tr('textes_sd_posture_' + p); }
+  const M = { top: 10, right: 30, bottom: 10, left: 120 };
+  const barH = 32, barGap = 16;
+  const chartH = heritages.length * (barH + barGap) - barGap;
+  const w = 500;
 
-  // Build table
-  let html = '<table>';
-  html += '<colgroup><col style="width:180px">';
-  flagCols.forEach(() => { html += '<col style="width:70px">'; });
-  html += '<col style="width:160px"></colgroup>';
+  const svg = d3.select(cont).append('svg')
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 60}`)
+    .style('max-width', '700px');
 
-  html += '<thead><tr>';
-  colHeaders.forEach((h, i) => { html += `<th>${h}</th>`; });
-  html += '</tr></thead><tbody>';
+  const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
-  rows.forEach(r => {
-    const hDot = `<span class="hm-heritage-dot" style="background:${HC[r.heritage] || HC.other}"></span>`;
-    html += `<tr><td data-country="${r.country}">${hDot}${r.country}</td>`;
-    flagCols.forEach(f => {
-      const present = r[f];
-      html += `<td class="${present ? 'sd-present' : 'sd-absent'}">${present ? 'V' : ''}</td>`;
+  const xS = d3.scaleLinear().domain([0, 100]).range([0, w]);
+
+  const scTT = d3.select('#scatter-tooltip');
+
+  heritages.forEach((h, hi) => {
+    const y = hi * (barH + barGap);
+    const total = hTotals[h];
+
+    // Heritage label
+    g.append('text')
+      .attr('x', -8).attr('y', y + barH / 2)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', HC[h]).attr('font-size', '12px').attr('font-weight', '600')
+      .text(HL(h));
+
+    // Count label below heritage name
+    g.append('text')
+      .attr('x', -8).attr('y', y + barH / 2 + 13)
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
+      .attr('fill', CSS.dim).attr('font-size', '9px')
+      .text(`n = ${total}`);
+
+    // Stacked segments
+    let xOffset = 0;
+    postures.forEach(p => {
+      const count = counts[h][p];
+      if (count === 0) return;
+      const pct = (count / total) * 100;
+      const segW = xS(pct);
+      const pLabel = tr('textes_sd_posture_' + p);
+      const countries = countryLists[h][p];
+
+      g.append('rect')
+        .attr('x', xOffset).attr('y', y)
+        .attr('width', Math.max(segW, 1)).attr('height', barH)
+        .attr('fill', SD_POSTURE_COLORS[p] || '#ccc').attr('opacity', 0.85)
+        .attr('rx', xOffset === 0 ? 3 : 0)
+        .style('cursor', 'pointer')
+        .on('mouseenter', function(ev) {
+          d3.select(this).attr('opacity', 1).attr('stroke', CSS.text).attr('stroke-width', 1);
+          scTT.html(
+            `<div class="tt-name">${pLabel}</div>` +
+            `<div style="font-size:0.85rem;margin-top:0.1rem">${HL(h)} : <b>${count}</b> ${tr('textes_sd_posture_countries') || (count === 1 ? tr('country') : 'pays')}</div>` +
+            `<div style="font-size:0.78rem;color:var(--dim)">${Math.round(pct)} %</div>` +
+            `<div style="font-size:0.75rem;color:var(--muted);margin-top:0.2rem">${countries.join(', ')}</div>`
+          ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
+        })
+        .on('mousemove', function(ev) { scTT.style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px'); })
+        .on('mouseleave', function() { d3.select(this).attr('opacity', 0.85).attr('stroke', 'none'); scTT.style('opacity', '0'); })
+        .on('click', function() {
+          // Show country list in detail panel
+          if (!detailCont) return;
+          detailCont.innerHTML = '';
+          const title = document.createElement('div');
+          title.className = 'sd-detail-title';
+          title.textContent = `${pLabel} — ${HL(h)} (${count})`;
+          detailCont.appendChild(title);
+          const pillBox = document.createElement('div');
+          pillBox.className = 'sd-detail-countries';
+          countries.forEach(c => {
+            const pill = document.createElement('span');
+            pill.className = 'sd-country-pill';
+            pill.textContent = c;
+            pill.addEventListener('click', () => {
+              openBio(c);
+              document.getElementById('bio-panel').scrollIntoView({ behavior: 'smooth' });
+            });
+            pillBox.appendChild(pill);
+          });
+          detailCont.appendChild(pillBox);
+        });
+
+      // Inline label for wide enough segments
+      if (segW > 30) {
+        g.append('text')
+          .attr('x', xOffset + segW / 2).attr('y', y + barH / 2)
+          .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+          .attr('fill', '#fff').attr('font-size', '9px').attr('font-weight', '600')
+          .attr('pointer-events', 'none')
+          .text(Math.round(pct) + '%');
+      }
+
+      xOffset += segW;
     });
-    html += `<td class="sd-posture">${postureLabel(r.posture)}</td>`;
-    html += '</tr>';
   });
 
-  html += '</tbody></table>';
-  cont.innerHTML = html;
-
-  // Country click → open bio
-  cont.querySelectorAll('td[data-country]').forEach(td => {
-    td.addEventListener('click', () => {
-      openBio(td.dataset.country);
-      document.getElementById('bio-panel').scrollIntoView({ behavior: 'smooth' });
-    });
+  // Legend below chart
+  const legY = chartH + 14;
+  const legItems = postures.filter(p => {
+    return heritages.some(h => counts[h][p] > 0);
   });
-}
-
-function initSDFilters() {
-  // Sort buttons
-  document.querySelectorAll('[data-sd-sort]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-sd-sort]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sdSortMode = btn.dataset.sdSort;
-      renderSDGrid();
-    });
-  });
-  // Heritage filter buttons
-  document.querySelectorAll('[data-sd-hf]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('[data-sd-hf]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sdHeritageFilter = btn.dataset.sdHf;
-      renderSDGrid();
-    });
+  const legItemW = w / legItems.length;
+  legItems.forEach((p, i) => {
+    const lg = g.append('g').attr('transform', `translate(${i * legItemW}, ${legY})`);
+    lg.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
+      .attr('fill', SD_POSTURE_COLORS[p]).attr('opacity', 0.85);
+    lg.append('text').attr('x', 14).attr('y', 8)
+      .attr('font-size', '9px').attr('fill', CSS.muted)
+      .text(tr('textes_sd_posture_' + p));
   });
 }
 
@@ -2657,7 +2703,7 @@ function initSDFilters() {
 function renderTextesTab() {
   renderSovereigntyChart();
   renderPeoplesChart();
-  renderSDGrid();
+  renderSDPosture();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2714,11 +2760,6 @@ const FIGURE_INDEX = [
   {id:'N.2', file:'topics_heritage_heatmap', ch:'NLP', caption_fr:'Topics × héritage', caption_en:'Topics × heritage'},
 ];
 
-// Featured figures get 2-column span in the mosaic
-const FEATURED_FIGURES = new Set([
-  'ch2s2_dual_choropleth', 'overview_choropleth_score',
-  'ch2s2_heritage_dumbbell', 'ch2s2_heritage_radar'
-]);
 
 // Chapter descriptions (methodology + key finding)
 const CHAPTER_DESCS = {
@@ -2857,29 +2898,18 @@ function renderFigures() {
       container.appendChild(descEl);
     }
 
-    // Methodology toggle
+    // Methodology note (always visible)
     const method = CHAPTER_METHODS[group.ch];
     if (method) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.className = 'method-toggle';
-      toggleBtn.textContent = tr('fig_method_toggle');
       const detailEl = document.createElement('div');
       detailEl.className = 'method-detail';
       detailEl.textContent = lang === 'fr' ? method.fr : method.en;
-      toggleBtn.addEventListener('click', () => {
-        detailEl.classList.toggle('open');
-        toggleBtn.textContent = detailEl.classList.contains('open') ? tr('fig_method_toggle_close') : tr('fig_method_toggle');
-      });
-      container.appendChild(toggleBtn);
       container.appendChild(detailEl);
     }
 
     for (const fig of group.figures) {
       const card = document.createElement('div');
       card.className = 'fig-gallery-card';
-      if (FEATURED_FIGURES.has(fig.file)) {
-        card.classList.add('featured');
-      }
 
       const img = document.createElement('img');
       img.src = `figures/${fig.file}.png`;
@@ -2937,4 +2967,3 @@ renderScatter();
 initScatterFilters();
 renderConflictTab();
 renderTextesTab();
-initSDFilters();

@@ -270,23 +270,8 @@
 
     <h3 class="textes-section-title" data-tr="textes_sd_title">Autodétermination</h3>
     <div class="sub" data-tr="textes_sd_sub">8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.</div>
-    <div class="sd-filters">
-      <div class="filter-group">
-        <span class="filter-label" data-tr="textes_sd_sort_label">Tri</span>
-        <button class="hm-btn active" data-sd-sort="heritage" data-tr="heritage_label">Héritage</button>
-        <button class="hm-btn" data-sd-sort="posture" data-tr="textes_sd_posture">Posture</button>
-        <button class="hm-btn" data-sd-sort="criteria" data-tr="textes_sd_criteria">Critères</button>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label" data-tr="heritage_label">Héritage</span>
-        <button class="hm-btn active" data-sd-hf="all" data-tr="filter_all">Tous</button>
-        <button class="hm-btn" data-sd-hf="francophone" data-tr="h_francophone">Francophone</button>
-        <button class="hm-btn" data-sd-hf="anglophone" data-tr="h_anglophone">Anglophone</button>
-        <button class="hm-btn" data-sd-hf="lusophone" data-tr="h_lusophone">Lusophone</button>
-        <button class="hm-btn" data-sd-hf="other" data-tr="h_other">Autre</button>
-      </div>
-    </div>
-    <div id="sd-grid" role="table" aria-label="Marqueurs d'autodétermination par pays"></div>
+    <div id="sd-posture-chart" role="img" aria-label="Posture d'autodétermination par héritage colonial"></div>
+    <div id="sd-posture-detail" class="sd-posture-detail"></div>
   </div>
 </div>
 
@@ -305,11 +290,11 @@
 
     <h3 data-tr="clusters_umap_title">Carte de proximité sémantique</h3>
     <div class="sub" data-tr="clusters_umap_sub">Chaque point représente une constitution. Les points proches sont textuellement similaires. Les couleurs indiquent l'héritage colonial.</div>
-    <div class="umap-controls">
+    <div class="umap-controls content-center">
       <button class="mode-btn active" data-umap="constitutions" data-tr="btn_constitutions">Constitutions</button>
       <button class="mode-btn" data-umap="preambles" data-tr="btn_preambles">Préambules</button>
     </div>
-    <div id="umap-container"></div>
+    <div id="umap-container" class="content-center"></div>
 
     <h3 data-tr="clusters_dendro_title">Classification hiérarchique interactive</h3>
     <div class="explainer" data-tr="clusters_dendro_explain">
@@ -319,7 +304,7 @@
       <div id="dendrogram-container"></div>
       <div id="cluster-map-container"></div>
     </div>
-    <div class="cluster-composition" id="cluster-composition"></div>
+    <div class="cluster-composition content-center" id="cluster-composition"></div>
   </div>
 </div>
 
