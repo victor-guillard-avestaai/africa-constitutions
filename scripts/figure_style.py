@@ -47,6 +47,13 @@ FEATURES = ['Dpa', 'F', 'Dau', 'Drc', 'Drm', 'Id', 'La', 'PJ', 'Dc', 'Dis']
 # Identity cluster first (for correlation matrix ordering)
 FEATURES_IDENTITY_FIRST = ['Drc', 'Drm', 'Id', 'Dpa', 'PJ', 'La', 'Dau', 'Dc', 'Dis', 'F']
 
+# Dimension groupings
+IDENTITY_DIMS = ['Drm', 'Id', 'Drc', 'Dpa', 'PJ']
+INSTITUTIONAL_DIMS = ['Dc', 'La', 'Dis', 'Dau', 'F']
+
+# Tier 1 heritages
+TIER1_HERITAGES = ['francophone', 'anglophone']
+
 # ── Bilingual labels ─────────────────────────────────────
 LABELS = {
     'fr': {
@@ -207,6 +214,27 @@ LABELS = {
         'people_vs_peoples_right_ylabel': 'pour 1000 mots',
         'pc_non_conflict_short': 'Non-conflit',
         'pc_post_conflict_short': 'Post-conflit',
+
+        # New labels for figure rework
+        'peoples_semantic_title': "Les constitutions francophones citent « peoples »\nsans le traduire en droit domestique",
+        'peoples_semantic_xlabel': "% des occurrences de « peoples »",
+        'peoples_semantic_annot': "61 % = citations de la Charte\n+ solidarité diplomatique",
+        'timeline_subtitle': "5 des 30 communications invoquent les droits des peuples (art. 19-24)",
+        'article_freq_subtitle': "Combien des 30 affaires CADHP citent chaque article de la Charte",
+        'correlation_cluster_label': 'Cluster identitaire',
+        'pre_post_ogiek_subtitle': "Les constitutions post-Ogiek sont majoritairement des révisions\nautoritaires francophones (Guinée, Tunisie, Tchad),\npas des réponses à la jurisprudence.",
+        'dendrogram_subtitle': "Les pays se regroupent par profil de reconnaissance, pas par héritage",
+        'treaty_beeswarm_subtitle': "Chaque point = un pays. La ligne plate montre l'absence\nde relation entre traités ratifiés et reconnaissance constitutionnelle.",
+        'treaty_beeswarm_mean': 'Moyenne globale',
+        'pc_outliers_title': "Les « anomalies » s'expliquent par le moment\nconstitutionnel post-conflit",
+        'pc_outliers_ylabel': 'Score constitutionnel total (sur 20)',
+        'pc_mechanism_title': "L'effet post-conflit se concentre\nsur les dimensions identitaires",
+        'pc_mechanism_ylabel': 'Score moyen (0-2)',
+        'pc_mechanism_identity': 'Dimensions identitaires',
+        'pc_mechanism_institutional': 'Dimensions institutionnelles',
+        'tier2_note': '* Lusophone, autre = Tier 2 (études de cas)',
+        'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
+        'kwic_pct_xlabel': "% des occurrences",
     },
 
     'en': {
@@ -365,6 +393,27 @@ LABELS = {
         'people_vs_peoples_right_ylabel': 'per 1000 words',
         'pc_non_conflict_short': 'Non-conflict',
         'pc_post_conflict_short': 'Post-conflict',
+
+        # New labels for figure rework
+        'peoples_semantic_title': "Francophone constitutions cite 'peoples'\nwithout translating it into domestic law",
+        'peoples_semantic_xlabel': "% of 'peoples' occurrences",
+        'peoples_semantic_annot': "61% = Charter citations\n+ diplomatic solidarity",
+        'timeline_subtitle': "5 of 30 communications invoke peoples' rights (art. 19-24)",
+        'article_freq_subtitle': "How many of the 30 ACHPR cases cited each Charter article",
+        'correlation_cluster_label': 'Identity cluster',
+        'pre_post_ogiek_subtitle': "Post-Ogiek constitutions are mostly francophone\nauthoritarian revisions (Guinea, Tunisia, Chad),\nnot responses to case law.",
+        'dendrogram_subtitle': "Countries cluster by recognition patterns, not by heritage",
+        'treaty_beeswarm_subtitle': "Each dot = one country. The flat line shows no relationship\nbetween treaty ratification and constitutional recognition.",
+        'treaty_beeswarm_mean': 'Overall mean',
+        'pc_outliers_title': "The 'outliers' are explained by post-conflict\nconstitutional moments",
+        'pc_outliers_ylabel': 'Total constitutional score (out of 20)',
+        'pc_mechanism_title': "The post-conflict effect is concentrated\non identity dimensions",
+        'pc_mechanism_ylabel': 'Mean score (0-2)',
+        'pc_mechanism_identity': 'Identity dimensions',
+        'pc_mechanism_institutional': 'Institutional dimensions',
+        'tier2_note': '* Lusophone, other = Tier 2 (case studies)',
+        'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
+        'kwic_pct_xlabel': "% of occurrences",
     },
 }
 
@@ -377,6 +426,14 @@ def t(key, lang='fr'):
 def hl(heritage, lang='fr'):
     """Get heritage label."""
     return LABELS[lang].get(heritage, heritage.capitalize())
+
+
+def add_tier_note(ax, lang='fr', tier=1):
+    """Add small tier annotation to figure corner."""
+    label = t('tier1_note', lang) if tier == 1 else t('tier2_note', lang)
+    ax.text(0.98, 0.02, label, transform=ax.transAxes, ha='right', va='bottom',
+            fontsize=7, color=C_DIM, style='italic',
+            bbox=dict(boxstyle='round,pad=0.2', facecolor='white', edgecolor=C_DIM, alpha=0.6))
 
 
 # ── Style ─────────────────────────────────────────────────

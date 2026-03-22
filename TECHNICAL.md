@@ -71,7 +71,7 @@ data/
   case_law_analysis.json — Doctrinal concepts, cross-system citations (M5)
   extended_coding_v2.json — 12 sub-categories: land/resources + cultural rights (M6)
   embeddings/         — Voyage voyage-law-2 embeddings (gitignored, regenerable)
-  figures/            — 29 thesis-quality PDFs + PNGs (gitignored, regenerable)
+  figures/            — 31 thesis-quality PDFs + PNGs (gitignored, regenerable)
   appendix/           — CSV tables for thesis methodology appendix (M7)
 docs/
   session-prompts.md  — User prompts from initial development session

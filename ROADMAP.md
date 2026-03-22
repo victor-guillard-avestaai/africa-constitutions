@@ -6,7 +6,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 **Team:** Alex (law researcher, PhD student) + Victor (data scientist, developer) + Claude (AI assistant).
 
-**Current state:** Research phase complete (M0-M7). 11 key insights, 29 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
+**Current state:** Research phase complete (M0-M7). 11 key insights, 31 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
 
 ---
 
@@ -301,7 +301,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - [x] Exported CSVs in data/appendix/
 
 ### Publication
-- [x] 29 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
+- [x] 31 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
 - [x] Dashboard hosted on GitHub Pages or university server
 - [ ] French/English language toggle (not yet done)
 - [x] Citation metadata (HTML meta tags)
