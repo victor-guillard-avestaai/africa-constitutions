@@ -21,8 +21,9 @@ PDF-ready academic figures + statistical tables for the thesis document. Must be
 
 ### Deliverable 2: Interactive Dashboard
 Website where non-technical law researchers explore the data interactively.
-- 7-tab structure (Carte, Matrice, Héritage, Traités, Post-conflit, Textes, Clusters)
-- 5 tabs interactive (D3), 2 tabs static image embeds (need conversion to D3)
+- 8-tab structure (Carte, Matrice, Héritage, Traités, Post-conflit, Textes, Clusters, Figures)
+- 7 tabs interactive (D3), 1 tab static image embeds (Textes), 1 gallery (Figures)
+- 5 map modes (Score, Combiné, Héritage, Sov. vs Id., Post-conflit)
 - Live at: https://victor-guillard-avestaai.github.io/africa-constitutions/
 - Must work in **French and English**
 
@@ -39,11 +40,14 @@ Website where non-technical law researchers explore the data interactively.
 - [x] Add captions and source citations to figure_index.md
 
 ### B. Dashboard Interactivity (Deliverable 2)
-- [ ] Convert Textes tab from static images to interactive D3 charts
-- [ ] Convert Clusters tab: interactive UMAP scatter (hover for country), interactive similarity heatmap
+- [x] Convert Clusters tab: interactive UMAP scatter + dendrogram with threshold slider + companion map
+- [x] Add 2 new map modes: "Sov. vs Id." (diverging choropleth) + "Post-conflit" (dashed borders)
+- [x] Fix heatmap column width stability (table-layout: fixed)
+- [x] Reduce scatter plot height (500→380)
+- [x] Richer heritage divergence annotations (3 per dimension with historical context)
+- [x] Figures gallery tab (8th tab, 36 figures by chapter)
+- [ ] Convert Textes tab from static images to interactive D3 charts (deferred — static figures sufficient)
 - [ ] Add per-dimension breakdown to Post-conflit tab
-- [ ] Add post-conflict toggle to scatter plot (switch heritage/post-conflict view)
-- [ ] Add post-conflict indicator to heatmap (column or icon next to country names)
 - [ ] Add methodology explainer modal accessible from all tabs
 - [ ] Extend year slider to 1847 (Liberia)
 
