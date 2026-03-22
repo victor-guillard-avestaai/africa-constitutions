@@ -159,8 +159,8 @@ header .lead {
 /* ─── Map Layout ────────────────────────────────────────── */
 .map-row {
   display: grid;
-  grid-template-columns: 230px 1fr;
-  gap: 1.2rem;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
   align-items: start;
 }
 
@@ -295,6 +295,18 @@ header .lead {
 .mode-btn:hover { background: var(--hover-light); color: var(--text); }
 .mode-btn.active { background: var(--score-x); color: var(--text); font-weight: 600; }
 
+/* Post-conflict overlay checkbox */
+.pc-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  cursor: pointer;
+  margin-top: 0.3rem;
+}
+.pc-toggle input { accent-color: var(--c2); cursor: pointer; }
+
 /* 2D legend grid */
 .legend-explain { font-size: 0.68rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.3rem; }
 .legend-grid {
@@ -333,7 +345,7 @@ header .lead {
 }
 
 /* Map */
-#map-container { position: relative; width: 100%; height: 620px; }
+#map-container { position: relative; width: 100%; height: 550px; }
 #map-svg { width: 100%; height: 100%; }
 
 #map-svg .country-path {
