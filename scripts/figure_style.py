@@ -102,7 +102,7 @@ LABELS = {
         'sovereignty_markers_ylabel': '% de constitutions contenant le terme',
 
         # Ch.1 S2
-        'naming_heatmap_title': 'Les anglophones utilisent un vocabulaire identitaire\nplus diversifié que les francophones',
+        'naming_heatmap_title': 'Francophones et anglophones\nnomment les groupes différemment',
         'naming_term_labels': ['peuple (sg.)', 'peuples (pl.)', 'ethni(que)', 'tribu/tribal',
                                'autochtone', 'communauté(s)', 'minorité(s)', 'nation', 'race/racial'],
         'naming_heatmap_cbar': 'pour 1000 mots',
@@ -244,6 +244,8 @@ LABELS = {
         'tier2_note': '* Lusophone, autre = Tier 2 (études de cas)',
         'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
         'kwic_pct_xlabel': "% des occurrences",
+        'people_vs_peoples_corpus_note': 'Terme recherché dans le corpus anglais (constituteproject.org)',
+        'pc_mechanism_sig_legend': '*** p < 0,001 (Mann-Whitney, effet post-conflit)',
     },
 
     'en': {
@@ -292,7 +294,7 @@ LABELS = {
         'sovereignty_markers_ylabel': '% of constitutions containing the term',
 
         # Ch.1 S2
-        'naming_heatmap_title': 'Anglophone constitutions use more diverse\nidentity vocabulary than francophone',
+        'naming_heatmap_title': 'Francophone and anglophone constitutions\nname groups differently',
         'naming_term_labels': ['people (sg.)', 'peoples (pl.)', 'ethnic', 'tribe/tribal',
                                'indigenous', 'community/ies', 'minority/ies', 'nation', 'race/racial'],
         'naming_heatmap_cbar': 'per 1000 words',
@@ -432,6 +434,8 @@ LABELS = {
         'tier2_note': '* Lusophone, other = Tier 2 (case studies)',
         'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
         'kwic_pct_xlabel': "% of occurrences",
+        'people_vs_peoples_corpus_note': 'Search term in the English corpus (constituteproject.org)',
+        'pc_mechanism_sig_legend': '*** p < 0.001 (Mann-Whitney, post-conflict effect)',
     },
 }
 
