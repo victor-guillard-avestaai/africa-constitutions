@@ -85,7 +85,7 @@ LABELS = {
         'score_boxplot_title': "L'écart de reconnaissance par héritage colonial",
         'score_boxplot_ylabel': 'Score constitutionnel total (sur 20)',
         'score_boxplot_annot': 'Cohen d = 1,05 (franco. vs anglo.)',
-        'dendrogram_title': 'Classification hiérarchique des 54 constitutions\n(Ward, 10 dimensions codées)',
+        'dendrogram_title': 'Les constitutions se regroupent par profil\nde reconnaissance, pas par héritage colonial',
         'dendrogram_xlabel': 'Distance',
 
         # ── Existing figure titles (Step 3) ──
@@ -277,7 +277,7 @@ LABELS = {
         'score_boxplot_title': 'The recognition gap by colonial heritage',
         'score_boxplot_ylabel': 'Total constitutional score (out of 20)',
         'score_boxplot_annot': "Cohen's d = 1.05 (franco. vs anglo.)",
-        'dendrogram_title': 'Hierarchical clustering of 54 constitutions\n(Ward, 10 coded dimensions)',
+        'dendrogram_title': 'Constitutions cluster by recognition profile,\nnot by colonial heritage',
         'dendrogram_xlabel': 'Distance',
 
         # ── Existing figure titles ──
