@@ -138,8 +138,13 @@ const I18N = {
     clusters_title: "Clustering constitutionnel",
     clusters_explain: "<strong>Méthode</strong> : les 54 constitutions sont plongées dans un espace sémantique (embeddings voyage-law-2, 1024 dimensions) puis projetées en 2D (UMAP). Le clustering hiérarchique (Ward) sur les 10 dimensions codées révèle des groupes qui ne reproduisent PAS l'héritage colonial (ARI = 0,033).",
     clusters_umap_title: "Carte de proximité sémantique",
+    clusters_umap_sub: "Chaque point représente une constitution. Les points proches sont textuellement similaires. Les couleurs indiquent l'héritage colonial.",
     clusters_dendro_title: "Classification hiérarchique interactive",
     clusters_dendro_explain: "Déplacez le curseur de droite à gauche. À droite, toute l'Afrique forme un seul groupe. En déplaçant vers la gauche, les constitutions différentes se séparent en groupes distincts. La carte montre quels pays restent ensemble.",
+    clusters_threshold: "Seuil",
+    clusters_groups: "groupes",
+    clusters_group: "Groupe",
+    clusters_countries: "pays",
     btn_constitutions: "Constitutions",
     btn_preambles: "Préambules",
 
@@ -147,6 +152,8 @@ const I18N = {
     figures_title: "Figures de la thèse",
     figures_sub: "36 figures organisées par chapitre. Cliquez sur une image pour l'agrandir. Téléchargez le PDF haute résolution via le bouton ⬇.",
     fig_download: "⬇ PDF",
+    fig_method_toggle: "En savoir plus",
+    fig_method_toggle_close: "Masquer",
 
     // Footer
     footer_note: "Chaque cellule colorée encode une dimension constitutionnelle",
@@ -396,8 +403,13 @@ const I18N = {
     clusters_title: "Constitutional clustering",
     clusters_explain: "<strong>Method</strong>: the 54 constitutions are embedded in a semantic space (voyage-law-2, 1024 dimensions) then projected to 2D (UMAP). Hierarchical clustering (Ward) on the 10 coded dimensions reveals groups that do NOT reproduce colonial heritage (ARI = 0.033).",
     clusters_umap_title: "Semantic proximity map",
+    clusters_umap_sub: "Each point represents a constitution. Nearby points are textually similar. Colors indicate colonial heritage.",
     clusters_dendro_title: "Interactive hierarchical classification",
     clusters_dendro_explain: "Drag the slider from right to left. On the right, all of Africa forms one group. Moving left, constitutions that are different separate into distinct groups. The map shows which countries stay together.",
+    clusters_threshold: "Threshold",
+    clusters_groups: "groups",
+    clusters_group: "Group",
+    clusters_countries: "countries",
     btn_constitutions: "Constitutions",
     btn_preambles: "Preambles",
 
@@ -405,6 +417,8 @@ const I18N = {
     figures_title: "Thesis figures",
     figures_sub: "36 figures organized by chapter. Click an image to enlarge. Download high-resolution PDF via the ⬇ button.",
     fig_download: "⬇ PDF",
+    fig_method_toggle: "Learn more",
+    fig_method_toggle_close: "Hide",
 
     // Footer
     footer_note: "Each colored cell encodes a constitutional dimension",
@@ -571,6 +585,11 @@ function switchLang() {
   renderFigures();
   renderHeatmap();
   renderLegend2D();
+  // Re-render UMAP (tooltips use tr()) and dendrogram/clusters
+  document.getElementById('umap-container').innerHTML = '';
+  renderUMAP();
+  document.getElementById('dendrogram-container').innerHTML = '';
+  renderDendrogram();
   renderTextesTab();
   // Re-render bio if open
   if (selCountry) {
@@ -1942,6 +1961,14 @@ function renderUMAP() {
   svg.append('text').attr('x',w/2).attr('y',h+35).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 1');
   svg.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-30).attr('text-anchor','middle').style('font-size','10px').style('fill',CSS.muted).text('UMAP 2');
 
+  // Compute total score lookup for tooltip
+  const scoreLookup = {};
+  if (DATA.feature_matrix) {
+    for (const row of DATA.feature_matrix) {
+      scoreLookup[row.PAYS] = DATA.features.reduce((s, f) => s + row[f], 0);
+    }
+  }
+
   // Draw points
   points.forEach(p => {
     const heritage = DATA.colonial_heritage[p.name] || 'other';
@@ -1970,12 +1997,14 @@ function renderUMAP() {
         .style('font-size','7px').style('fill',color).text(shortName);
     }
 
-    // Hover tooltip
+    // Hover tooltip — all countries
+    const totalScore = scoreLookup[p.name];
     g.on('mouseover', (event) => {
       const tt = document.getElementById('tooltip');
       tt.style.display = 'block';
       tt.style.opacity = '1';
-      tt.innerHTML = `<strong>${p.name}</strong><br>${HL(DATA.colonial_heritage[p.name] || 'other')}${pc?' &middot; ' + tr('postconflict_label'):''}`;
+      const scoreStr = totalScore !== undefined ? ` &middot; ${tr('score_label')} : ${totalScore}/20` : '';
+      tt.innerHTML = `<strong>${p.name}</strong><br>${HL(heritage)}${scoreStr}${pc ? ' &middot; ' + tr('postconflict_label') : ''}`;
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
@@ -2131,7 +2160,10 @@ function renderDendrogram() {
 }
 
 // ─── Companion cluster map ──────────────────────────────────
-const CLUSTER_COLORS = ['#5b9bd5','#ed7d31','#70ad47','#ffc000','#9b59b6','#e74c3c','#1abc9c','#95a5a6'];
+function clusterColor(clusterId, totalClusters) {
+  const t = totalClusters <= 1 ? 0.5 : clusterId / (totalClusters - 1);
+  return d3.interpolateRdYlBu(1 - t); // reversed: warm=0, cool=1
+}
 let clusterMapPaths = null;
 
 function renderClusterMap() {
@@ -2141,9 +2173,8 @@ function renderClusterMap() {
 
   // Reuse geoData fetched by the main map if available; otherwise wait
   if (!geoData) {
-    // Retry once geoData is loaded (initMap sets it)
     let retries = 0;
-    const maxRetries = 50; // 50 × 200ms = 10s max
+    const maxRetries = 50;
     const check = setInterval(() => {
       retries++;
       if (geoData) {
@@ -2158,7 +2189,7 @@ function renderClusterMap() {
   }
 
   const africa = geoData.features;
-  const w = 380, h = 400;
+  const w = 500, h = 420;
   const projection = d3.geoMercator().center([20, 3]).scale(w * 0.65).translate([w/2, h/2]);
   const path = d3.geoPath().projection(projection);
 
@@ -2171,8 +2202,34 @@ function renderClusterMap() {
     .attr('d', path)
     .attr('fill', '#eee')
     .attr('stroke', 'white')
-    .attr('stroke-width', 0.5);
+    .attr('stroke-width', 0.5)
+    .style('cursor', 'pointer')
+    .on('mouseover', (event, d) => {
+      const iso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+      const entry = Object.entries(DATA.name_to_iso).find(([n, i]) => i === iso);
+      if (!entry) return;
+      const name = entry[0];
+      const heritage = DATA.colonial_heritage[name] || 'other';
+      const clusterId = currentClusterMap[name];
+      const clusterLabel = clusterId !== undefined ? `${tr('clusters_group')} ${clusterId + 1}` : '—';
+      const tt = document.getElementById('tooltip');
+      tt.style.display = 'block';
+      tt.style.opacity = '1';
+      tt.innerHTML = `<strong>${name}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
+    })
+    .on('mousemove', (event) => {
+      const tt = document.getElementById('tooltip');
+      tt.style.left = (event.pageX + 12) + 'px';
+      tt.style.top = (event.pageY - 20) + 'px';
+    })
+    .on('mouseout', () => {
+      const tt = document.getElementById('tooltip');
+      tt.style.opacity = '0';
+      tt.style.display = '';
+    });
 }
+
+let currentClusterMap = {}; // shared for tooltip lookup
 
 function updateClusters(threshold) {
   if (!DATA.linkage_data) return;
@@ -2205,22 +2262,44 @@ function updateClusters(threshold) {
     if (!(root in rootToId)) rootToId[root] = nextId++;
     clusterMap[countries[i]] = rootToId[root];
   }
+  currentClusterMap = clusterMap;
+  const totalClusters = nextId;
 
   // Update companion map
   if (clusterMapPaths) {
     clusterMapPaths.attr('fill', d => {
       const iso = d.properties.ISO_A3;
-      // Also check ADM0_A3 for countries where ISO_A3 is -99
       const isoCheck = iso !== '-99' ? iso : d.properties.ADM0_A3;
       const name = Object.entries(DATA.name_to_iso).find(([n, i]) => i === isoCheck);
       if (!name) return '#eee';
       const clusterId = clusterMap[name[0]];
-      return clusterId !== undefined ? CLUSTER_COLORS[clusterId % CLUSTER_COLORS.length] : '#eee';
+      return clusterId !== undefined ? clusterColor(clusterId, totalClusters) : '#eee';
     });
   }
 
   // Update dendrogram link colors based on clusters
   d3.selectAll('.dendro-link').attr('stroke', '#999');
+
+  // Update cluster composition panel
+  const compPanel = document.getElementById('cluster-composition');
+  if (compPanel) {
+    // Group countries by cluster
+    const groups = {};
+    for (const [country, cid] of Object.entries(clusterMap)) {
+      if (!groups[cid]) groups[cid] = [];
+      groups[cid].push(country);
+    }
+    const sortedIds = Object.keys(groups).map(Number).sort((a, b) => a - b);
+
+    let html = `<div class="cc-header">${tr('clusters_threshold')} : ${threshold.toFixed(1)} — ${totalClusters} ${tr('clusters_groups')}</div>`;
+    for (const cid of sortedIds) {
+      const members = groups[cid];
+      const colorSwatch = clusterColor(cid, totalClusters);
+      const shortNames = members.map(c => c.replace('République démocratique du Congo','RDC').replace('République centrafricaine','Centrafrique'));
+      html += `<div class="cc-group"><span class="cc-group-label" style="color:${colorSwatch}">${tr('clusters_group')} ${cid + 1}</span> (${members.length} ${tr('clusters_countries')}) : <span class="cc-group-countries">${shortNames.join(', ')}</span></div>`;
+    }
+    compPanel.innerHTML = html;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2643,6 +2722,116 @@ const FIGURE_INDEX = [
   {id:'N.2', file:'topics_heritage_heatmap', ch:'NLP', caption_fr:'Topics × héritage', caption_en:'Topics × heritage'},
 ];
 
+// Featured figures get 2-column span in the mosaic
+const FEATURED_FIGURES = new Set([
+  'ch2s2_dual_choropleth', 'overview_choropleth_score',
+  'ch2s2_heritage_dumbbell', 'ch2s2_heritage_radar'
+]);
+
+// Chapter descriptions (methodology + key finding)
+const CHAPTER_DESCS = {
+  'Ch.1 S1': {
+    fr: "Analyse des pr\u00e9ambules constitutionnels par recherche de mots-cl\u00e9s (souverainet\u00e9, indivisibilit\u00e9, identit\u00e9). Le mod\u00e8le jacobin fran\u00e7ais structure la rh\u00e9torique des constitutions francophones.",
+    en: "Analysis of constitutional preambles by keyword search (sovereignty, indivisibility, identity). The French Jacobin model structures francophone constitutional rhetoric."
+  },
+  'Ch.1 S2': {
+    fr: "S\u00e9mantique du mot \u00ab peoples \u00bb dans les 54 constitutions. La majorit\u00e9 des occurrences francophones sont des citations de trait\u00e9s, non des droits domestiques.",
+    en: "Semantics of the word 'peoples' across 54 constitutions. Most francophone occurrences are treaty citations, not domestic rights."
+  },
+  'Ch.2 S1': {
+    fr: "Corr\u00e9lation entre ratification de trait\u00e9s internationaux et reconnaissance constitutionnelle. R\u00e9sultat : aucune corr\u00e9lation significative (\u03c1 = \u22120,06).",
+    en: "Correlation between international treaty ratification and constitutional recognition. Result: no significant correlation (\u03c1 = \u22120.06)."
+  },
+  'Ch.2 S2': {
+    fr: "Analyse multidimensionnelle de la divergence par h\u00e9ritage colonial. L\u2019\u00e9cart francophone-anglophone s\u2019\u00e9largit apr\u00e8s 1990 (\u03b7\u00b2 = 22,3 %).",
+    en: "Multidimensional analysis of divergence by colonial heritage. The francophone-anglophone gap widens after 1990 (\u03b7\u00b2 = 22.3%)."
+  },
+  'Ch.3': {
+    fr: "Chronologie et analyse des d\u00e9cisions de la Commission et Cour africaines des droits de l\u2019homme (CADHP). \u00c9mergence du crit\u00e8re fonctionnel.",
+    en: "Timeline and analysis of African Commission and Court decisions (ACHPR). Emergence of the functional criterion."
+  },
+  'Ch.4': {
+    fr: "Analyse du vocabulaire doctrinal et des citations inter-syst\u00e9miques dans la jurisprudence africaine des droits des peuples.",
+    en: "Analysis of doctrinal vocabulary and cross-system citations in African peoples' rights jurisprudence."
+  },
+  'Ch.5': {
+    fr: "Cartographie de l\u2019autod\u00e9termination dans les 54 constitutions. 8 pays mentionnent l\u2019autod\u00e9termination ; seule l\u2019\u00c9thiopie autorise la s\u00e9cession.",
+    en: "Mapping self-determination across 54 constitutions. 8 countries mention self-determination; only Ethiopia allows secession."
+  },
+  'Ch.7': {
+    fr: "Provisions territoriales et fonci\u00e8res dans les constitutions africaines. Le lien terre-identit\u00e9 comme marqueur de reconnaissance.",
+    en: "Territorial and land provisions in African constitutions. The land-identity link as a recognition marker."
+  },
+  'Ch.8': {
+    fr: "Profondeur des droits culturels : de la mention symbolique aux garanties justiciables. L\u2019analyse distingue trois niveaux de protection.",
+    en: "Cultural rights depth: from symbolic mention to justiciable guarantees. The analysis distinguishes three protection levels."
+  },
+  'Post-conflit': {
+    fr: "Interaction entre h\u00e9ritage colonial et contexte post-conflit. L\u2019effet post-conflit explique 41 % de variance suppl\u00e9mentaire (\u03b7\u00b2 passe de 22 % \u00e0 63 %).",
+    en: "Interaction between colonial heritage and post-conflict context. The post-conflict effect explains 41% additional variance (\u03b7\u00b2 goes from 22% to 63%)."
+  },
+  'Clustering': {
+    fr: "Embeddings s\u00e9mantiques (voyage-law-2) et UMAP. Le clustering hi\u00e9rarchique sur 10 dimensions ne reproduit pas l\u2019h\u00e9ritage colonial (ARI = 0,033).",
+    en: "Semantic embeddings (voyage-law-2) and UMAP. Hierarchical clustering on 10 dimensions does not reproduce colonial heritage (ARI = 0.033)."
+  },
+  'NLP': {
+    fr: "Analyse KWIC (concordancier) et mod\u00e9lisation de topics sur le corpus constitutionnel. Les th\u00e8mes r\u00e9v\u00e8lent des structures rh\u00e9toriques distinctes par h\u00e9ritage.",
+    en: "KWIC (concordance) analysis and topic modeling on the constitutional corpus. Topics reveal distinct rhetorical structures by heritage."
+  }
+};
+
+// Expandable methodology notes per chapter
+const CHAPTER_METHODS = {
+  'Ch.1 S1': {
+    fr: "Recherche de mots-cl\u00e9s (regex) sur les pr\u00e9ambules : \u00ab sovereignty \u00bb, \u00ab indivisible \u00bb, \u00ab unity \u00bb, \u00ab identity \u00bb, \u00ab diversity \u00bb. Taux de pr\u00e9sence calcul\u00e9s par h\u00e9ritage colonial. Score d\u2019\u00e9quilibre = ratio identit\u00e9/souverainet\u00e9.",
+    en: "Keyword search (regex) on preambles: 'sovereignty', 'indivisible', 'unity', 'identity', 'diversity'. Presence rates computed by colonial heritage. Balance score = identity/sovereignty ratio."
+  },
+  'Ch.1 S2': {
+    fr: "Classification manuelle des occurrences de \u00ab peoples \u00bb en 6 cat\u00e9gories s\u00e9mantiques. Validation crois\u00e9e sur un \u00e9chantillon de 10 constitutions.",
+    en: "Manual classification of 'peoples' occurrences into 6 semantic categories. Cross-validation on a sample of 10 constitutions."
+  },
+  'Ch.2 S1': {
+    fr: "Corr\u00e9lation de Spearman entre nombre de trait\u00e9s ratifi\u00e9s (6 trait\u00e9s : DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP) et score constitutionnel total. Beeswarm plot pour visualiser la distribution.",
+    en: "Spearman correlation between number of ratified treaties (6 treaties: UNDRIP, ICCPR, ICESCR, ICERD, ILO 169, ACHPR) and total constitutional score. Beeswarm plot for distribution visualization."
+  },
+  'Ch.2 S2': {
+    fr: "S\u00e9ries temporelles 1960\u20132026 par h\u00e9ritage. ANOVA \u00e0 deux facteurs (h\u00e9ritage \u00d7 post-conflit). Matrice de corr\u00e9lation de Spearman sur les 10 dimensions. Choropleth bi-dimensionnel (identitaire vs institutionnel).",
+    en: "Time series 1960\u20132026 by heritage. Two-way ANOVA (heritage \u00d7 post-conflict). Spearman correlation matrix on 10 dimensions. Bi-dimensional choropleth (identity vs institutional)."
+  },
+  'Ch.3': {
+    fr: "Extraction semi-automatique des d\u00e9cisions de la CADHP citant les droits des peuples (art. 19\u201324 de la Charte africaine). Classification par article invoqu\u00e9 et type de requ\u00e9rant.",
+    en: "Semi-automatic extraction of ACHPR decisions citing peoples' rights (art. 19\u201324 of the African Charter). Classification by invoked article and applicant type."
+  },
+  'Ch.4': {
+    fr: "Extraction de termes doctrinaux par TF-IDF. R\u00e9seau de citations inter-syst\u00e9miques (CADHP \u2194 CEDH \u2194 CIDH). Analyse des d\u00e9cisions embl\u00e9matiques (Endorois, Ogiek).",
+    en: "Doctrinal term extraction by TF-IDF. Cross-system citation network (ACHPR \u2194 ECHR \u2194 IACHR). Analysis of landmark decisions (Endorois, Ogiek)."
+  },
+  'Ch.5': {
+    fr: "Recherche de mots-cl\u00e9s : \u00ab self-determination \u00bb, \u00ab secession \u00bb, \u00ab autonomy \u00bb, \u00ab indivisible \u00bb. Classification en 7 postures constitutionnelles.",
+    en: "Keyword search: 'self-determination', 'secession', 'autonomy', 'indivisible'. Classification into 7 constitutional postures."
+  },
+  'Ch.7': {
+    fr: "Codage binaire des provisions territoriales (terre communautaire, droit foncier coutumier, ressources naturelles). Analyse par h\u00e9ritage et statut post-conflit.",
+    en: "Binary coding of territorial provisions (communal land, customary land law, natural resources). Analysis by heritage and post-conflict status."
+  },
+  'Ch.8': {
+    fr: "Codage en trois niveaux (absent / mention / garantie justiciable) des droits culturels. Analyse de la profondeur institutionnelle associ\u00e9e.",
+    en: "Three-level coding (absent / mention / justiciable guarantee) of cultural rights. Analysis of associated institutional depth."
+  },
+  'Post-conflit': {
+    fr: "Variable binaire (post-conflit oui/non). Test de Mann-Whitney et ANOVA \u00e0 deux facteurs. Taille d\u2019effet : \u03b7\u00b2 héritage = 22 %, \u03b7\u00b2 h\u00e9ritage + post-conflit = 63 %.",
+    en: "Binary variable (post-conflict yes/no). Mann-Whitney test and two-way ANOVA. Effect size: \u03b7\u00b2 heritage = 22%, \u03b7\u00b2 heritage + post-conflict = 63%."
+  },
+  'Clustering': {
+    fr: "Embeddings voyage-law-2 (1024 dim). R\u00e9duction UMAP (2D). Clustering hi\u00e9rarchique Ward sur les 10 dimensions cod\u00e9es. M\u00e9trique : Adjusted Rand Index vs h\u00e9ritage colonial.",
+    en: "Voyage-law-2 embeddings (1024 dim). UMAP reduction (2D). Ward hierarchical clustering on 10 coded dimensions. Metric: Adjusted Rand Index vs colonial heritage."
+  },
+  'NLP': {
+    fr: "Concordancier KWIC sur \u00ab customary \u00bb avec fen\u00eatre de \u00b110 mots. Mod\u00e9lisation de topics (LDA, k=8) sur les constitutions compl\u00e8tes.",
+    en: "KWIC concordance on 'customary' with \u00b110-word window. Topic modeling (LDA, k=8) on full constitutions."
+  }
+};
+
 function renderFigures() {
   const container = document.getElementById('figures-gallery');
   if (!container) return;
@@ -2662,13 +2851,43 @@ function renderFigures() {
   container.classList.add('figures-gallery');
 
   for (const group of groups) {
+    // Chapter heading
     const h3 = document.createElement('h3');
     h3.textContent = group.ch;
     container.appendChild(h3);
 
+    // Chapter description
+    const desc = CHAPTER_DESCS[group.ch];
+    if (desc) {
+      const descEl = document.createElement('div');
+      descEl.className = 'chapter-desc';
+      descEl.textContent = lang === 'fr' ? desc.fr : desc.en;
+      container.appendChild(descEl);
+    }
+
+    // Methodology toggle
+    const method = CHAPTER_METHODS[group.ch];
+    if (method) {
+      const toggleBtn = document.createElement('button');
+      toggleBtn.className = 'method-toggle';
+      toggleBtn.textContent = tr('fig_method_toggle');
+      const detailEl = document.createElement('div');
+      detailEl.className = 'method-detail';
+      detailEl.textContent = lang === 'fr' ? method.fr : method.en;
+      toggleBtn.addEventListener('click', () => {
+        detailEl.classList.toggle('open');
+        toggleBtn.textContent = detailEl.classList.contains('open') ? tr('fig_method_toggle_close') : tr('fig_method_toggle');
+      });
+      container.appendChild(toggleBtn);
+      container.appendChild(detailEl);
+    }
+
     for (const fig of group.figures) {
       const card = document.createElement('div');
       card.className = 'fig-gallery-card';
+      if (FEATURED_FIGURES.has(fig.file)) {
+        card.classList.add('featured');
+      }
 
       const img = document.createElement('img');
       img.src = `figures/${fig.file}.png`;

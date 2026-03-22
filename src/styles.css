@@ -691,10 +691,17 @@ footer {
 .figures-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 .figures-gallery h3 { grid-column: 1 / -1; margin-top: 1rem; font-family: var(--font-heading); font-size: 1rem; }
 .fig-gallery-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; }
+.fig-gallery-card.featured { grid-column: span 2; }
 .fig-gallery-card img { width: 100%; border-radius: 4px; cursor: pointer; }
 .fig-gallery-card .fig-num { font-size: 0.75rem; color: var(--muted); }
 .fig-gallery-card .fig-caption { font-size: 0.8rem; margin-top: 0.25rem; }
 .fig-gallery-card .fig-dl { font-size: 0.75rem; color: var(--c2); text-decoration: none; }
+
+.chapter-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; margin-bottom: 0.5rem; grid-column: 1 / -1; }
+.method-toggle { font-size: 0.75rem; color: var(--c2); cursor: pointer; border: none; background: none; font-family: var(--font); padding: 0; grid-column: 1 / -1; text-align: left; }
+.method-toggle:hover { text-decoration: underline; }
+.method-detail { display: none; font-size: 0.78rem; color: var(--muted); padding: 0.5rem; background: var(--explainer-bg); border-radius: 4px; margin-bottom: 0.5rem; grid-column: 1 / -1; line-height: 1.5; }
+.method-detail.open { display: block; }
 
 @media (max-width: 1000px) {
   .map-row { grid-template-columns: 1fr; }
@@ -735,6 +742,7 @@ footer {
 
   /* Figures gallery */
   .figures-gallery { grid-template-columns: repeat(2, 1fr); }
+  .fig-gallery-card.featured { grid-column: span 2; }
 }
 
 @media (max-width: 600px) {
@@ -776,15 +784,51 @@ footer {
 
   /* Figures gallery */
   .figures-gallery { grid-template-columns: 1fr; }
+  .fig-gallery-card.featured { grid-column: span 1; }
 }
 
 /* ─── Clusters Tab ───────────────────────────────────────── */
-.umap-controls { display: flex; gap: 0.5rem; margin: 0.5rem 0; }
-.cluster-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+.umap-controls {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+  width: fit-content;
+}
+.cluster-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1rem; align-items: start; }
 #umap-container svg { max-width: 700px; width: 100%; }
 #dendrogram-container svg { width: 100%; }
-#cluster-map-container svg { width: 100%; max-width: 400px; }
+#cluster-map-container svg { width: 100%; max-width: 520px; }
 .threshold-line { cursor: ew-resize; }
+
+.cluster-composition {
+  margin-top: 1rem;
+  background: var(--explainer-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.cluster-composition .cc-header {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+  font-size: 0.82rem;
+}
+.cluster-composition .cc-group {
+  margin-bottom: 0.25rem;
+}
+.cluster-composition .cc-group-label {
+  font-weight: 600;
+  color: var(--text);
+}
+.cluster-composition .cc-group-countries {
+  color: var(--muted);
+}
 
 /* ─── Figure Cards ───────────────────────────────────────── */
 .fig-card {
