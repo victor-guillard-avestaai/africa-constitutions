@@ -6,7 +6,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 **Team:** Alex (law researcher, PhD student) + Victor (data scientist, developer) + Claude (AI assistant).
 
-**Current state:** Research phase complete (M0-M7). 11 key insights, 31 thesis figures, 7 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
+**Current state:** Research phase complete (M0-M7). 11 key insights, 36 thesis figures, 8 notebooks, 30 cases, embeddings, extended coding. Now in presentation phase.
 
 ---
 
@@ -14,7 +14,7 @@ Data science, NLP, and visualization contributions to a PhD thesis on sub-state 
 
 ### Deliverable 1: Thesis Figures & Statistical Results
 PDF-ready academic figures + statistical tables for the thesis document. Must be in **French and English**.
-- 29 figures exist (18 original + 7 case law + 4 new). 26 bilingual (FR+EN), 3 FR-only
+- 36 figures, all bilingual (FR+EN): 18 original + 7 case law + 4 missing + 2 post-conflict + 5 creative (maps, dumbbell, radar)
 - ~~4 missing~~ All generated: heritage divergence, treaty beeswarm, correlation matrix, score boxplot
 - Statistical tables in data/appendix/ (coding scheme, full dataset)
 - All figures need captions, source citations, figure numbers
@@ -35,8 +35,8 @@ Website where non-technical law researchers explore the data interactively.
 - [x] All 5 figure-generating notebooks retrofitted with `for lang in ('fr', 'en')` loops
 - [x] Generate missing figures: heritage divergence (10 small multiples), treaty beeswarm, correlation matrix, score distribution boxplot
 - [x] Fix dendrogram readability: horizontal orientation, `figsize=(8,14)`, `leaf_font_size=8`
-- [x] All 29 figures generated in both FR and EN (data/figures/fr/ + data/figures/en/)
-- [x] Add captions and source citations to figure_index.md (29 figures with bilingual titles + insight descriptions)
+- [x] All 36 figures generated in both FR and EN (data/figures/fr/ + data/figures/en/)
+- [x] Add captions and source citations to figure_index.md
 
 ### B. Dashboard Interactivity (Deliverable 2)
 - [ ] Convert Textes tab from static images to interactive D3 charts
@@ -49,7 +49,7 @@ Website where non-technical law researchers explore the data interactively.
 
 ### C. Bilingual Support
 - [ ] Dashboard: French/English toggle for all UI text, titles, explainers
-- [ ] Thesis figures: generate both French and English versions from notebooks
+- [x] Thesis figures: all 36 generated in both French and English from notebooks
 
 ### D. Polish & Publication
 - [x] GitHub Pages deployment
@@ -301,7 +301,7 @@ The existing Drc dimension is binary (X/P/V). Constitutional cultural rights pro
 - [x] Exported CSVs in data/appendix/
 
 ### Publication
-- [x] 31 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
+- [x] 36 thesis figures in data/figures/ (PDF 300dpi + PNG) (matplotlib/seaborn → LaTeX)
 - [x] Dashboard hosted on GitHub Pages or university server
 - [ ] French/English language toggle (not yet done)
 - [x] Citation metadata (HTML meta tags)

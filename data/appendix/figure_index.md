@@ -1,6 +1,6 @@
 # Thesis Figure Index
 
-31 figures in `data/figures/fr/` (French) and `data/figures/en/` (English) — PDF (300 dpi) + PNG.
+36 figures in `data/figures/fr/` (French) and `data/figures/en/` (English) — PDF (300 dpi) + PNG.
 Generated from notebooks. Regenerate with `uv run jupyter nbconvert --execute`.
 
 Two-tier methodology: statistical comparisons use Tier 1 only (francophone n=23, anglophone n=19). Structural visualizations (clustering, similarity) include all 54 countries. Figures annotated accordingly.
@@ -14,6 +14,10 @@ Two-tier methodology: statistical comparisons use Tier 1 only (francophone n=23,
 | 1.3 | Marqueurs de souveraineté par héritage | ch1s1_sovereignty_markers | m2 |
 
 *70% of francophone constitutions contain "indivisible" vs 21% anglophone — the strongest heritage marker.*
+
+| 1.4 | Souveraineté ou identité : la géographie du silence constitutionnel (carte) | sov_vs_id_choropleth | thesis_figures |
+
+*Blue = institutional-dominant (francophone West Africa), warm = identity-dominant (anglophone East/Southern Africa). The geographic divide is immediately visible.*
 
 ## Ch.1 S2 — Terminologie de nomination
 
@@ -40,8 +44,11 @@ Two-tier methodology: statistical comparisons use Tier 1 only (francophone n=23,
 | 2.2 | Divergence héritage (10 petits multiples) | ch2s2_heritage_divergence | thesis_figures |
 | 2.3 | Matrice de corrélation (Tier 1) | ch2s2_correlation_matrix | thesis_figures |
 | 2.4 | Écart de reconnaissance (Tier 1) | ch2s2_score_distribution | thesis_figures |
+| 2.5 | Carte : identitaire vs institutionnel (double choroplèthe) | ch2s2_dual_choropleth | thesis_figures |
+| 2.6 | Le fossé identitaire (dumbbell) | ch2s2_heritage_dumbbell | thesis_figures |
+| 2.7 | Profil constitutionnel par héritage (radar) | ch2s2_heritage_radar | thesis_figures |
 
-*Identity cluster diverges post-1990; institutional dimensions converge. Cohen d=1.05. Drc↔Drm r=0.69.*
+*Identity cluster diverges post-1990; institutional dimensions converge. Cohen d=1.05. The dual choropleth makes the thesis argument visual at a glance.*
 
 ## Ch.3 — Chronologie jurisprudentielle
 
@@ -97,8 +104,9 @@ Two-tier methodology: statistical comparisons use Tier 1 only (francophone n=23,
 | T.2 | Heatmap 4 cellules × 10 dimensions | post_conflict_dimensions | post_conflict |
 | T.3 | Les anomalies s'expliquent par le post-conflit | post_conflict_outliers_explained | post_conflict |
 | T.4 | Effet concentré sur les dimensions identitaires | post_conflict_mechanism | post_conflict |
+| T.5 | Carte : score total avec overlay post-conflit | overview_choropleth_score | thesis_figures |
 
-*Post-conflict is the strongest predictor (η²=51.0%). RDC, Kenya, South Africa are not heritage anomalies — they are post-conflict constitutions. The effect is concentrated on identity dimensions (Drm, Id, Dpa, Drc: all p<0.001).*
+*Post-conflict is the strongest predictor (η²=51.0%). The choropleth shows geographic clustering in Great Lakes/Horn/Southern Africa. RDC, Kenya, South Africa are not heritage anomalies — they are post-conflict constitutions. The effect is concentrated on identity dimensions (Drm, Id, Dpa, Drc: all p<0.001).*
 
 ## Clustering & Embeddings
 

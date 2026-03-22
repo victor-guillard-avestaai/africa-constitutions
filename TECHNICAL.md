@@ -54,7 +54,7 @@ notebooks/
   m4_clustering_embeddings.ipynb    — Semantic clustering: Voyage + UMAP (M4b/c)
   m4d_kwic_topics.ipynb             — KWIC + BERTopic (M4d)
   m3_m5_case_law_analysis.ipynb     — ACHPR case law: timeline, citations, Ogiek (M3/M5)
-  thesis_figures.ipynb              — 4 new figures + fixed dendrogram (bilingual)
+  thesis_figures.ipynb              — 13 thesis figures: maps, dumbbell, radar, boxplot, dendrogram, etc. (bilingual)
 src/                  — Dashboard (open index.html in browser)
   index.html          — 7-tab dashboard (~300 lines)
   styles.css          — All CSS (~700 lines)
@@ -71,7 +71,9 @@ data/
   case_law_analysis.json — Doctrinal concepts, cross-system citations (M5)
   extended_coding_v2.json — 12 sub-categories: land/resources + cultural rights (M6)
   embeddings/         — Voyage voyage-law-2 embeddings (gitignored, regenerable)
-  figures/            — 31 thesis-quality PDFs + PNGs (gitignored, regenerable)
+  figures/fr/         — 36 thesis-quality PDFs + PNGs in French (gitignored, regenerable)
+  figures/en/         — 36 thesis-quality PDFs + PNGs in English (gitignored, regenerable)
+  ne_50m_admin_0_countries.geojson — Natural Earth 50m boundaries (cached for choropleth maps)
   appendix/           — CSV tables for thesis methodology appendix (M7)
 docs/
   session-prompts.md  — User prompts from initial development session
