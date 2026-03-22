@@ -90,20 +90,23 @@ LABELS = {
 
         # ── Existing figure titles (Step 3) ──
         # Ch.1 S1
-        'preamble_sov_id_title': 'Préambules constitutionnels : souveraineté vs. identité',
+        'preamble_sov_id_title': 'Les traditions coloniales structurent\nla rhétorique préambulaire',
         'preamble_sov_id_xlabel': 'Rhétorique de souveraineté (mots-clés pour 1000 mots)',
         'preamble_sov_id_ylabel': 'Rhétorique identitaire (mots-clés pour 1000 mots)',
         'preamble_parity': 'parité',
         'preamble_mean_fmt': 'moyenne {}',
-        'preamble_balance_title': 'Équilibre rhétorique des préambules\n(identité − souveraineté, pour 1000 mots)',
+        'preamble_balance_title': 'Les préambules francophones privilégient la souveraineté,\nles anglophones l\'identité',
         'preamble_balance_xlabel': '← Souveraineté dominante          Identité dominante →',
-        'sovereignty_markers_title': 'Marqueurs de souveraineté par héritage colonial',
+        'sovereignty_markers_title': "« Indivisible » : un marqueur\ndistinctement francophone",
+        'sov_marker_labels': ['« indivisible »', '« unité »', '« souverain »'],
         'sovereignty_markers_ylabel': '% de constitutions contenant le terme',
 
         # Ch.1 S2
-        'naming_heatmap_title': 'Terminologie de nomination des groupes par héritage colonial',
+        'naming_heatmap_title': 'Les anglophones utilisent un vocabulaire identitaire\nplus diversifié que les francophones',
+        'naming_term_labels': ['peuple (sg.)', 'peuples (pl.)', 'ethni(que)', 'tribu/tribal',
+                               'autochtone', 'communauté(s)', 'minorité(s)', 'nation', 'race/racial'],
         'naming_heatmap_cbar': 'pour 1000 mots',
-        'peoples_context_title': "Contexte d'utilisation de « peoples » (pluriel)",
+        'peoples_context_title': "« Peoples » dans les constitutions francophones :\nun mot emprunté, pas traduit en droit",
         'peoples_context_xlabel': "Nombre d'occurrences de « peoples »",
         'peoples_context_legend': 'Type de contexte',
         'peoples_context_right_title': 'Répartition proportionnelle',
@@ -119,10 +122,10 @@ LABELS = {
         'ctx_other': 'Autre',
 
         # Ch.5
-        'sd_posture_title': "Posture d'autodétermination par héritage colonial",
+        'sd_posture_title': "Les constitutions francophones sont majoritairement\nsilencieuses sur l'autodétermination",
         'sd_posture_xlabel': 'Nombre de constitutions',
         'sd_posture_legend': 'Posture',
-        'sd_flags_title': "Marqueurs d'autodétermination\ndans 54 constitutions africaines",
+        'sd_flags_title': "L'autodétermination reste largement absente\ndes constitutions africaines",
         'sd_flag_labels': ['Autodétermination', 'Indivisible', 'Autonomie', 'Sécession'],
         'sd_categories': [
             'externe (sécession permise)', 'interne (autodét. + autonomie)',
@@ -130,18 +133,18 @@ LABELS = {
             'indivisible + autonomie (tension)', 'indivisible (prohibition implicite)',
             'silencieuse',
         ],
-        'pre_post_ogiek_title': 'Reconnaissance constitutionnelle avant/après Ogiek (2017)\nScore moyen par dimension',
+        'pre_post_ogiek_title': "L'arrêt Ogiek n'a pas (encore) influencé\nles réformes constitutionnelles",
         'pre_post_ogiek_ylabel': 'Score moyen (0-2)',
         'pre_ogiek_label': 'Avant Ogiek (n={})',
         'post_ogiek_label': 'Après Ogiek (n={})',
 
         # Ch.3 case law
-        'timeline_title': 'Chronologie des décisions CADHP/Cour africaine\n30 communications analysées',
+        'timeline_title': 'Le critère fonctionnel émerge progressivement\ndepuis Endorois (2010)',
         'timeline_xlabel': 'Année (dépôt ou décision)',
         'legend_other_decisions': 'Autres décisions',
         'legend_peoples_rights': 'Droits des peuples (art. 19-24)',
         'legend_functional': 'Critère fonctionnel appliqué',
-        'article_freq_title': "Fréquence d'invocation des articles de la Charte africaine\ndans 30 communications CADHP",
+        'article_freq_title': "Les droits des peuples (art. 19-24) restent\nmarginaux dans la pratique CADHP",
         'article_freq_xlabel': 'Article de la Charte africaine',
         'article_freq_ylabel': "Nombre d'invocations",
         'legend_other_articles': 'Autres articles',
@@ -162,7 +165,7 @@ LABELS = {
         'citations_title': 'Citations inter-systémiques dans la jurisprudence CADHP\n— Articles 60-61 de la Charte africaine',
         'citations_xlabel': 'Citations dans le corpus (3 documents, sessions 70-81)',
         'citations_note': 'Articles 60-61 : la CADHP s\'inspire\ndu droit international et comparé',
-        'landmark_title': 'Citations de décisions emblématiques\ndans le corpus CADHP (sessions 70-81)',
+        'landmark_title': 'Nuba/Kordofan domine les citations récentes —\nles précédents fondateurs sont absents',
         'landmark_xlabel': 'Citations dans le corpus',
         'landmark_note': 'Note : Endorois et Ogiek ne sont pas citées dans les\nsessions 70-81 car elles sont antérieures au corpus.',
 
@@ -175,27 +178,30 @@ LABELS = {
         'sys_afcourt': 'Cour africaine',
 
         # Post-conflict
-        'pc_interaction_title': 'Score par héritage × contexte constitutionnel',
+        'pc_interaction_title': "L'effet post-conflit est plus marqué\nchez les francophones",
         'pc_interaction_ylabel': 'Score constitutionnel total (sur 20)',
         'pc_interaction_effect': "Effet d'interaction",
         'pc_non_conflict': 'Non-conflit',
         'pc_post_conflict': 'Post-conflit',
-        'pc_dimensions_title': 'Score moyen par dimension — Héritage × contexte constitutionnel (Tier 1, n=42)',
+        'pc_dimensions_title': "Les constitutions post-conflit reconnaissent\nplus sur toutes les dimensions identitaires",
         'pc_dimensions_cbar': 'Score moyen (0=X, 1=P, 2=V)',
         'pc_row_labels': ['Franco non-conflit', 'Franco post-conflit', 'Anglo non-conflit', 'Anglo post-conflit'],
 
         # Clustering
-        'umap_const_title': 'Clustering sémantique des 54 constitutions\n(embeddings voyage-law-2, projection UMAP)',
-        'umap_preamb_title': 'Clustering sémantique des 49 préambules\n(embeddings voyage-law-2, projection UMAP)',
-        'similarity_title': 'Similarité sémantique entre 54 constitutions\n(cosinus sur embeddings voyage-law-2)',
+        'umap_const_title': "L'héritage colonial structure le texte constitutionnel,\npas la reconnaissance substantielle",
+        'umap_preamb_title': 'Les préambules se regroupent moins nettement\npar héritage que les textes complets',
+        'similarity_title': 'Les voisins géographiques sont plus similaires\ntextuellement que les pairs par héritage',
         'similarity_cbar': 'Similarité cosinus',
         'post_conflict_suffix': ' (post-conflit)',
 
         # KWIC / Topics
-        'kwic_customary_title': "Contexte d'utilisation de « customary » par héritage",
+        'kwic_customary_title': "« Customary » renvoie au droit coutumier en anglophone,\nau droit international en francophone",
+        'kwic_cats': ['Droit coutumier/tribunaux', 'Autorité traditionnelle', 'Droits fonciers',
+                      'Pratiques culturelles', 'Droit international', 'Autre'],
         'kwic_xlabel': "Nombre d'occurrences",
         'kwic_legend': 'Type de contexte',
-        'topics_title': 'Distribution des topics par héritage colonial\n(BERTopic sur paragraphes constitutionnels)',
+        'topics_title': 'Les thèmes constitutionnels latents varient\nentre traditions juridiques',
+        'topics_note': 'Mots-clés anglais issus du corpus (constituteproject.org)',
         'topics_cbar': '% des paragraphes du groupe héritage',
 
         # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
@@ -204,9 +210,10 @@ LABELS = {
         'ch7_xlabel': 'Pour 1000 mots',
         'ch7_right_xlabel': 'Provisions totales (moyenne)',
         'ch7_land_cats': ['Droits fonciers', 'Ressources naturelles', 'Environnement', 'Terres ancestrales', 'Droits hydriques'],
-        'ch8_title': 'Ch.8 : Profondeur des droits culturels par héritage',
+        'ch8_title': 'Profondeur des droits culturels par héritage',
         'ch8_cbar': 'Occurrences moyennes',
         'ch8_cats': ['Droits linguistiques', 'Pratiques culturelles', 'Institutions culturelles', 'Protection du patrimoine'],
+        'ch8_zero_note': 'Les 0,0 reflètent une absence quasi-totale de ces provisions dans le corpus constitutionnel.',
         'people_vs_peoples_title': 'Fréquence de « people » vs « peoples »',
         'people_vs_peoples_xlabel': '« people » (singulier, pour 1000 mots)',
         'people_vs_peoples_ylabel': '« peoples » (pluriel, pour 1000 mots)',
@@ -232,6 +239,8 @@ LABELS = {
         'pc_mechanism_ylabel': 'Score moyen (0-2)',
         'pc_mechanism_identity': 'Dimensions identitaires',
         'pc_mechanism_institutional': 'Dimensions institutionnelles',
+        'pc_interaction_suptitle': "L'effet post-conflit est plus fort que l'héritage colonial",
+        'pc_mechanism_footnote': 'Drm=Minorités, Id=Identité, Drc=Droits culturels, Dpa=Peuples autochtones, PJ=Pluralisme juridique, Dc=Décentralisation, La=Langues, Dis=Anti-discrimination, Dau=Autonomie, F=Fédéralisme',
         'tier2_note': '* Lusophone, autre = Tier 2 (études de cas)',
         'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
         'kwic_pct_xlabel': "% des occurrences",
@@ -271,20 +280,23 @@ LABELS = {
 
         # ── Existing figure titles ──
         # Ch.1 S1
-        'preamble_sov_id_title': 'Constitutional preambles: sovereignty vs. identity',
+        'preamble_sov_id_title': 'Colonial traditions structure\npreamble rhetoric',
         'preamble_sov_id_xlabel': 'Sovereignty rhetoric (keywords per 1000 words)',
         'preamble_sov_id_ylabel': 'Identity rhetoric (keywords per 1000 words)',
         'preamble_parity': 'parity',
         'preamble_mean_fmt': '{} mean',
-        'preamble_balance_title': 'Rhetorical balance of preambles\n(identity − sovereignty, per 1000 words)',
+        'preamble_balance_title': 'Francophone preambles emphasize sovereignty,\nanglophone preambles emphasize identity',
         'preamble_balance_xlabel': '← Sovereignty-dominant          Identity-dominant →',
-        'sovereignty_markers_title': 'Sovereignty markers by colonial heritage',
+        'sovereignty_markers_title': '"Indivisible": a distinctly\nfrancophone marker',
+        'sov_marker_labels': ['"indivisible"', '"unity"', '"sovereign"'],
         'sovereignty_markers_ylabel': '% of constitutions containing the term',
 
         # Ch.1 S2
-        'naming_heatmap_title': 'Group-naming terminology by colonial heritage',
+        'naming_heatmap_title': 'Anglophone constitutions use more diverse\nidentity vocabulary than francophone',
+        'naming_term_labels': ['people (sg.)', 'peoples (pl.)', 'ethnic', 'tribe/tribal',
+                               'indigenous', 'community/ies', 'minority/ies', 'nation', 'race/racial'],
         'naming_heatmap_cbar': 'per 1000 words',
-        'peoples_context_title': 'Context of "peoples" (plural) usage',
+        'peoples_context_title': '"Peoples" in francophone constitutions:\na borrowed word, not translated into law',
         'peoples_context_xlabel': 'Number of "peoples" occurrences',
         'peoples_context_legend': 'Context type',
         'peoples_context_right_title': 'Proportional distribution',
@@ -299,10 +311,10 @@ LABELS = {
         'ctx_other': 'Other',
 
         # Ch.5
-        'sd_posture_title': 'Self-determination posture by colonial heritage',
+        'sd_posture_title': 'Francophone constitutions are mostly silent\non self-determination',
         'sd_posture_xlabel': 'Number of constitutions',
         'sd_posture_legend': 'Posture',
-        'sd_flags_title': 'Self-determination markers\nin 54 African constitutions',
+        'sd_flags_title': 'Self-determination remains largely absent\nfrom African constitutions',
         'sd_flag_labels': ['Self-determination', 'Indivisible', 'Autonomy', 'Secession'],
         'sd_categories': [
             'external (secession permitted)', 'internal (self-determination + autonomy)',
@@ -310,18 +322,18 @@ LABELS = {
             'indivisible + autonomy (tension)', 'indivisible (implicit prohibition)',
             'silent',
         ],
-        'pre_post_ogiek_title': 'Constitutional recognition before/after Ogiek (2017)\nMean score per dimension',
+        'pre_post_ogiek_title': 'The Ogiek ruling has not (yet) influenced\nconstitutional reforms',
         'pre_post_ogiek_ylabel': 'Mean score (0-2)',
         'pre_ogiek_label': 'Before Ogiek (n={})',
         'post_ogiek_label': 'After Ogiek (n={})',
 
         # Ch.3 case law
-        'timeline_title': 'Timeline of ACHPR/African Court decisions\n30 communications analyzed',
+        'timeline_title': 'The functional criterion emerges progressively\nsince Endorois (2010)',
         'timeline_xlabel': 'Year (filing or decision)',
         'legend_other_decisions': 'Other decisions',
         'legend_peoples_rights': "Peoples' rights (art. 19-24)",
         'legend_functional': 'Functional criterion applied',
-        'article_freq_title': 'Invocation frequency of African Charter articles\nin 30 ACHPR communications',
+        'article_freq_title': "Peoples' rights (art. 19-24) remain marginal\nin ACHPR practice",
         'article_freq_xlabel': 'African Charter article',
         'article_freq_ylabel': 'Number of invocations',
         'legend_other_articles': 'Other articles',
@@ -342,7 +354,7 @@ LABELS = {
         'citations_title': 'Cross-system citations in ACHPR case law\n— Articles 60-61 of the African Charter',
         'citations_xlabel': 'Citations in the corpus (3 documents, sessions 70-81)',
         'citations_note': 'Articles 60-61: the ACHPR draws on\ninternational and comparative law',
-        'landmark_title': 'Landmark case citations\nin the ACHPR corpus (sessions 70-81)',
+        'landmark_title': 'Nuba/Kordofan dominates recent citations —\nfoundational precedents are absent',
         'landmark_xlabel': 'Citations in the corpus',
         'landmark_note': 'Note: Endorois and Ogiek are not cited in sessions\n70-81 as they predate the corpus.',
 
@@ -354,27 +366,30 @@ LABELS = {
         'sys_afcourt': 'African Court',
 
         # Post-conflict
-        'pc_interaction_title': 'Score by heritage × constitutional context',
+        'pc_interaction_title': 'The post-conflict effect is stronger\namong francophone constitutions',
         'pc_interaction_ylabel': 'Total constitutional score (out of 20)',
         'pc_interaction_effect': 'Interaction effect',
         'pc_non_conflict': 'Non-conflict',
         'pc_post_conflict': 'Post-conflict',
-        'pc_dimensions_title': 'Mean score by dimension — Heritage × constitutional context (Tier 1, n=42)',
+        'pc_dimensions_title': 'Post-conflict constitutions recognize more\nacross all identity dimensions',
         'pc_dimensions_cbar': 'Mean score (0=X, 1=P, 2=V)',
         'pc_row_labels': ['Franco non-conflict', 'Franco post-conflict', 'Anglo non-conflict', 'Anglo post-conflict'],
 
         # Clustering
-        'umap_const_title': 'Semantic clustering of 54 constitutions\n(voyage-law-2 embeddings, UMAP projection)',
-        'umap_preamb_title': 'Semantic clustering of 49 preambles\n(voyage-law-2 embeddings, UMAP projection)',
-        'similarity_title': 'Semantic similarity between 54 constitutions\n(cosine on voyage-law-2 embeddings)',
+        'umap_const_title': 'Colonial heritage shapes constitutional text,\nnot substantive recognition',
+        'umap_preamb_title': 'Preambles cluster less clearly by heritage\nthan full constitutional texts',
+        'similarity_title': 'Geographic neighbors are more textually similar\nthan heritage peers',
         'similarity_cbar': 'Cosine similarity',
         'post_conflict_suffix': ' (post-conflict)',
 
         # KWIC / Topics
-        'kwic_customary_title': 'Context of "customary" usage by heritage',
+        'kwic_customary_title': '"Customary" refers to customary law in anglophone,\nto international law in francophone',
+        'kwic_cats': ['Customary law/courts', 'Traditional authority', 'Land/property rights',
+                      'Cultural practices', 'International law', 'Other'],
         'kwic_xlabel': 'Number of occurrences',
         'kwic_legend': 'Context type',
-        'topics_title': 'Topic distribution by colonial heritage\n(BERTopic on constitutional paragraphs)',
+        'topics_title': 'Latent constitutional topics vary\nacross legal traditions',
+        'topics_note': 'English keywords from corpus (constituteproject.org)',
         'topics_cbar': '% of paragraphs in heritage group',
 
         # Ch.7 / Ch.8 / Ch.1 S2 (remaining figures)
@@ -383,9 +398,10 @@ LABELS = {
         'ch7_xlabel': 'Per 1000 words',
         'ch7_right_xlabel': 'Total provisions (mean)',
         'ch7_land_cats': ['Land rights', 'Natural resources', 'Environment', 'Ancestral land', 'Water rights'],
-        'ch8_title': 'Ch.8: Cultural rights depth by heritage',
+        'ch8_title': 'Cultural rights depth by heritage',
         'ch8_cbar': 'Mean occurrences',
         'ch8_cats': ['Linguistic rights', 'Cultural practices', 'Cultural institutions', 'Heritage protection'],
+        'ch8_zero_note': 'The 0.0 values reflect a near-total absence of these provisions in the constitutional corpus.',
         'people_vs_peoples_title': 'Frequency of "people" vs "peoples"',
         'people_vs_peoples_xlabel': '"people" (singular, per 1000 words)',
         'people_vs_peoples_ylabel': '"peoples" (plural, per 1000 words)',
@@ -411,6 +427,8 @@ LABELS = {
         'pc_mechanism_ylabel': 'Mean score (0-2)',
         'pc_mechanism_identity': 'Identity dimensions',
         'pc_mechanism_institutional': 'Institutional dimensions',
+        'pc_interaction_suptitle': 'The post-conflict effect is stronger than colonial heritage',
+        'pc_mechanism_footnote': 'Drm=Minorities, Id=Identity, Drc=Cultural rights, Dpa=Indigenous peoples, PJ=Legal pluralism, Dc=Decentralization, La=Languages, Dis=Anti-discrimination, Dau=Autonomy, F=Federalism',
         'tier2_note': '* Lusophone, other = Tier 2 (case studies)',
         'tier1_note': 'Tier 1 (n=42, francophone + anglophone)',
         'kwic_pct_xlabel': "% of occurrences",
