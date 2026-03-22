@@ -56,10 +56,10 @@ notebooks/
   m3_m5_case_law_analysis.ipynb     — ACHPR case law: timeline, citations, Ogiek (M3/M5)
   thesis_figures.ipynb              — 13 thesis figures: maps, dumbbell, radar, boxplot, dendrogram, etc. (bilingual)
 src/                  — Dashboard (open index.html in browser)
-  index.html          — 7-tab dashboard (~300 lines)
+  index.html          — 8-tab dashboard (~350 lines)
   styles.css          — All CSS (~700 lines)
   data.js             — Inline dataset (362KB, 1 line) — DO NOT REFORMAT
-  app.js              — Application logic (~1060 lines, D3 charts)
+  app.js              — Application logic (~2940 lines, D3 charts + i18n)
   figures/            — Thesis figures copied for web serving (gitignored from data/figures/)
 data/
   tableau_constit_pays_af_complet_copie.xlsx   — Source spreadsheet (54 countries)
