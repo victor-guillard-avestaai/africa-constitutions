@@ -30,6 +30,498 @@ const CSS = (() => {
   };
 })();
 
+// ═══════════════════════════════════════════════════════════
+// Internationalization (I18N)
+// ═══════════════════════════════════════════════════════════
+const I18N = {
+  fr: {
+    // Header
+    site_title: "Constitutions d'Afrique",
+    site_lead: "De la construction nationale au pluralisme identitaire — comment 54 pays africains reconnaissent ou effacent la diversité ethnoculturelle dans leurs constitutions",
+
+    // Tab names
+    tab_carte: "Carte",
+    tab_matrice: "Matrice",
+    tab_heritage: "Héritage",
+    tab_traites: "Traités",
+    tab_conflit: "Post-conflit",
+    tab_textes: "Textes",
+    tab_clusters: "Clusters",
+    tab_figures: "Figures",
+
+    // Carte tab
+    carte_title: "Carte de la reconnaissance constitutionnelle",
+    carte_sub: "Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.",
+    carte_year: "Année",
+    carte_animate: "Animer",
+    carte_dims: "Dimensions (multi-sélection)",
+    carte_mode: "Mode d'affichage",
+    mode_score: "Score seul",
+    mode_combined: "Combiné",
+    mode_heritage: "Héritage seul",
+    carte_loading: "Chargement de la carte...",
+    carte_reset: "↺ Réinitialiser la vue",
+    carte_colonial: "Territoire colonial",
+    carte_disputed: "Territoire disputé",
+    bio_close: "Fermer",
+
+    // Matrice tab
+    matrice_title: "Matrice comparative — 54 pays × 10 dimensions",
+    matrice_sub: "Dernière constitution en vigueur par pays. Cliquez sur un en-tête de colonne pour trier. Cliquez sur un nom de pays pour ouvrir sa fiche.",
+    matrice_x: "X = absent",
+    matrice_p: "P = reconnaissance partielle",
+    matrice_v: "V = pleinement reconnu",
+    filter_all: "Tous",
+    filter_postconflict: "Post-conflit",
+    filter_nonconflict: "Non-conflit",
+
+    // Heritage tab
+    heritage_title: "Divergence par héritage colonial",
+    heritage_sub: "Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes par héritage.",
+    heritage_explain: "L'héritage colonial détermine la tradition juridique constitutionnelle. Les pays <strong>francophones</strong> ont hérité du modèle jacobin français (État unitaire, silence sur la diversité). Les pays <strong>anglophones</strong> ont hérité du pluralisme de la common law britannique (chefferie traditionnelle, tribunaux coutumiers). Les pays <strong>lusophones</strong> suivent une troisième voie, souvent marquée par le socialisme post-indépendance.<br><br><strong>Résultat clé</strong> : l'écart francophone-anglophone s'est <em>élargi</em> après 1990, passant de 2,4 à 4,7 points. La vague de démocratisation a apporté la décentralisation et la reconnaissance linguistique, mais pas la reconnaissance identitaire profonde (droits des minorités, peuples autochtones). η² = 22,3 % (n = 42 franco + anglo).",
+    heritage_franco: "Francophone (23 pays)",
+    heritage_anglo: "Anglophone (19 pays)",
+    heritage_luso: "Lusophone (5 pays)",
+
+    // Traites tab
+    traites_title: "Ratifier n'est pas reconnaître",
+    traites_sub: "Ce graphique confronte deux mesures pour chaque pays : ses engagements internationaux (nombre de traités ratifiés sur 6) et la réalité de sa constitution (score total des 10 dimensions sur 20). La corrélation est nulle (ρ = −0,06, p = 0,68) — ratifier des traités ne prédit pas la reconnaissance constitutionnelle.",
+    traites_explain: "<strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br><strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br><strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br><strong>Forme</strong> : ● = constitution non-conflit, ◆ = constitution post-conflit.<br><strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.",
+
+    // Post-conflit tab
+    conflit_title: "Le moment constitutionnel post-conflit",
+    conflit_sub: "Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.",
+    conflit_method_result_thesis: "<strong>Variable</strong> : la <em>constitution actuelle</em> a-t-elle été adoptée dans le cadre d'un processus de paix, d'une transition post-guerre ou d'une construction nationale post-libération ? 13/54 constitutions codées post-conflit.<br><strong>Résultat</strong> : parmi les 42 pays francophones et anglophones, les constitutions post-conflit obtiennent un score moyen de 14,1/20 contre 7,5 (p = 0,0001). L'héritage seul explique 22,3 % de la variance ; héritage + post-conflit en explique 63,2 %. L'effet est concentré sur les dimensions identitaires (Dpa, Dau, Drc, Drm : p &lt; 0,001).<br><strong>Implication pour la thèse</strong> : la reconnaissance des peuples infra-étatiques est motivée par la nécessité politique (le critère fonctionnel), pas par la tradition juridique héritée seule.",
+    conflit_read: "<strong>Comment lire ce graphique ?</strong> Chaque barre représente le score moyen d'un groupe de pays. Le groupe est défini par deux variables : l'héritage colonial (francophone ou anglophone) et le contexte de la constitution actuelle (post-conflit ou non). Si l'héritage était le seul facteur, les deux barres bleues seraient au même niveau. L'écart entre « conflit » et « non-conflit » <em>au sein du même héritage</em> montre que le contexte de rédaction de la constitution compte autant, sinon plus, que la tradition juridique héritée.",
+
+    // Textes tab
+    textes_title: "Ce que disent les constitutions",
+    textes_sub: "Analyse textuelle de 54 constitutions (1,4 million de mots). Nous avons compté et classé les occurrences de termes juridiques clés pour mesurer objectivement ce que chaque constitution dit — et ce qu'elle tait.",
+    textes_method: "<strong>Méthode</strong> : les 54 constitutions ont été téléchargées en anglais depuis <em>constituteproject.org</em>, puis analysées par recherche de mots-clés. Pour chaque terme (« sovereignty », « peoples », « indivisible »...), nous avons compté les occurrences et classé leur contexte d'utilisation.<br><strong>Limite</strong> : seules les 19 constitutions anglophones sont dans leur langue originale. Les 35 autres sont des traductions. Les termes techniques juridiques (« indivisible », « self-determination ») se traduisent fidèlement ; les termes courants (« people », « community ») sont plus ambigus.",
+    textes_sov_title: "Souveraineté vs identité dans les préambules",
+    textes_sov_sub: "70 % des constitutions francophones contiennent le mot « indivisible », contre 21 % des anglophones. Le modèle jacobin se lit dans le texte.",
+    textes_peoples_title: "Le mot « peoples » : citation vs reconnaissance",
+    textes_peoples_sub: "Les constitutions francophones utilisent le mot « peoples » (peuples) plus souvent que les anglophones — mais 61 % des occurrences sont des citations de la Charte africaine (24 %) ou des formules diplomatiques (37 %). Le mot « peuples » n'est pas traduit en droits domestiques.",
+    textes_sd_title: "Autodétermination",
+    textes_sd_sub: "8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.",
+
+    // Clusters tab
+    clusters_title: "Clustering constitutionnel",
+    clusters_explain: "<strong>Méthode</strong> : les 54 constitutions sont plongées dans un espace sémantique (embeddings voyage-law-2, 1024 dimensions) puis projetées en 2D (UMAP). Le clustering hiérarchique (Ward) sur les 10 dimensions codées révèle des groupes qui ne reproduisent PAS l'héritage colonial (ARI = 0,033).",
+    clusters_umap_title: "Carte de proximité sémantique",
+    clusters_dendro_title: "Classification hiérarchique interactive",
+    clusters_dendro_explain: "Déplacez le curseur de droite à gauche. À droite, toute l'Afrique forme un seul groupe. En déplaçant vers la gauche, les constitutions différentes se séparent en groupes distincts. La carte montre quels pays restent ensemble.",
+    btn_constitutions: "Constitutions",
+    btn_preambles: "Préambules",
+
+    // Figures tab
+    figures_title: "Figures de la thèse",
+    figures_sub: "36 figures organisées par chapitre. Cliquez sur une image pour l'agrandir. Téléchargez le PDF haute résolution via le bouton ⬇.",
+    fig_download: "⬇ PDF",
+
+    // Footer
+    footer_note: "Chaque cellule colorée encode une dimension constitutionnelle",
+
+    // Tooltips & UI
+    no_data: "Pas de données",
+    score_label: "Score",
+    heritage_label: "Héritage",
+    postconflict_label: "Post-conflit",
+    postconflict_constitution: "Constitution post-conflit",
+    total_score: "Score total",
+    treaties_ratified: "Traités ratifiés",
+    yes: "Oui",
+    no: "Non",
+    no_comment: "Pas de commentaire disponible.",
+    untitled: "Sans titre",
+    click_segment: "Cliquez sur un segment pour lire le commentaire complet",
+    click_open: "Cliquez pour ouvrir la fiche",
+    mean_score: "Score moyen",
+    country: "Pays",
+    constitutional_score: "Score constitutionnel",
+    part_of_until: "Fait partie de {parent} jusqu'en {year}",
+    colonial_territory: "Territoire colonial — indépendance en {year}",
+    identity_score: "Identitaire",
+    institutional_score: "Institutionnel",
+    balance: "Balance",
+    texts_count: "{n} textes",
+
+    // Legend
+    legend_absent: "Absent",
+    legend_partial: "Partiel",
+    legend_recognized: "Reconnu",
+    legend_explain: "La <b>teinte</b> indique l'héritage colonial ; l'<b>intensité</b> indique le niveau de reconnaissance.",
+    legend_sov_explain: "La couleur indique l'équilibre entre dimensions <b>institutionnelles</b> (gauche) et <b>identitaires</b> (droite).",
+    legend_institutional_left: "← Institutionnel",
+    legend_identity_right: "Identitaire →",
+    legend_postconflict_border: "Bordure épaisse = constitution post-conflit",
+
+    // Heritage names
+    h_francophone: "Francophone",
+    h_anglophone: "Anglophone",
+    h_lusophone: "Lusophone",
+    h_other: "Autre",
+    h_mixed: "Mixte",
+
+    // Groups
+    grp_all: "Toutes",
+    grp_identity: "Identitaire",
+    grp_institutional: "Institutionnel",
+    grp_protections: "Protections",
+
+    // Short dimension labels
+    dim_short: { Dpa:'Péd.aut.', F:'Féd.', Dau:'Auto.', Drc:'Cult.', Drm:'Min.', Id:'Iden.', La:'Lng.', PJ:'Plur.', Dc:'Déc.', Dis:'Discr.' },
+
+    // CSV headers
+    csv_country: "Pays",
+    csv_heritage: "Héritage",
+    csv_postconflict: "Post-conflit",
+    csv_total: "Score total",
+    csv_treaties: "Traités ratifiés",
+
+    // Scatter
+    scatter_ylabel: "Score constitutionnel total (sur 20)",
+    scatter_xlabel: "Nombre de traités internationaux ratifiés (sur 6)",
+    scatter_stat: "Spearman ρ = −0,06 · p = 0,68 (non significatif)",
+
+    // Conflict chart
+    conflict_ylabel: "Score moyen (sur 20)",
+    conflict_labels: ['Francophone\nnon-conflit','Francophone\npost-conflit','Anglophone\nnon-conflit','Anglophone\npost-conflit'],
+
+    // Divergence annotations
+    div_events: [['Démocratisation'],['UA créée']],
+    div_annotations: {
+      'F': [
+        {year:1963, text:'Nigéria (1963) : première fédération africaine post-indépendance'},
+        {year:1990, text:'Le fédéralisme reste une spécificité anglophone — Nigéria, Éthiopie, Af. du Sud'},
+        {year:1995, text:'Éthiopie (1995) : fédéralisme ethnique avec droit de sécession (art. 39)'},
+      ],
+      'Dc': [
+        {year:1990, text:'Conférence de La Baule (1990) : la France conditionne l\'aide à la démocratisation'},
+        {year:1996, text:'Les constitutions francophones inscrivent massivement la décentralisation'},
+        {year:2010, text:'Convergence quasi-complète : 93% du continent reconnaît la décentralisation'},
+      ],
+      'Drm': [
+        {year:1990, text:'La démocratisation ne comble PAS l\'écart sur les droits des minorités'},
+        {year:1996, text:'Af. du Sud (1996) : Bill of Rights avec 11 langues officielles et droits des minorités'},
+        {year:2010, text:'Le silence francophone sur les minorités persiste malgré 20 ans de démocratie'},
+      ],
+      'La': [
+        {year:1990, text:'Le multilinguisme officiel reste un marqueur anglophone'},
+        {year:1996, text:'Af. du Sud reconnaît 11 langues ; Tanzanie ajoute le swahili et l\'anglais'},
+        {year:2010, text:'Les francophones restent monolingues constitutionnellement (français = langue officielle)'},
+      ],
+      'Drc': [
+        {year:1990, text:'Les droits culturels émergent dans les constitutions post-démocratisation'},
+        {year:2002, text:'Charte de l\'UA (2002) : le protocole de Maputo renforce les droits culturels'},
+        {year:2010, text:'Kenya (2010) et Zimbabwe (2013) inscrivent des droits culturels forts'},
+      ],
+      'Dpa': [
+        {year:1990, text:'Quasi-absent : le concept de « peuples autochtones » est un import occidental'},
+        {year:2007, text:'DNUDPA (2007) : 52/54 pays africains votent pour — mais ne légifèrent pas'},
+        {year:2010, text:'Seuls RDC (2006) et Kenya (2010) inscrivent les peuples autochtones'},
+      ],
+      'Dis': [
+        {year:1960, text:'Les premières constitutions post-indépendance inscrivent l\'anti-discrimination'},
+        {year:1990, text:'La vague démocratique entraîne une adoption quasi universelle (98%)'},
+        {year:2010, text:'Convergence totale — aucune différence entre héritages sur cette dimension'},
+      ],
+      'Id': [
+        {year:1990, text:'Pré-1990 : l\'identité constitutionnelle est quasi inexistante'},
+        {year:2002, text:'L\'identité émerge dans les constitutions de 3e génération post-UA'},
+        {year:2010, text:'L\'écart se creuse : les anglophones reconnaissent, les francophones restent silencieux'},
+      ],
+      'Dau': [
+        {year:1990, text:'L\'autonomie reste rare — seules les fédérations la prévoient'},
+        {year:1995, text:'Éthiopie (1995) : autonomie régionale maximale (nations, nationalités, peuples)'},
+        {year:2010, text:'RDC (2006) et Kenya (2010) inscrivent l\'autonomie post-conflit'},
+      ],
+      'PJ': [
+        {year:1990, text:'Le pluralisme juridique distingue nettement anglophones et francophones'},
+        {year:1996, text:'Af. du Sud (1996) : reconnaissance du droit coutumier dans la Constitution'},
+        {year:2010, text:'Les lusophones (Angola 2010, Mozambique 2004) rejoignent les anglophones'},
+      ],
+    },
+
+    // Disputed tooltips
+    disputed_sahraouie_title: "République sahraouie (RASD)",
+    disputed_sahraouie_desc: "Territoire disputé — membre de l'UA depuis 1984.<br>Pas de constitution. Non inclus dans l'analyse.",
+    disputed_somaliland_title: "Somaliland",
+    disputed_somaliland_desc: "Territoire autoproclamé indépendant depuis 1991.<br>Non reconnu internationalement. Pas de constitution dans le dataset.",
+
+    // Error
+    error_prefix: "Erreur",
+
+    // Lang toggle
+    lang_toggle: "EN",
+  },
+  en: {
+    // Header
+    site_title: "African Constitutions",
+    site_lead: "From nation-building to identity pluralism — how 54 African countries recognize or erase ethnocultural diversity in their constitutions",
+
+    // Tab names
+    tab_carte: "Map",
+    tab_matrice: "Matrix",
+    tab_heritage: "Heritage",
+    tab_traites: "Treaties",
+    tab_conflit: "Post-conflict",
+    tab_textes: "Texts",
+    tab_clusters: "Clusters",
+    tab_figures: "Figures",
+
+    // Carte tab
+    carte_title: "Map of constitutional recognition",
+    carte_sub: "Each country is colored by the average score of the selected dimensions for the chosen year. Click a country to explore its constitutional history. <b>Shift+click</b> dimensions to select several.",
+    carte_year: "Year",
+    carte_animate: "Animate",
+    carte_dims: "Dimensions (multi-select)",
+    carte_mode: "Display mode",
+    mode_score: "Score only",
+    mode_combined: "Combined",
+    mode_heritage: "Heritage only",
+    carte_loading: "Loading map...",
+    carte_reset: "↺ Reset view",
+    carte_colonial: "Colonial territory",
+    carte_disputed: "Disputed territory",
+    bio_close: "Close",
+
+    // Matrice tab
+    matrice_title: "Comparative matrix — 54 countries × 10 dimensions",
+    matrice_sub: "Latest constitution in force per country. Click a column header to sort. Click a country name to open its profile.",
+    matrice_x: "X = absent",
+    matrice_p: "P = partial recognition",
+    matrice_v: "V = fully recognized",
+    filter_all: "All",
+    filter_postconflict: "Post-conflict",
+    filter_nonconflict: "Non-conflict",
+
+    // Heritage tab
+    heritage_title: "Divergence by colonial heritage",
+    heritage_sub: "Average recognition score by legal tradition (1960–2026). Hover for exact values by heritage.",
+    heritage_explain: "Francophone Africa inherits the French Jacobin tradition — unitary state, indivisible, single language. Anglophone Africa inherits British Common Law — pluralism, recognition of collective rights. Lusophone Africa shows a distinct profile, mixing socialist influences and indigenous aspirations.<br><br><strong>Key result</strong>: the francophone-anglophone gap <em>widened</em> after 1990, from 2.4 to 4.7 points. The democratization wave brought decentralization and linguistic recognition, but not deep identity recognition (minority rights, indigenous peoples). η² = 22.3% (n = 42 franco + anglo).",
+    heritage_franco: "Francophone (23 countries)",
+    heritage_anglo: "Anglophone (19 countries)",
+    heritage_luso: "Lusophone (5 countries)",
+
+    // Traites tab
+    traites_title: "Ratification does not mean recognition",
+    traites_sub: "This chart compares two measures for each country: its international commitments (number of treaties ratified out of 6) and the reality of its constitution (total score of 10 dimensions out of 20). The correlation is null (ρ = −0.06, p = 0.68) — ratifying treaties does not predict constitutional recognition.",
+    traites_explain: "<strong>Horizontal axis</strong> = number of ratified international treaties (UNDRIP, ICCPR, ICESCR, ICERD, ILO 169, ACHPR).<br><strong>Vertical axis</strong> = total constitutional score (sum of 10 dimensions, 0 = all absent, 20 = all recognized).<br><strong>Horizontal line</strong> = column mean score. The flat line confirms the absence of correlation.<br><strong>Shape</strong>: ● = non-conflict constitution, ◆ = post-conflict constitution.<br><strong>Striking finding</strong>: almost all countries ratified the ACHPR (53/54) and UNDRIP (52/54), but only one (CAR) ratified ILO Convention 169 on indigenous peoples — international regimes do not predict constitutional reality.",
+
+    // Post-conflit tab
+    conflit_title: "The post-conflict constitutional moment",
+    conflit_sub: "Constitutions adopted through a peace process or post-war transition recognize significantly more ethnocultural diversity.",
+    conflit_method_result_thesis: "<strong>Variable</strong>: was the <em>current constitution</em> adopted through a peace process, post-war transition, or post-liberation state-building? 13/54 constitutions coded as post-conflict.<br><strong>Result</strong>: among the 42 francophone and anglophone countries, post-conflict constitutions score 14.1/20 vs 7.5 (p = 0.0001). Heritage alone explains 22.3% of variance; heritage + post-conflict explains 63.2%. The effect concentrates on identity dimensions (Dpa, Dau, Drc, Drm: p &lt; 0.001).<br><strong>Thesis implication</strong>: recognition of sub-state peoples is driven by political necessity (the functional criterion), not by inherited legal tradition alone.",
+    conflit_read: "<strong>How to read this chart?</strong> Each bar represents the average score of a group of countries. The group is defined by two variables: colonial heritage (francophone or anglophone) and the context of the current constitution (post-conflict or not). If heritage were the only factor, the two blue bars would be at the same level. The gap between 'conflict' and 'non-conflict' <em>within the same heritage</em> shows that the constitution's drafting context matters as much as, if not more than, the inherited legal tradition.",
+
+    // Textes tab
+    textes_title: "What the constitutions say",
+    textes_sub: "Textual analysis of 54 constitutions (1.4 million words). We counted and classified occurrences of key legal terms to objectively measure what each constitution says — and what it silences.",
+    textes_method: "<strong>Method</strong>: the 54 constitutions were downloaded in English from <em>constituteproject.org</em>, then analyzed by keyword search. For each term ('sovereignty', 'peoples', 'indivisible'...), we counted occurrences and classified their usage context.<br><strong>Limitation</strong>: only the 19 anglophone constitutions are in their original language. The other 35 are translations. Technical legal terms ('indivisible', 'self-determination') translate faithfully; common terms ('people', 'community') are more ambiguous.",
+    textes_sov_title: "Sovereignty vs identity in preambles",
+    textes_sov_sub: "70% of francophone constitutions contain the word 'indivisible,' vs 21% of anglophone. The Jacobin model is written into the text.",
+    textes_peoples_title: "The word 'peoples': citation vs recognition",
+    textes_peoples_sub: "Francophone constitutions use the word 'peoples' more often than anglophone — but 61% of occurrences are citations of the African Charter (24%) or diplomatic formulas (37%). The word 'peoples' is not translated into domestic law.",
+    textes_sd_title: "Self-determination",
+    textes_sd_sub: "8 out of 54 countries mention self-determination. Only Ethiopia allows secession. Preliminary keyword-based classification — requires legal validation.",
+
+    // Clusters tab
+    clusters_title: "Constitutional clustering",
+    clusters_explain: "<strong>Method</strong>: the 54 constitutions are embedded in a semantic space (voyage-law-2, 1024 dimensions) then projected to 2D (UMAP). Hierarchical clustering (Ward) on the 10 coded dimensions reveals groups that do NOT reproduce colonial heritage (ARI = 0.033).",
+    clusters_umap_title: "Semantic proximity map",
+    clusters_dendro_title: "Interactive hierarchical classification",
+    clusters_dendro_explain: "Drag the slider from right to left. On the right, all of Africa forms one group. Moving left, constitutions that are different separate into distinct groups. The map shows which countries stay together.",
+    btn_constitutions: "Constitutions",
+    btn_preambles: "Preambles",
+
+    // Figures tab
+    figures_title: "Thesis figures",
+    figures_sub: "36 figures organized by chapter. Click an image to enlarge. Download high-resolution PDF via the ⬇ button.",
+    fig_download: "⬇ PDF",
+
+    // Footer
+    footer_note: "Each colored cell encodes a constitutional dimension",
+
+    // Tooltips & UI
+    no_data: "No data",
+    score_label: "Score",
+    heritage_label: "Heritage",
+    postconflict_label: "Post-conflict",
+    postconflict_constitution: "Post-conflict constitution",
+    total_score: "Total score",
+    treaties_ratified: "Treaties ratified",
+    yes: "Yes",
+    no: "No",
+    no_comment: "No commentary available.",
+    untitled: "Untitled",
+    click_segment: "Click a segment to read the full commentary",
+    click_open: "Click to open profile",
+    mean_score: "Mean score",
+    country: "Country",
+    constitutional_score: "Constitutional score",
+    part_of_until: "Part of {parent} until {year}",
+    colonial_territory: "Colonial territory — independence in {year}",
+    identity_score: "Identity",
+    institutional_score: "Institutional",
+    balance: "Balance",
+    texts_count: "{n} texts",
+
+    // Legend
+    legend_absent: "Absent",
+    legend_partial: "Partial",
+    legend_recognized: "Recognized",
+    legend_explain: "<b>Hue</b> indicates colonial heritage; <b>intensity</b> indicates recognition level.",
+    legend_sov_explain: "Color indicates the balance between <b>institutional</b> (left) and <b>identity</b> (right) dimensions.",
+    legend_institutional_left: "← Institutional",
+    legend_identity_right: "Identity →",
+    legend_postconflict_border: "Thick border = post-conflict constitution",
+
+    // Heritage names
+    h_francophone: "Francophone",
+    h_anglophone: "Anglophone",
+    h_lusophone: "Lusophone",
+    h_other: "Other",
+    h_mixed: "Mixed",
+
+    // Groups
+    grp_all: "All",
+    grp_identity: "Identity",
+    grp_institutional: "Institutional",
+    grp_protections: "Protections",
+
+    // Short dimension labels
+    dim_short: { Dpa:'Indig.', F:'Fed.', Dau:'Auton.', Drc:'Cult.', Drm:'Minor.', Id:'Ident.', La:'Lang.', PJ:'Plur.', Dc:'Decen.', Dis:'Discr.' },
+
+    // CSV headers
+    csv_country: "Country",
+    csv_heritage: "Heritage",
+    csv_postconflict: "Post-conflict",
+    csv_total: "Total score",
+    csv_treaties: "Treaties ratified",
+
+    // Scatter
+    scatter_ylabel: "Total constitutional score (out of 20)",
+    scatter_xlabel: "Number of ratified international treaties (out of 6)",
+    scatter_stat: "Spearman ρ = −0.06 · p = 0.68 (not significant)",
+
+    // Conflict chart
+    conflict_ylabel: "Mean score (out of 20)",
+    conflict_labels: ['Francophone\nnon-conflict','Francophone\npost-conflict','Anglophone\nnon-conflict','Anglophone\npost-conflict'],
+
+    // Divergence annotations
+    div_events: [['Democratization'],['AU created']],
+    div_annotations: {
+      'F': [
+        {year:1963, text:'Nigeria (1963): first post-independence African federation'},
+        {year:1990, text:'Federalism remains an anglophone specificity — Nigeria, Ethiopia, South Africa'},
+        {year:1995, text:'Ethiopia (1995): ethnic federalism with secession right (art. 39)'},
+      ],
+      'Dc': [
+        {year:1990, text:'La Baule Conference (1990): France conditions aid on democratization'},
+        {year:1996, text:'Francophone constitutions massively adopt decentralization'},
+        {year:2010, text:'Near-complete convergence: 93% of the continent recognizes decentralization'},
+      ],
+      'Drm': [
+        {year:1990, text:'Democratization does NOT close the gap on minority rights'},
+        {year:1996, text:'South Africa (1996): Bill of Rights with 11 official languages and minority rights'},
+        {year:2010, text:'Francophone silence on minorities persists despite 20 years of democracy'},
+      ],
+      'La': [
+        {year:1990, text:'Official multilingualism remains an anglophone marker'},
+        {year:1996, text:'South Africa recognizes 11 languages; Tanzania adds Swahili and English'},
+        {year:2010, text:'Francophones remain constitutionally monolingual (French = official language)'},
+      ],
+      'Drc': [
+        {year:1990, text:'Cultural rights emerge in post-democratization constitutions'},
+        {year:2002, text:'AU Charter (2002): the Maputo Protocol strengthens cultural rights'},
+        {year:2010, text:'Kenya (2010) and Zimbabwe (2013) enshrine strong cultural rights'},
+      ],
+      'Dpa': [
+        {year:1990, text:'Nearly absent: the concept of "indigenous peoples" is a Western import'},
+        {year:2007, text:'UNDRIP (2007): 52/54 African countries vote for — but do not legislate'},
+        {year:2010, text:'Only DRC (2006) and Kenya (2010) enshrine indigenous peoples'},
+      ],
+      'Dis': [
+        {year:1960, text:'The first post-independence constitutions include anti-discrimination'},
+        {year:1990, text:'The democratic wave leads to near-universal adoption (98%)'},
+        {year:2010, text:'Total convergence — no difference between heritages on this dimension'},
+      ],
+      'Id': [
+        {year:1990, text:'Pre-1990: constitutional identity is nearly non-existent'},
+        {year:2002, text:'Identity emerges in 3rd-generation post-AU constitutions'},
+        {year:2010, text:'The gap widens: anglophones recognize, francophones remain silent'},
+      ],
+      'Dau': [
+        {year:1990, text:'Autonomy remains rare — only federations provide for it'},
+        {year:1995, text:'Ethiopia (1995): maximum regional autonomy (nations, nationalities, peoples)'},
+        {year:2010, text:'DRC (2006) and Kenya (2010) enshrine post-conflict autonomy'},
+      ],
+      'PJ': [
+        {year:1990, text:'Legal pluralism sharply distinguishes anglophones from francophones'},
+        {year:1996, text:'South Africa (1996): constitutional recognition of customary law'},
+        {year:2010, text:'Lusophones (Angola 2010, Mozambique 2004) join the anglophones'},
+      ],
+    },
+
+    // Disputed tooltips
+    disputed_sahraouie_title: "Sahrawi Arab Democratic Republic (SADR)",
+    disputed_sahraouie_desc: "Disputed territory — AU member since 1984.<br>No constitution. Not included in the analysis.",
+    disputed_somaliland_title: "Somaliland",
+    disputed_somaliland_desc: "Self-declared independent territory since 1991.<br>Not internationally recognized. No constitution in the dataset.",
+
+    // Error
+    error_prefix: "Error",
+
+    // Lang toggle
+    lang_toggle: "FR",
+  }
+};
+
+let lang = 'fr';
+function tr(key) { return I18N[lang][key] || I18N.fr[key] || key; }
+
+function switchLang() {
+  lang = lang === 'fr' ? 'en' : 'fr';
+  document.documentElement.lang = lang;
+  document.getElementById('lang-toggle').textContent = tr('lang_toggle');
+  updateAllText();
+  // Re-render dynamic charts that contain translatable text
+  document.getElementById('div-grid').innerHTML = '';
+  renderDivergence();
+  document.getElementById('scatter-container').innerHTML = '';
+  renderScatter();
+  document.getElementById('conflict-chart-container').innerHTML = '';
+  renderConflictChart();
+  document.getElementById('figures-gallery').innerHTML = '';
+  document.getElementById('figures-gallery').classList.remove('figures-gallery');
+  renderFigures();
+  renderHeatmap();
+  renderLegend2D();
+  // Re-render bio if open
+  if (selCountry) {
+    const evs = DATA.country_timelines[selCountry];
+    if (evs) renderBio(selCountry, evs);
+  }
+}
+
+function updateAllText() {
+  // Update all elements with data-tr attribute
+  document.querySelectorAll('[data-tr]').forEach(el => {
+    const key = el.dataset.tr;
+    const val = tr(key);
+    if (val === key) return; // key not found, skip
+    if (el.dataset.trHtml !== undefined) el.innerHTML = val;
+    else el.textContent = val;
+  });
+  // Update group buttons
+  document.querySelectorAll('.grp-btn').forEach(b => {
+    const gName = b.dataset.grp;
+    if (gName === 'all') b.textContent = tr('grp_all');
+    else if (gName) b.textContent = tr('grp_' + gName);
+  });
+}
+
 // ─── Constants & Color Scales ─────────────────────────────
 const COLOR_NONE = CSS.cNone;
 
@@ -68,12 +560,11 @@ const sovIdScale = d3.scaleDiverging()
 function numVal(s) { return s === 'V' ? 2 : s === 'P' ? 1 : 0; }
 
 const HC = { francophone:CSS.francophone, anglophone:CSS.anglophone, lusophone:CSS.lusophone, other:CSS.otherH, mixed:CSS.otherH };
-const HL = { all:'Tous', francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre' };
-const HM_SHORT = {
-  'Dpa': 'Péd.aut.', 'F': 'Féd.', 'Dau': 'Auto.', 'Drc': 'Cult.',
-  'Drm': 'Min.', 'Id': 'Iden.', 'La': 'Lng.', 'PJ': 'Plur.',
-  'Dc': 'Déc.', 'Dis': 'Discr.'
-};
+function HL(h) {
+  const map = { all:'filter_all', francophone:'h_francophone', anglophone:'h_anglophone', lusophone:'h_lusophone', other:'h_other', mixed:'h_mixed' };
+  return tr(map[h] || 'h_other');
+}
+function HM_SHORT(dim) { return tr('dim_short')[dim] || dim; }
 
 // ─── State ─────────────────────────────────────────────────
 let selDims = new Set(['Drm']);
@@ -87,10 +578,14 @@ let hmSort = { col: '_total', dir: -1 };
 let hmFilter = 'all';
 
 const GROUPS = {
-  'Identitaire': ['Drm','La','Drc','Id'],
-  'Institutionnel': ['F','Dc','Dau','PJ'],
-  'Protections': ['Dpa','Dis'],
+  'identity': ['Drm','La','Drc','Id'],
+  'institutional': ['F','Dc','Dau','PJ'],
+  'protections': ['Dpa','Dis'],
 };
+function groupLabel(key) {
+  const map = { identity:'grp_identity', institutional:'grp_institutional', protections:'grp_protections' };
+  return tr(map[key] || key);
+}
 
 // ─── Utility ───────────────────────────────────────────────
 function getState(c, y) {
@@ -141,11 +636,11 @@ function renderLegend2D() {
       const val = -6 + (12 * i / steps);
       stops.push(sovIdScale(val));
     }
-    let html = '<div class="legend-explain">La couleur indique l\'équilibre entre dimensions <b>institutionnelles</b> (gauche) et <b>identitaires</b> (droite).</div>';
+    let html = `<div class="legend-explain">${tr('legend_sov_explain')}</div>`;
     html += '<div style="display:flex;align-items:center;gap:0.3rem;margin-top:0.35rem">';
-    html += '<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">\u2190 Institutionnel</span>';
+    html += `<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">${tr('legend_institutional_left')}</span>`;
     html += `<div style="flex:1;height:14px;border-radius:3px;background:linear-gradient(to right,${stops.join(',')})"></div>`;
-    html += '<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">Identitaire \u2192</span>';
+    html += `<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">${tr('legend_identity_right')}</span>`;
     html += '</div>';
     cont.innerHTML = html;
     return;
@@ -156,7 +651,7 @@ function renderLegend2D() {
     renderCombinedLegend(cont);
     cont.innerHTML += '<div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;display:flex;align-items:center;gap:0.35rem">'
       + '<svg width="28" height="14"><rect x="1" y="1" width="26" height="12" fill="none" stroke="#333" stroke-width="2.5" stroke-dasharray="5,2.5" rx="2"/></svg>'
-      + ' Bordure \u00e9paisse = constitution post-conflit</div>';
+      + ` ${tr('legend_postconflict_border')}</div>`;
     return;
   }
 
@@ -167,10 +662,10 @@ function renderLegend2D() {
 function renderCombinedLegend(cont) {
   const heritages = ['francophone','anglophone','lusophone','other','mixed'];
   const scores = ['X','P','V'];
-  const scoreLabels = { X:'Absent', P:'Partiel', V:'Reconnu' };
-  const hLabels = { francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre', mixed:'Mixte' };
+  const scoreLabels = { X:tr('legend_absent'), P:tr('legend_partial'), V:tr('legend_recognized') };
+  const hLabels = { francophone:tr('h_francophone'), anglophone:tr('h_anglophone'), lusophone:tr('h_lusophone'), other:tr('h_other'), mixed:tr('h_mixed') };
 
-  let html = '<div class="legend-explain">La <b>teinte</b> indique l\'h\u00e9ritage colonial ; l\'<b>intensit\u00e9</b> indique le niveau de reconnaissance.</div>';
+  let html = `<div class="legend-explain">${tr('legend_explain')}</div>`;
   html += '<div class="legend-grid">';
   html += '<div></div>';
   scores.forEach(s => { html += `<div class="lg-header">${scoreLabels[s]}</div>`; });
@@ -192,9 +687,9 @@ function buildDimBtns() {
   const cont = document.getElementById('dim-buttons');
   const grpC = document.getElementById('grp-buttons');
 
-  Object.entries(GROUPS).forEach(([n, ds]) => {
+  Object.entries(GROUPS).forEach(([key, ds]) => {
     const b = document.createElement('button');
-    b.className = 'grp-btn'; b.textContent = n;
+    b.className = 'grp-btn'; b.dataset.grp = key; b.textContent = groupLabel(key);
     b.title = ds.map(d => DATA.feature_labels[d]).join(', ');
     b.addEventListener('click', () => {
       const all = ds.every(d => selDims.has(d));
@@ -207,7 +702,7 @@ function buildDimBtns() {
   });
 
   const aBtn = document.createElement('button');
-  aBtn.className = 'grp-btn'; aBtn.textContent = 'Toutes';
+  aBtn.className = 'grp-btn'; aBtn.dataset.grp = 'all'; aBtn.textContent = tr('grp_all');
   aBtn.addEventListener('click', () => {
     DATA.features.forEach(d => selDims.add(d));
     syncDims(); updateMap();
@@ -241,9 +736,9 @@ function syncDims() {
     b.querySelector('.cb').textContent = selDims.has(d) ? '✓' : '';
   });
   document.querySelectorAll('.grp-btn').forEach(b => {
-    const n = b.textContent;
-    if (n === 'Toutes') b.classList.toggle('active', selDims.size === DATA.features.length);
-    else if (GROUPS[n]) b.classList.toggle('active', GROUPS[n].every(d => selDims.has(d)));
+    const key = b.dataset.grp;
+    if (key === 'all') b.classList.toggle('active', selDims.size === DATA.features.length);
+    else if (GROUPS[key]) b.classList.toggle('active', GROUPS[key].every(d => selDims.has(d)));
   });
 }
 
@@ -455,14 +950,14 @@ const tooltip = document.getElementById('tooltip');
 
 function onHover(ev, d) {
   // Disputed territories — special tooltip
-  const disputedInfo = {
-    'République sahraouie': 'République sahraouie (RASD)|Territoire disputé — membre de l\'UA depuis 1984.<br>Pas de constitution. Non inclus dans l\'analyse.',
-    'Somaliland': 'Somaliland|Territoire autoproclamé indépendant depuis 1991.<br>Non reconnu internationalement. Pas de constitution dans le dataset.',
+  const disputedKeys = {
+    'République sahraouie': ['disputed_sahraouie_title', 'disputed_sahraouie_desc'],
+    'Somaliland': ['disputed_somaliland_title', 'disputed_somaliland_desc'],
   };
-  if (disputedInfo[d.name]) {
-    const [title, desc] = disputedInfo[d.name].split('|');
+  if (disputedKeys[d.name]) {
+    const [tKey, dKey] = disputedKeys[d.name];
     const tt = document.getElementById('tooltip');
-    tt.innerHTML = `<div class="tt-name">${title}</div><div style="font-size:0.75rem;color:${CSS.dim}">${desc}</div>`;
+    tt.innerHTML = `<div class="tt-name">${tr(tKey)}</div><div style="font-size:0.75rem;color:${CSS.dim}">${tr(dKey)}</div>`;
     tt.style.opacity = '1';
     tt.style.left = (ev.clientX + 14) + 'px';
     tt.style.top = (ev.clientY - 10) + 'px';
@@ -477,17 +972,17 @@ function onHover(ev, d) {
     const parent = getParentCountry(d.name);
     const splitInfo = DATA.border_splits[d.name];
     if (splitInfo) {
-      statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">Fait partie de ${parent} jusqu'en ${splitInfo.split_year}</div>`;
+      statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">${tr('part_of_until').replace('{parent}', parent).replace('{year}', splitInfo.split_year)}</div>`;
     }
   } else if (!indep) {
     const indepY = DATA.independence_dates[d.name];
-    statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">Territoire colonial — indépendance en ${indepY}</div>`;
+    statusLine = `<div style="font-size:0.72rem;color:${CSS.pillCp};margin-bottom:0.2rem">${tr('colonial_territory').replace('{year}', indepY)}</div>`;
   }
 
   const st = getState(d.name, selYear);
   const sc = compScore(st);
   const h = DATA.colonial_heritage[d.name] || 'other';
-  const hLabel = HL[h] || h;
+  const hLabel = HL(h);
 
   // sov_vs_id mode — special tooltip
   if (mapMode === 'sov_vs_id') {
@@ -499,15 +994,15 @@ function onHover(ev, d) {
         `<div class="tt-name">${d.name}</div>` +
         `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
         statusLine +
-        `<div style="font-size:0.75rem;margin-top:0.2rem">Identitaire : ${entry.identity}/10</div>` +
-        `<div style="font-size:0.75rem">Institutionnel : ${entry.institutional}/10</div>` +
-        `<div class="tt-score"><div class="tt-swatch" style="background:${balColor}"></div>Balance : ${bal > 0 ? '+' : ''}${bal}</div>`;
+        `<div style="font-size:0.75rem;margin-top:0.2rem">${tr('identity_score')} : ${entry.identity}/10</div>` +
+        `<div style="font-size:0.75rem">${tr('institutional_score')} : ${entry.institutional}/10</div>` +
+        `<div class="tt-score"><div class="tt-swatch" style="background:${balColor}"></div>${tr('balance')} : ${bal > 0 ? '+' : ''}${bal}</div>`;
     } else {
       tooltip.innerHTML =
         `<div class="tt-name">${d.name}</div>` +
         `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
         statusLine +
-        '<div style="font-size:0.75rem;color:var(--dim)">Pas de données</div>';
+        `<div style="font-size:0.75rem;color:var(--dim)">${tr('no_data')}</div>`;
     }
     tooltip.style.opacity = '1';
     return;
@@ -528,7 +1023,7 @@ function onHover(ev, d) {
   // postconflict mode — add post-conflict label
   let pcLine = '';
   if (mapMode === 'postconflict' && DATA.post_conflict && DATA.post_conflict[d.name]) {
-    pcLine = `<div style="font-size:0.72rem;color:#555;margin-bottom:0.15rem;font-weight:600">Constitution post-conflit</div>`;
+    pcLine = `<div style="font-size:0.72rem;color:#555;margin-bottom:0.15rem;font-weight:600">${tr('postconflict_constitution')}</div>`;
   }
 
   tooltip.innerHTML =
@@ -537,7 +1032,7 @@ function onHover(ev, d) {
     statusLine +
     pcLine +
     (indep && splitOk
-      ? `<div class="tt-score"><div class="tt-swatch" style="background:${fillFor(sc, h, d.name)}"></div>${sc !== null ? `Score : ${sc.toFixed(2)}/2 (${selDims.size} dim.)` : 'Pas de données'}</div>` +
+      ? `<div class="tt-score"><div class="tt-swatch" style="background:${fillFor(sc, h, d.name)}"></div>${sc !== null ? `${tr('score_label')} : ${sc.toFixed(2)}/2 (${selDims.size} dim.)` : tr('no_data')}</div>` +
         (st ? `<div class="tt-const">${st.name} (${st.date_raw||st.year||'?'})</div>` : '')
       : '') +
     pills;
@@ -567,9 +1062,8 @@ function openBio(c) {
   const evs = DATA.country_timelines[c];
   const h = DATA.colonial_heritage[c] || 'other';
   const reg = DATA.country_region[c] || '';
-  const hL = { francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre', mixed:'Mixte' };
   document.getElementById('bio-meta').innerHTML =
-    `<span style="color:${HC[h]||HC.other}">${hL[h]||h}</span><span>${reg}</span><span>${evs.length} textes</span>`;
+    `<span style="color:${HC[h]||HC.other}">${HL(h)}</span><span>${reg}</span><span>${tr('texts_count').replace('{n}', evs.length)}</span>`;
   document.getElementById('commentary-pane').classList.remove('open');
   document.getElementById('commentary-pane').innerHTML = '';
   renderBio(c, evs);
@@ -594,10 +1088,10 @@ function showCommentary(ev) {
   }).join('');
 
   pane.innerHTML =
-    `<div class="cp-title">${ev.name || 'Sans titre'}</div>` +
+    `<div class="cp-title">${ev.name || tr('untitled')}</div>` +
     `<div class="cp-date">${ev.date_raw || ev.year || ''}</div>` +
     `<div class="cp-pills">${pills}</div>` +
-    `<div class="cp-text">${ev.comment || '<em>Pas de commentaire disponible.</em>'}</div>`;
+    `<div class="cp-text">${ev.comment || '<em>' + tr('no_comment') + '</em>'}</div>`;
   pane.classList.add('open');
   pane.scrollIntoView({ behavior:'smooth', block:'nearest' });
 }
@@ -675,7 +1169,7 @@ function renderBio(country, events) {
   // Instruction
   g.append('text').attr('x', W/2).attr('y', iH + 26)
     .attr('text-anchor','middle').attr('fill',CSS.dim).attr('font-size','9px')
-    .text('Cliquez sur un segment pour lire le commentaire complet');
+    .text(tr('click_segment'));
 }
 
 // ─── Slider ────────────────────────────────────────────────
@@ -732,12 +1226,12 @@ function renderHeatmap() {
   let html = '<colgroup><col style="width:180px">';
   feats.forEach(() => { html += '<col style="width:55px">'; });
   html += '<col style="width:60px"></colgroup>';
-  html += '<thead><tr><th>Pays</th>';
+  html += `<thead><tr><th>${tr('country')}</th>`;
   feats.forEach(f => {
     const sorted = hmSort.col === f ? ' sorted' : '';
-    html += `<th class="${sorted}" data-col="${f}" title="${DATA.feature_labels[f]}">${HM_SHORT[f] || f}</th>`;
+    html += `<th class="${sorted}" data-col="${f}" title="${DATA.feature_labels[f]}">${HM_SHORT(f)}</th>`;
   });
-  html += `<th class="${hmSort.col === '_total' ? 'sorted' : ''}" data-col="_total" title="Score total">Total</th>`;
+  html += `<th class="${hmSort.col === '_total' ? 'sorted' : ''}" data-col="_total" title="${tr('total_score')}">Total</th>`;
   html += '</tr></thead><tbody>';
 
   rows.forEach(r => {
@@ -792,58 +1286,7 @@ function renderDivergence() {
   const hC = { francophone:CSS.francophone, anglophone:CSS.anglophone, lusophone:CSS.lusophone };
   const divTT = document.getElementById('div-tooltip');
 
-  const divAnnotations = {
-    'F': [
-      {year:1963, text:'Nigéria (1963) : première fédération africaine post-indépendance'},
-      {year:1990, text:'Le fédéralisme reste une spécificité anglophone — Nigéria, Éthiopie, Af. du Sud'},
-      {year:1995, text:'Éthiopie (1995) : fédéralisme ethnique avec droit de sécession (art. 39)'},
-    ],
-    'Dc': [
-      {year:1990, text:'Conférence de La Baule (1990) : la France conditionne l\'aide à la démocratisation'},
-      {year:1996, text:'Les constitutions francophones inscrivent massivement la décentralisation'},
-      {year:2010, text:'Convergence quasi-complète : 93% du continent reconnaît la décentralisation'},
-    ],
-    'Drm': [
-      {year:1990, text:'La démocratisation ne comble PAS l\'écart sur les droits des minorités'},
-      {year:1996, text:'Af. du Sud (1996) : Bill of Rights avec 11 langues officielles et droits des minorités'},
-      {year:2010, text:'Le silence francophone sur les minorités persiste malgré 20 ans de démocratie'},
-    ],
-    'La': [
-      {year:1990, text:'Le multilinguisme officiel reste un marqueur anglophone'},
-      {year:1996, text:'Af. du Sud reconnaît 11 langues ; Tanzanie ajoute le swahili et l\'anglais'},
-      {year:2010, text:'Les francophones restent monolingues constitutionnellement (français = langue officielle)'},
-    ],
-    'Drc': [
-      {year:1990, text:'Les droits culturels émergent dans les constitutions post-démocratisation'},
-      {year:2002, text:'Charte de l\'UA (2002) : le protocole de Maputo renforce les droits culturels'},
-      {year:2010, text:'Kenya (2010) et Zimbabwe (2013) inscrivent des droits culturels forts'},
-    ],
-    'Dpa': [
-      {year:1990, text:'Quasi-absent : le concept de « peuples autochtones » est un import occidental'},
-      {year:2007, text:'DNUDPA (2007) : 52/54 pays africains votent pour — mais ne légifèrent pas'},
-      {year:2010, text:'Seuls RDC (2006) et Kenya (2010) inscrivent les peuples autochtones'},
-    ],
-    'Dis': [
-      {year:1960, text:'Les premières constitutions post-indépendance inscrivent l\'anti-discrimination'},
-      {year:1990, text:'La vague démocratique entraîne une adoption quasi universelle (98%)'},
-      {year:2010, text:'Convergence totale — aucune différence entre héritages sur cette dimension'},
-    ],
-    'Id': [
-      {year:1990, text:'Pré-1990 : l\'identité constitutionnelle est quasi inexistante'},
-      {year:2002, text:'L\'identité émerge dans les constitutions de 3e génération post-UA'},
-      {year:2010, text:'L\'écart se creuse : les anglophones reconnaissent, les francophones restent silencieux'},
-    ],
-    'Dau': [
-      {year:1990, text:'L\'autonomie reste rare — seules les fédérations la prévoient'},
-      {year:1995, text:'Éthiopie (1995) : autonomie régionale maximale (nations, nationalités, peuples)'},
-      {year:2010, text:'RDC (2006) et Kenya (2010) inscrivent l\'autonomie post-conflit'},
-    ],
-    'PJ': [
-      {year:1990, text:'Le pluralisme juridique distingue nettement anglophones et francophones'},
-      {year:1996, text:'Af. du Sud (1996) : reconnaissance du droit coutumier dans la Constitution'},
-      {year:2010, text:'Les lusophones (Angola 2010, Mozambique 2004) rejoignent les anglophones'},
-    ],
-  };
+  const divAnnotations = tr('div_annotations');
 
   DATA.features.forEach(feat => {
     const div = document.createElement('div');
@@ -877,9 +1320,10 @@ function renderDivergence() {
     g.append('text').attr('x',-4).attr('y',yS(2)+3).attr('text-anchor','end').attr('fill',CSS.dim).attr('font-size','7.5px').text('V');
 
     // Key event lines
+    const divEvts = tr('div_events');
     const events = [
-      [1990, 'Démocratisation'],
-      [2002, 'UA créée'],
+      [1990, divEvts[0][0]],
+      [2002, divEvts[1][0]],
     ];
     events.forEach(([yr, lbl]) => {
       g.append('line').attr('x1',xS(yr)).attr('x2',xS(yr)).attr('y1',0).attr('y2',h)
@@ -916,8 +1360,8 @@ function renderDivergence() {
           if (!series) continue;
           const idx = yr - 1960;
           const val = series[idx] ? series[idx][1] : 0;
-          const label = val < 0.5 ? 'Absent' : val < 1.5 ? 'Partiel' : 'Reconnu';
-          ttHtml += `<div class="dtt-row"><div class="dtt-dot" style="background:${color}"></div><b>${HL[hg]}</b> : ${val.toFixed(2)} (${label})</div>`;
+          const label = val < 0.5 ? tr('legend_absent') : val < 1.5 ? tr('legend_partial') : tr('legend_recognized');
+          ttHtml += `<div class="dtt-row"><div class="dtt-dot" style="background:${color}"></div><b>${HL(hg)}</b> : ${val.toFixed(2)} (${label})</div>`;
         }
         // Show contextual annotation near notable events
         const annots = divAnnotations[feat];
@@ -987,11 +1431,11 @@ function renderScatter() {
 
   // Axis labels
   g.append('text').attr('x',w/2).attr('y',h+44).attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
-    .text('Nombre de traités internationaux ratifiés (sur 6)');
+    .text(tr('scatter_xlabel'));
 
   g.append('text').attr('transform','rotate(-90)').attr('x',-h/2).attr('y',-44)
     .attr('text-anchor','middle').attr('fill',CSS.muted).attr('font-size','11.5px')
-    .text('Score constitutionnel total (sur 20)');
+    .text(tr('scatter_ylabel'));
 
   // Mean line per column
   treatyCounts.forEach(tc => {
@@ -1007,7 +1451,7 @@ function renderScatter() {
   g.append('text').attr('x', w - 4).attr('y', 16)
     .attr('text-anchor', 'end').attr('fill', CSS.dim).attr('font-size', '10px')
     .attr('font-style', 'italic')
-    .text('Spearman ρ = −0,06 · p = 0,68 (non significatif)');
+    .text(tr('scatter_stat'));
 
   // Beeswarm: force-simulate within each column to avoid overlap
   const R = 5.5;
@@ -1051,10 +1495,10 @@ function renderScatter() {
       d3.select(this).attr('opacity',1).attr('d', d.postConflict ? d3.symbol().type(d3.symbolDiamond).size(R*R*7)() : d3.symbol().type(d3.symbolCircle).size(R*R*7)());
       scTT.html(
         `<div class="tt-name">${d.name}</div>` +
-        `<div style="font-size:0.8rem;margin-top:0.15rem">Score constitutionnel : <b>${d.totalScore}</b>/20</div>` +
-        `<div style="font-size:0.8rem">Traités ratifiés : <b>${d.treatyCount}</b>/6</div>` +
-        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL[d.heritage]}${d.postConflict ? ' · Constitution post-conflit' : ''}</div>` +
-        `<div style="font-size:0.7rem;color:var(--dim);margin-top:0.2rem;font-style:italic">Cliquez pour ouvrir la fiche</div>`
+        `<div style="font-size:0.8rem;margin-top:0.15rem">${tr('constitutional_score')} : <b>${d.totalScore}</b>/20</div>` +
+        `<div style="font-size:0.8rem">${tr('treaties_ratified')} : <b>${d.treatyCount}</b>/6</div>` +
+        `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL(d.heritage)}${d.postConflict ? ' · ' + tr('postconflict_constitution') : ''}</div>` +
+        `<div style="font-size:0.7rem;color:var(--dim);margin-top:0.2rem;font-style:italic">${tr('click_open')}</div>`
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
@@ -1069,11 +1513,12 @@ function renderConflictChart() {
   const cont = document.getElementById('conflict-chart-container');
   if (!cont) return;
 
+  const cLabels = tr('conflict_labels');
   const groups = [
-    { label: 'Francophone\nnon-conflit', heritage: 'francophone', pc: false },
-    { label: 'Francophone\npost-conflit', heritage: 'francophone', pc: true },
-    { label: 'Anglophone\nnon-conflit', heritage: 'anglophone', pc: false },
-    { label: 'Anglophone\npost-conflit', heritage: 'anglophone', pc: true },
+    { label: cLabels[0], heritage: 'francophone', pc: false },
+    { label: cLabels[1], heritage: 'francophone', pc: true },
+    { label: cLabels[2], heritage: 'anglophone', pc: false },
+    { label: cLabels[3], heritage: 'anglophone', pc: true },
   ];
 
   groups.forEach(g => {
@@ -1106,7 +1551,7 @@ function renderConflictChart() {
 
   g.append('text').attr('transform', 'rotate(-90)').attr('x', -h / 2).attr('y', -38)
     .attr('text-anchor', 'middle').attr('fill', CSS.muted).attr('font-size', '11px')
-    .text('Score moyen (sur 20)');
+    .text(tr('conflict_ylabel'));
 
   const scTT = d3.select('#scatter-tooltip');
 
@@ -1123,7 +1568,7 @@ function renderConflictChart() {
     .on('mouseenter', function(ev, d) {
       scTT.html(
         `<div class="tt-name">${d.label.replace('\n', ' ')}</div>` +
-        `<div style="font-size:0.8rem">Score moyen : <b>${d.mean.toFixed(1)}</b>/20 (n=${d.n})</div>` +
+        `<div style="font-size:0.8rem">${tr('mean_score')} : <b>${d.mean.toFixed(1)}</b>/20 (n=${d.n})</div>` +
         `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.2rem">${d.countries.join(', ')}</div>`
       ).style('opacity', '1').style('left', (ev.clientX + 14) + 'px').style('top', (ev.clientY - 10) + 'px');
     })
@@ -1160,11 +1605,11 @@ function renderConflictChart() {
 
 // ─── CSV Download ─────────────────────────────────────────
 document.getElementById('download-csv')?.addEventListener('click', () => {
-  const header = ['Pays','Héritage','Post-conflit','Score total',...DATA.features.map(f => DATA.feature_labels[f]),'Traités ratifiés'];
+  const header = [tr('csv_country'),tr('csv_heritage'),tr('csv_postconflict'),tr('csv_total'),...DATA.features.map(f => DATA.feature_labels[f]),tr('csv_treaties')];
   const rows = DATA.feature_matrix.map(r => {
     const c = r.PAYS;
     const h = DATA.colonial_heritage[c] || 'other';
-    const pc = DATA.post_conflict && DATA.post_conflict[c] ? 'Oui' : 'Non';
+    const pc = DATA.post_conflict && DATA.post_conflict[c] ? tr('yes') : tr('no');
     const total = DATA.features.reduce((s,f) => s + r[f], 0);
     const rats = DATA.ratif_data[c] || {};
     const ratCount = DATA.treaties.reduce((s,t) => s + (rats[t]==='V'?1:0), 0);
@@ -1242,7 +1687,7 @@ function renderUMAP() {
       const tt = document.getElementById('tooltip');
       tt.style.display = 'block';
       tt.style.opacity = '1';
-      tt.innerHTML = `<strong>${p.name}</strong><br>${DATA.colonial_heritage[p.name] || 'other'}${pc?' &middot; Post-conflit':''}`;
+      tt.innerHTML = `<strong>${p.name}</strong><br>${HL(DATA.colonial_heritage[p.name] || 'other')}${pc?' &middot; ' + tr('postconflict_label'):''}`;
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
@@ -1573,7 +2018,7 @@ function renderFigures() {
 
       const img = document.createElement('img');
       img.src = `figures/${fig.file}.png`;
-      img.alt = fig.caption_fr;
+      img.alt = lang === 'fr' ? fig.caption_fr : (fig.caption_en || fig.caption_fr);
       img.loading = 'lazy';
       img.addEventListener('click', () => window.open(img.src, '_blank'));
 
@@ -1583,13 +2028,13 @@ function renderFigures() {
 
       const caption = document.createElement('div');
       caption.className = 'fig-caption';
-      caption.textContent = fig.caption_fr;
+      caption.textContent = lang === 'fr' ? fig.caption_fr : (fig.caption_en || fig.caption_fr);
 
       const dl = document.createElement('a');
       dl.className = 'fig-dl';
       dl.href = `figures/${fig.file}.pdf`;
       dl.download = '';
-      dl.textContent = '\u2B07 PDF';
+      dl.textContent = tr('fig_download');
 
       card.appendChild(img);
       card.appendChild(num);
@@ -1611,7 +2056,7 @@ initMap().then(() => {
   renderClusterMap();
   renderFigures();
 }).catch(err => {
-  document.getElementById('loading').innerHTML = `<span style="color:${CSS.anglophone}">Erreur : ${err.message}</span>`;
+  document.getElementById('loading').innerHTML = `<span style="color:${CSS.anglophone}">${tr('error_prefix')} : ${err.message}</span>`;
 });
 renderHeatmap();
 initHeatmapFilters();

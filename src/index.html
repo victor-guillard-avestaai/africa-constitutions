@@ -23,20 +23,21 @@
 <div class="tt" id="scatter-tooltip" style="max-width:300px"></div>
 
 <header>
-  <h1>Constitutions d'Afrique</h1>
-  <p class="lead">De la construction nationale au pluralisme identitaire — comment 54 pays africains reconnaissent ou effacent la diversité ethnoculturelle dans leurs constitutions</p>
+  <button id="lang-toggle" class="lang-btn" onclick="switchLang()">EN</button>
+  <h1 data-tr="site_title">Constitutions d'Afrique</h1>
+  <p class="lead" data-tr="site_lead">De la construction nationale au pluralisme identitaire — comment 54 pays africains reconnaissent ou effacent la diversité ethnoculturelle dans leurs constitutions</p>
 </header>
 
 <!-- ═══════ TAB BAR ═══════ -->
 <nav class="tab-bar" role="tablist" aria-label="Sections thématiques">
-  <button class="tab-btn active" id="tab-btn-carte" data-tab="carte" role="tab" aria-selected="true" aria-controls="tab-carte">Carte</button>
-  <button class="tab-btn" id="tab-btn-matrice" data-tab="matrice" role="tab" aria-selected="false" aria-controls="tab-matrice">Matrice</button>
-  <button class="tab-btn" id="tab-btn-heritage" data-tab="heritage" role="tab" aria-selected="false" aria-controls="tab-heritage">Héritage</button>
-  <button class="tab-btn" id="tab-btn-traites" data-tab="traites" role="tab" aria-selected="false" aria-controls="tab-traites">Traités</button>
-  <button class="tab-btn" id="tab-btn-conflit" data-tab="conflit" role="tab" aria-selected="false" aria-controls="tab-conflit">Post-conflit</button>
-  <button class="tab-btn" id="tab-btn-textes" data-tab="textes" role="tab" aria-selected="false" aria-controls="tab-textes">Textes</button>
-  <button class="tab-btn" id="tab-btn-clusters" data-tab="clusters" role="tab" aria-selected="false" aria-controls="tab-clusters">Clusters</button>
-  <button class="tab-btn" id="tab-btn-figures" data-tab="figures" role="tab" aria-selected="false" aria-controls="tab-figures">Figures</button>
+  <button class="tab-btn active" id="tab-btn-carte" data-tab="carte" data-tr="tab_carte" role="tab" aria-selected="true" aria-controls="tab-carte">Carte</button>
+  <button class="tab-btn" id="tab-btn-matrice" data-tab="matrice" data-tr="tab_matrice" role="tab" aria-selected="false" aria-controls="tab-matrice">Matrice</button>
+  <button class="tab-btn" id="tab-btn-heritage" data-tab="heritage" data-tr="tab_heritage" role="tab" aria-selected="false" aria-controls="tab-heritage">Héritage</button>
+  <button class="tab-btn" id="tab-btn-traites" data-tab="traites" data-tr="tab_traites" role="tab" aria-selected="false" aria-controls="tab-traites">Traités</button>
+  <button class="tab-btn" id="tab-btn-conflit" data-tab="conflit" data-tr="tab_conflit" role="tab" aria-selected="false" aria-controls="tab-conflit">Post-conflit</button>
+  <button class="tab-btn" id="tab-btn-textes" data-tab="textes" data-tr="tab_textes" role="tab" aria-selected="false" aria-controls="tab-textes">Textes</button>
+  <button class="tab-btn" id="tab-btn-clusters" data-tab="clusters" data-tr="tab_clusters" role="tab" aria-selected="false" aria-controls="tab-clusters">Clusters</button>
+  <button class="tab-btn" id="tab-btn-figures" data-tab="figures" data-tr="tab_figures" role="tab" aria-selected="false" aria-controls="tab-figures">Figures</button>
 </nav>
 
 <!-- ═══════ TAB: CARTE ═══════ -->
@@ -44,13 +45,13 @@
 
 <div class="section">
   <div class="card">
-    <h2>Carte de la reconnaissance constitutionnelle</h2>
-    <div class="sub">Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.</div>
+    <h2 data-tr="carte_title">Carte de la reconnaissance constitutionnelle</h2>
+    <div class="sub" data-tr="carte_sub" data-tr-html="true">Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. <b>Shift+clic</b> sur les dimensions pour en sélectionner plusieurs.</div>
 
     <div class="map-row">
       <div class="map-sidebar">
         <div>
-          <div class="ctrl-label">Année</div>
+          <div class="ctrl-label" data-tr="carte_year">Année</div>
           <div class="year-row">
             <button id="play-btn" aria-label="Animer le slider temporel" title="Animer">&#9654;</button>
             <input type="range" id="year-slider" aria-label="Année de référence" min="1930" max="2026" value="2026" step="1">
@@ -59,19 +60,19 @@
         </div>
 
         <div>
-          <div class="ctrl-label">Dimensions (multi-sélection)</div>
+          <div class="ctrl-label" data-tr="carte_dims">Dimensions (multi-sélection)</div>
           <div class="grp-row" id="grp-buttons"></div>
           <div class="dim-buttons" id="dim-buttons"></div>
         </div>
 
         <div>
-          <div class="ctrl-label">Mode d'affichage</div>
+          <div class="ctrl-label" data-tr="carte_mode">Mode d'affichage</div>
           <div class="mode-switch" id="mode-switch">
-            <button class="mode-btn" data-mode="score">Score seul</button>
-            <button class="mode-btn active" data-mode="combined">Combiné</button>
-            <button class="mode-btn" data-mode="heritage">Héritage seul</button>
+            <button class="mode-btn" data-mode="score" data-tr="mode_score">Score seul</button>
+            <button class="mode-btn active" data-mode="combined" data-tr="mode_combined">Combiné</button>
+            <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage seul</button>
             <button class="mode-btn" data-mode="sov_vs_id">Sov. vs Id.</button>
-            <button class="mode-btn" data-mode="postconflict">Post-conflit</button>
+            <button class="mode-btn" data-mode="postconflict" data-tr="tab_conflit">Post-conflit</button>
           </div>
           <div id="legend-2d"></div>
         </div>
@@ -79,18 +80,18 @@
 
       <div>
         <div id="map-container">
-          <div id="loading"><span>Chargement de la carte...</span></div>
+          <div id="loading"><span data-tr="carte_loading">Chargement de la carte...</span></div>
           <svg id="map-svg" role="img" aria-label="Carte interactive de la reconnaissance constitutionnelle en Afrique" style="display:none"></svg>
-          <button id="zoom-reset" title="Réinitialiser le zoom et la position" style="position:absolute;top:8px;right:8px;padding:0.25rem 0.5rem;font-size:0.7rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--muted);cursor:pointer;opacity:0.7">↺ Réinitialiser la vue</button>
+          <button id="zoom-reset" data-tr="carte_reset" title="Réinitialiser le zoom et la position" style="position:absolute;top:8px;right:8px;padding:0.25rem 0.5rem;font-size:0.7rem;border:1px solid var(--border);border-radius:4px;background:var(--card);color:var(--muted);cursor:pointer;opacity:0.7">↺ Réinitialiser la vue</button>
         </div>
         <div class="scale-bar" style="justify-content:center;gap:1rem;">
           <span style="display:inline-flex;align-items:center;gap:0.3rem">
             <svg width="14" height="14" style="border:1px solid var(--border);border-radius:2px"><defs><pattern id="hatch-leg" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="#e8e4dd"/><line x1="0" y1="0" x2="0" y2="4" stroke="#b0a898" stroke-width="1.2"/></pattern></defs><rect width="14" height="14" fill="url(#hatch-leg)"/></svg>
-            <span style="font-size:0.7rem;color:var(--dim)">Territoire colonial</span>
+            <span style="font-size:0.7rem;color:var(--dim)" data-tr="carte_colonial">Territoire colonial</span>
           </span>
           <span style="display:inline-flex;align-items:center;gap:0.3rem">
             <svg width="14" height="14" style="border:1px solid var(--border);border-radius:2px"><defs><pattern id="hatch-disp-leg" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#e8e4dd"/><line x1="0" y1="0" x2="4" y2="4" stroke="#c0b8a8" stroke-width="0.6"/><line x1="4" y1="0" x2="0" y2="4" stroke="#c0b8a8" stroke-width="0.6"/></pattern></defs><rect width="14" height="14" fill="url(#hatch-disp-leg)"/></svg>
-            <span style="font-size:0.7rem;color:var(--dim)">Territoire disputé</span>
+            <span style="font-size:0.7rem;color:var(--dim)" data-tr="carte_disputed">Territoire disputé</span>
           </span>
         </div>
       </div>
@@ -103,7 +104,7 @@
           <h3 id="bio-country-name"></h3>
           <div class="bio-meta" id="bio-meta"></div>
         </div>
-        <button class="bio-close" onclick="closeBio()">Fermer</button>
+        <button class="bio-close" data-tr="bio_close" onclick="closeBio()">Fermer</button>
       </div>
       <div id="bio-timeline-container">
         <svg id="bio-timeline-svg"></svg>
@@ -121,23 +122,23 @@
 
 <div class="section">
   <div class="card">
-    <h2>Matrice comparative — 54 pays × 10 dimensions</h2>
-    <div class="sub">Dernière constitution en vigueur par pays. Cliquez sur un en-tête de colonne pour trier. Cliquez sur un nom de pays pour ouvrir sa fiche.</div>
-    <div class="explainer">
+    <h2 data-tr="matrice_title">Matrice comparative — 54 pays × 10 dimensions</h2>
+    <div class="sub" data-tr="matrice_sub">Dernière constitution en vigueur par pays. Cliquez sur un en-tête de colonne pour trier. Cliquez sur un nom de pays pour ouvrir sa fiche.</div>
+    <div class="explainer" id="matrice-explainer">
       <strong>X</strong> = absent de la constitution &nbsp;|&nbsp;
       <strong>P</strong> = reconnaissance partielle (mentionné mais sans garanties effectives) &nbsp;|&nbsp;
       <strong>V</strong> = pleinement reconnu (droits opposables, institutions dédiées)
     </div>
     <div class="heatmap-controls">
       <span class="hm-filter-label">Filtrer :</span>
-      <button class="hm-sort-btn active" data-hf="all">Tous</button>
-      <button class="hm-sort-btn" data-hf="francophone">Francophone</button>
-      <button class="hm-sort-btn" data-hf="anglophone">Anglophone</button>
-      <button class="hm-sort-btn" data-hf="lusophone">Lusophone</button>
-      <button class="hm-sort-btn" data-hf="other">Autre</button>
+      <button class="hm-sort-btn active" data-hf="all" data-tr="filter_all">Tous</button>
+      <button class="hm-sort-btn" data-hf="francophone" data-tr="h_francophone">Francophone</button>
+      <button class="hm-sort-btn" data-hf="anglophone" data-tr="h_anglophone">Anglophone</button>
+      <button class="hm-sort-btn" data-hf="lusophone" data-tr="h_lusophone">Lusophone</button>
+      <button class="hm-sort-btn" data-hf="other" data-tr="h_other">Autre</button>
       <span style="margin-left:0.5rem;color:var(--border)">|</span>
-      <button class="hm-sort-btn" data-hf="post-conflict">Post-conflit</button>
-      <button class="hm-sort-btn" data-hf="non-conflict">Non-conflit</button>
+      <button class="hm-sort-btn" data-hf="post-conflict" data-tr="filter_postconflict">Post-conflit</button>
+      <button class="hm-sort-btn" data-hf="non-conflict" data-tr="filter_nonconflict">Non-conflit</button>
     </div>
     <div id="heatmap-container">
       <table id="heatmap-table" role="table" aria-label="Matrice comparative des 54 pays sur 10 dimensions"></table>
@@ -152,17 +153,17 @@
 
 <div class="section">
   <div class="card">
-    <h2>Divergence par héritage colonial</h2>
-    <div class="sub">Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes par héritage.</div>
-    <div class="explainer">
+    <h2 data-tr="heritage_title">Divergence par héritage colonial</h2>
+    <div class="sub" data-tr="heritage_sub">Score moyen de reconnaissance par tradition juridique (1960–2026). Survolez pour les valeurs exactes par héritage.</div>
+    <div class="explainer" data-tr="heritage_explain" data-tr-html="true">
       L'héritage colonial détermine la tradition juridique constitutionnelle. Les pays <strong>francophones</strong> ont hérité du modèle jacobin français (État unitaire, silence sur la diversité). Les pays <strong>anglophones</strong> ont hérité du pluralisme de la common law britannique (chefferie traditionnelle, tribunaux coutumiers). Les pays <strong>lusophones</strong> suivent une troisième voie, souvent marquée par le socialisme post-indépendance.
       <br><br>
       <strong>Résultat clé</strong> : l'écart francophone-anglophone s'est <em>élargi</em> après 1990, passant de 2,4 à 4,7 points. La vague de démocratisation a apporté la décentralisation et la reconnaissance linguistique, mais pas la reconnaissance identitaire profonde (droits des minorités, peuples autochtones). η² = 22,3 % (n = 42 franco + anglo).
     </div>
     <div class="hl-bar">
-      <div class="hl-item"><div class="hl-line" style="background:var(--francophone)"></div>Francophone (23 pays)</div>
-      <div class="hl-item"><div class="hl-line" style="background:var(--anglophone)"></div>Anglophone (19 pays)</div>
-      <div class="hl-item"><div class="hl-line" style="background:var(--lusophone)"></div>Lusophone (5 pays)</div>
+      <div class="hl-item"><div class="hl-line" style="background:var(--francophone)"></div><span data-tr="heritage_franco">Francophone (23 pays)</span></div>
+      <div class="hl-item"><div class="hl-line" style="background:var(--anglophone)"></div><span data-tr="heritage_anglo">Anglophone (19 pays)</span></div>
+      <div class="hl-item"><div class="hl-line" style="background:var(--lusophone)"></div><span data-tr="heritage_luso">Lusophone (5 pays)</span></div>
     </div>
     <div class="div-grid" id="div-grid" role="img" aria-label="Graphiques de divergence par héritage colonial"></div>
   </div>
@@ -175,9 +176,9 @@
 
 <div class="section">
   <div class="card">
-    <h2>Ratifier n'est pas reconnaître</h2>
-    <div class="sub">Ce graphique confronte deux mesures pour chaque pays : ses engagements internationaux (nombre de traités ratifiés sur 6) et la réalité de sa constitution (score total des 10 dimensions sur 20). La corrélation est nulle (ρ = −0,06, p = 0,68) — ratifier des traités ne prédit pas la reconnaissance constitutionnelle.</div>
-    <div class="explainer">
+    <h2 data-tr="traites_title">Ratifier n'est pas reconnaître</h2>
+    <div class="sub" data-tr="traites_sub">Ce graphique confronte deux mesures pour chaque pays : ses engagements internationaux (nombre de traités ratifiés sur 6) et la réalité de sa constitution (score total des 10 dimensions sur 20). La corrélation est nulle (ρ = −0,06, p = 0,68) — ratifier des traités ne prédit pas la reconnaissance constitutionnelle.</div>
+    <div class="explainer" data-tr="traites_explain" data-tr-html="true">
       <strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br>
       <strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br>
       <strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br>
@@ -186,12 +187,12 @@
     </div>
     <div id="scatter-container" role="img" aria-label="Graphique en essaim : traités ratifiés vs score constitutionnel"></div>
     <div class="scatter-legend">
-      <div class="sl-item"><div class="sl-dot" style="background:var(--francophone)"></div>Francophone</div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div>Anglophone</div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div>Lusophone</div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div>Autre</div>
-      <div class="sl-item" style="margin-left:1.5rem"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--muted)" opacity="0.6"/></svg> Non-conflit</div>
-      <div class="sl-item"><svg width="12" height="12"><polygon points="6,1 11,6 6,11 1,6" fill="var(--muted)" opacity="0.6"/></svg> Post-conflit</div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--francophone)"></div><span data-tr="h_francophone">Francophone</span></div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div><span data-tr="h_anglophone">Anglophone</span></div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div><span data-tr="h_lusophone">Lusophone</span></div>
+      <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div><span data-tr="h_other">Autre</span></div>
+      <div class="sl-item" style="margin-left:1.5rem"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--muted)" opacity="0.6"/></svg> <span data-tr="filter_nonconflict">Non-conflit</span></div>
+      <div class="sl-item"><svg width="12" height="12"><polygon points="6,1 11,6 6,11 1,6" fill="var(--muted)" opacity="0.6"/></svg> <span data-tr="filter_postconflict">Post-conflit</span></div>
     </div>
   </div>
 </div>
@@ -203,15 +204,15 @@
 
 <div class="section">
   <div class="card">
-    <h2>Le moment constitutionnel post-conflit</h2>
-    <div class="sub">Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.</div>
-    <div class="explainer">
+    <h2 data-tr="conflit_title">Le moment constitutionnel post-conflit</h2>
+    <div class="sub" data-tr="conflit_sub">Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.</div>
+    <div class="explainer" id="conflit-explainer" data-tr="conflit_method_result_thesis" data-tr-html="true">
       <strong>Variable</strong> : la <em>constitution actuelle</em> a-t-elle été adoptée dans le cadre d'un processus de paix, d'une transition post-guerre ou d'une construction nationale post-libération ? 13/54 constitutions codées post-conflit.<br>
       <strong>Résultat</strong> : parmi les 42 pays francophones et anglophones, les constitutions post-conflit obtiennent un score moyen de 14,1/20 contre 7,5 (p = 0,0001). L'héritage seul explique 22,3 % de la variance ; héritage + post-conflit en explique 63,2 %. L'effet est concentré sur les dimensions identitaires (Dpa, Dau, Drc, Drm : p &lt; 0,001).<br>
       <strong>Implication pour la thèse</strong> : la reconnaissance des peuples infra-étatiques est motivée par la nécessité politique (le critère fonctionnel), pas par la tradition juridique héritée seule.
     </div>
     <div id="conflict-chart-container" role="img" aria-label="Graphique d'interaction héritage × post-conflit"></div>
-    <div class="explainer" style="margin-top:1rem">
+    <div class="explainer" style="margin-top:1rem" data-tr="conflit_read" data-tr-html="true">
       <strong>Comment lire ce graphique ?</strong> Chaque barre représente le score moyen d'un groupe de pays. Le groupe est défini par deux variables : l'héritage colonial (francophone ou anglophone) et le contexte de la constitution actuelle (post-conflit ou non). Si l'héritage était le seul facteur, les deux barres bleues seraient au même niveau. L'écart entre « conflit » et « non-conflit » <em>au sein du même héritage</em> montre que le contexte de rédaction de la constitution compte autant, sinon plus, que la tradition juridique héritée.
     </div>
   </div>
@@ -224,32 +225,32 @@
 
 <div class="section">
   <div class="card">
-    <h2>Ce que disent les constitutions</h2>
-    <div class="sub">Analyse textuelle de 54 constitutions (1,4 million de mots). Nous avons compté et classé les occurrences de termes juridiques clés pour mesurer objectivement ce que chaque constitution dit — et ce qu'elle tait.</div>
-    <div class="explainer">
+    <h2 data-tr="textes_title">Ce que disent les constitutions</h2>
+    <div class="sub" data-tr="textes_sub">Analyse textuelle de 54 constitutions (1,4 million de mots). Nous avons compté et classé les occurrences de termes juridiques clés pour mesurer objectivement ce que chaque constitution dit — et ce qu'elle tait.</div>
+    <div class="explainer" data-tr="textes_method" data-tr-html="true">
       <strong>Méthode</strong> : les 54 constitutions ont été téléchargées en anglais depuis <em>constituteproject.org</em>, puis analysées par recherche de mots-clés. Pour chaque terme (« sovereignty », « peoples », « indivisible »...), nous avons compté les occurrences et classé leur contexte d'utilisation.<br>
       <strong>Limite</strong> : seules les 19 constitutions anglophones sont dans leur langue originale. Les 35 autres sont des traductions. Les termes techniques juridiques (« indivisible », « self-determination ») se traduisent fidèlement ; les termes courants (« people », « community ») sont plus ambigus.
     </div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Souveraineté vs identité dans les préambules</h3>
-    <div class="sub">70 % des constitutions francophones contiennent le mot « indivisible », contre 21 % des anglophones. Le modèle jacobin se lit dans le texte.</div>
+    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_sov_title">Souveraineté vs identité dans les préambules</h3>
+    <div class="sub" data-tr="textes_sov_sub">70 % des constitutions francophones contiennent le mot « indivisible », contre 21 % des anglophones. Le modèle jacobin se lit dans le texte.</div>
     <div id="textes-figures" style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch1s1_sovereignty_markers.png" alt="Marqueurs de souveraineté" style="max-width:100%"><a href="figures/ch1s1_sovereignty_markers.pdf" download class="fig-dl">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch1s1_preamble_sovereignty_identity.png" alt="Scatter souveraineté vs identité" style="max-width:100%"><a href="figures/ch1s1_preamble_sovereignty_identity.pdf" download class="fig-dl">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch1s1_sovereignty_markers.png" alt="Marqueurs de souveraineté" style="max-width:100%"><a href="figures/ch1s1_sovereignty_markers.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch1s1_preamble_sovereignty_identity.png" alt="Scatter souveraineté vs identité" style="max-width:100%"><a href="figures/ch1s1_preamble_sovereignty_identity.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
     </div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Le mot « peoples » : citation vs reconnaissance</h3>
-    <div class="sub">Les constitutions francophones utilisent le mot « peoples » (peuples) plus souvent que les anglophones — mais 61 % des occurrences sont des citations de la Charte africaine (24 %) ou des formules diplomatiques (37 %). Le mot « peuples » n'est pas traduit en droits domestiques.</div>
+    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_peoples_title">Le mot « peoples » : citation vs reconnaissance</h3>
+    <div class="sub" data-tr="textes_peoples_sub">Les constitutions francophones utilisent le mot « peoples » (peuples) plus souvent que les anglophones — mais 61 % des occurrences sont des citations de la Charte africaine (24 %) ou des formules diplomatiques (37 %). Le mot « peuples » n'est pas traduit en droits domestiques.</div>
     <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch1s2_peoples_context.png" alt="Contexte peoples" style="max-width:100%"><a href="figures/ch1s2_peoples_context.pdf" download class="fig-dl">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch1s2_naming_heatmap.png" alt="Terminologie de nomination" style="max-width:100%"><a href="figures/ch1s2_naming_heatmap.pdf" download class="fig-dl">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch1s2_peoples_context.png" alt="Contexte peoples" style="max-width:100%"><a href="figures/ch1s2_peoples_context.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch1s2_naming_heatmap.png" alt="Terminologie de nomination" style="max-width:100%"><a href="figures/ch1s2_naming_heatmap.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
     </div>
 
-    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem">Autodétermination</h3>
-    <div class="sub">8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.</div>
+    <h3 style="margin-top:1.5rem;font-family:var(--font-heading);font-size:1.05rem" data-tr="textes_sd_title">Autodétermination</h3>
+    <div class="sub" data-tr="textes_sd_sub">8 pays sur 54 mentionnent l'autodétermination. Seule l'Éthiopie autorise la sécession. Classification préliminaire par mots-clés — nécessite validation juridique.</div>
     <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center;margin:1rem 0">
-      <div class="fig-card"><img src="figures/ch5_self_determination_posture.png" alt="Posture d'autodétermination" style="max-width:100%"><a href="figures/ch5_self_determination_posture.pdf" download class="fig-dl">⬇ PDF</a></div>
-      <div class="fig-card"><img src="figures/ch5_sd_flags_heatmap.png" alt="Marqueurs SD 54 pays" style="max-width:100%"><a href="figures/ch5_sd_flags_heatmap.pdf" download class="fig-dl">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch5_self_determination_posture.png" alt="Posture d'autodétermination" style="max-width:100%"><a href="figures/ch5_self_determination_posture.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
+      <div class="fig-card"><img src="figures/ch5_sd_flags_heatmap.png" alt="Marqueurs SD 54 pays" style="max-width:100%"><a href="figures/ch5_sd_flags_heatmap.pdf" download class="fig-dl" data-tr="fig_download">⬇ PDF</a></div>
     </div>
   </div>
 </div>
@@ -261,22 +262,22 @@
 
 <div class="section">
   <div class="card">
-    <h2>Clustering constitutionnel</h2>
-    <div class="explainer">
+    <h2 data-tr="clusters_title">Clustering constitutionnel</h2>
+    <div class="explainer" data-tr="clusters_explain" data-tr-html="true">
       <strong>Méthode</strong> : les 54 constitutions sont plongées dans un espace sémantique (embeddings voyage-law-2, 1024 dimensions) puis projetées en 2D (UMAP).
       Le clustering hiérarchique (Ward) sur les 10 dimensions codées révèle des groupes qui ne reproduisent PAS l'héritage colonial (ARI = 0,033).
     </div>
 
-    <h3>Carte de proximité sémantique</h3>
+    <h3 data-tr="clusters_umap_title">Carte de proximité sémantique</h3>
     <div class="sub">Chaque point représente une constitution. Les points proches sont textuellement similaires. Les couleurs indiquent l'héritage colonial.</div>
     <div class="umap-controls">
-      <button class="mode-btn active" data-umap="constitutions">Constitutions</button>
-      <button class="mode-btn" data-umap="preambles">Préambules</button>
+      <button class="mode-btn active" data-umap="constitutions" data-tr="btn_constitutions">Constitutions</button>
+      <button class="mode-btn" data-umap="preambles" data-tr="btn_preambles">Préambules</button>
     </div>
     <div id="umap-container"></div>
 
-    <h3>Classification hiérarchique interactive</h3>
-    <div class="explainer">
+    <h3 data-tr="clusters_dendro_title">Classification hiérarchique interactive</h3>
+    <div class="explainer" data-tr="clusters_dendro_explain">
       Déplacez le curseur de droite à gauche. À droite, toute l'Afrique forme un seul groupe. En déplaçant vers la gauche, les constitutions différentes se séparent en groupes distincts. La carte montre quels pays restent ensemble.
     </div>
     <div class="cluster-layout">
@@ -293,8 +294,8 @@
 
 <div class="section">
   <div class="card">
-    <h2>Figures de la thèse</h2>
-    <div class="explainer">
+    <h2 data-tr="figures_title">Figures de la thèse</h2>
+    <div class="explainer" data-tr="figures_sub">
       36 figures organisées par chapitre. Cliquez sur une image pour l'agrandir. Téléchargez le PDF haute résolution via le bouton ⬇.
     </div>
     <div id="figures-gallery"></div>
