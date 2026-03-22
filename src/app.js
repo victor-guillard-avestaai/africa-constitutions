@@ -60,6 +60,11 @@ const mapColorScale = d3.scaleLinear()
   .range([COLOR_X, COLOR_P, COLOR_V])
   .interpolate(d3.interpolateRgb.gamma(2.2));
 
+// Diverging scale for sov_vs_id mode (blue=institutional, warm=identity)
+const sovIdScale = d3.scaleDiverging()
+  .domain([-6, 0, 6])
+  .interpolator(t => d3.interpolateRdYlBu(1 - t));
+
 function numVal(s) { return s === 'V' ? 2 : s === 'P' ? 1 : 0; }
 
 const HC = { francophone:CSS.francophone, anglophone:CSS.anglophone, lusophone:CSS.lusophone, other:CSS.otherH, mixed:CSS.otherH };
@@ -74,7 +79,7 @@ const HM_SHORT = {
 let selDims = new Set(['Drm']);
 let selYear = 2026;
 let selCountry = null;
-let mapMode = 'combined'; // 'score' | 'combined' | 'heritage'
+let mapMode = 'combined'; // 'score' | 'combined' | 'heritage' | 'sov_vs_id' | 'postconflict'
 let geoData = null;
 let isoToGeo = {};
 let playInt = null;
@@ -103,12 +108,17 @@ function compScore(st) {
   return s / selDims.size;
 }
 
-function fillFor(sc, heritage) {
+function fillFor(sc, heritage, country) {
+  if (mapMode === 'sov_vs_id') {
+    const entry = DATA.sov_vs_id_scores && DATA.sov_vs_id_scores[country];
+    if (!entry) return COLOR_NONE;
+    return sovIdScale(entry.balance);
+  }
   if (sc === null) return COLOR_NONE;
   const h = heritage || 'other';
   if (mapMode === 'score') return mapColorScale(sc);
   if (mapMode === 'heritage') return HERITAGE_COLORS[h] ? HERITAGE_COLORS[h].flat : HERITAGE_COLORS.other.flat;
-  // combined mode
+  // combined + postconflict modes use same fill logic
   return (HERITAGE_SCALES[h] || HERITAGE_SCALES.other)(sc);
 }
 
@@ -122,23 +132,54 @@ function renderScale() {
 
 function renderLegend2D() {
   const cont = document.getElementById('legend-2d');
+
+  // ── sov_vs_id mode: horizontal diverging gradient ──
+  if (mapMode === 'sov_vs_id') {
+    const steps = 40;
+    const stops = [];
+    for (let i = 0; i <= steps; i++) {
+      const val = -6 + (12 * i / steps);
+      stops.push(sovIdScale(val));
+    }
+    let html = '<div class="legend-explain">La couleur indique l\'équilibre entre dimensions <b>institutionnelles</b> (gauche) et <b>identitaires</b> (droite).</div>';
+    html += '<div style="display:flex;align-items:center;gap:0.3rem;margin-top:0.35rem">';
+    html += '<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">\u2190 Institutionnel</span>';
+    html += `<div style="flex:1;height:14px;border-radius:3px;background:linear-gradient(to right,${stops.join(',')})"></div>`;
+    html += '<span style="font-size:0.62rem;color:var(--muted);white-space:nowrap">Identitaire \u2192</span>';
+    html += '</div>';
+    cont.innerHTML = html;
+    return;
+  }
+
+  // ── postconflict mode: normal 2D legend + border note ──
+  if (mapMode === 'postconflict') {
+    renderCombinedLegend(cont);
+    cont.innerHTML += '<div style="font-size:0.65rem;color:var(--muted);margin-top:0.4rem;display:flex;align-items:center;gap:0.35rem">'
+      + '<svg width="28" height="14"><rect x="1" y="1" width="26" height="12" fill="none" stroke="#333" stroke-width="2.5" stroke-dasharray="5,2.5" rx="2"/></svg>'
+      + ' Bordure \u00e9paisse = constitution post-conflit</div>';
+    return;
+  }
+
+  // ── default: combined / score / heritage 2D grid ──
+  renderCombinedLegend(cont);
+}
+
+function renderCombinedLegend(cont) {
   const heritages = ['francophone','anglophone','lusophone','other','mixed'];
   const scores = ['X','P','V'];
   const scoreLabels = { X:'Absent', P:'Partiel', V:'Reconnu' };
   const hLabels = { francophone:'Francophone', anglophone:'Anglophone', lusophone:'Lusophone', other:'Autre', mixed:'Mixte' };
 
-  let html = '<div class="legend-explain">La <b>teinte</b> indique l\'héritage colonial ; l\'<b>intensité</b> indique le niveau de reconnaissance.</div>';
+  let html = '<div class="legend-explain">La <b>teinte</b> indique l\'h\u00e9ritage colonial ; l\'<b>intensit\u00e9</b> indique le niveau de reconnaissance.</div>';
   html += '<div class="legend-grid">';
-  // Header row
   html += '<div></div>';
   scores.forEach(s => { html += `<div class="lg-header">${scoreLabels[s]}</div>`; });
-  // Heritage rows
   heritages.forEach(h => {
     const dotColor = HC[h];
     html += `<div class="lg-row-label"><span class="lg-dot" style="background:${dotColor}"></span>${hLabels[h]}</div>`;
     scores.forEach(s => {
       const color = HERITAGE_COLORS[h][s];
-      html += `<div class="lg-swatch" style="background:${color}" title="${hLabels[h]} — ${scoreLabels[s]}"></div>`;
+      html += `<div class="lg-swatch" style="background:${color}" title="${hLabels[h]} \u2014 ${scoreLabels[s]}"></div>`;
     });
   });
   html += '</div>';
@@ -219,10 +260,21 @@ function buildModeSwitch() {
 }
 
 function resetStrokes() {
-  d3.selectAll('.country-path').each(function() {
+  d3.selectAll('.country-path').each(function(d) {
     const el = d3.select(this);
-    if (!el.classed('selected')) {
-      el.attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.4);
+    if (el.classed('selected')) return;
+    if (mapMode === 'postconflict' && DATA.post_conflict && DATA.post_conflict[d.name]) {
+      el.attr('stroke', '#333').attr('stroke-width', 3).attr('stroke-dasharray', '6,3');
+    } else {
+      el.attr('stroke', CSS.strokeDefault).attr('stroke-width', 0.4).attr('stroke-dasharray', null);
+    }
+  });
+  // Island markers in post-conflict mode
+  d3.selectAll('circle.island-marker').each(function(d) {
+    if (mapMode === 'postconflict' && DATA.post_conflict && DATA.post_conflict[d.name]) {
+      d3.select(this).attr('stroke', '#333').attr('stroke-width', 3).attr('stroke-dasharray', '6,3');
+    } else {
+      d3.select(this).attr('stroke', 'white').attr('stroke-width', 1.5).attr('stroke-dasharray', null);
     }
   });
 }
@@ -375,15 +427,15 @@ function updateMap() {
         const pState = getState(parent, selYear);
         const pScore = compScore(pState);
         const parentIndep = isIndependent(parent, selYear);
-        const parentFill = parentIndep ? fillFor(pScore, pH) : 'url(#hatch-colonial)';
+        const parentFill = parentIndep ? fillFor(pScore, pH, parent) : 'url(#hatch-colonial)';
         el.attr('fill', parentFill);
-        el.attr('stroke', parentIndep ? fillFor(pScore, pH) : CSS.hatchBg).attr('stroke-width', 0.8);
+        el.attr('stroke', parentIndep ? fillFor(pScore, pH, parent) : CSS.hatchBg).attr('stroke-width', 0.8);
       }
     } else if (!indep) {
       el.attr('fill', 'url(#hatch-colonial)');
     } else {
       const st = getState(d.name, selYear);
-      el.attr('fill', fillFor(compScore(st), h));
+      el.attr('fill', fillFor(compScore(st), h, d.name));
     }
   });
 
@@ -391,10 +443,11 @@ function updateMap() {
   d3.selectAll('circle.island-marker').each(function(d) {
     const h = DATA.colonial_heritage[d.name] || 'other';
     const st = getState(d.name, selYear);
-    d3.select(this).attr('fill', fillFor(compScore(st), h));
+    d3.select(this).attr('fill', fillFor(compScore(st), h, d.name));
   });
 
   resetStrokes();
+  renderLegend2D();
 }
 
 // ─── Tooltip ───────────────────────────────────────────────
@@ -433,6 +486,31 @@ function onHover(ev, d) {
   const sc = compScore(st);
   const h = DATA.colonial_heritage[d.name] || 'other';
   const hLabel = HL[h] || h;
+
+  // sov_vs_id mode — special tooltip
+  if (mapMode === 'sov_vs_id') {
+    const entry = DATA.sov_vs_id_scores && DATA.sov_vs_id_scores[d.name];
+    if (entry && indep && splitOk) {
+      const bal = entry.balance;
+      const balColor = sovIdScale(bal);
+      tooltip.innerHTML =
+        `<div class="tt-name">${d.name}</div>` +
+        `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
+        statusLine +
+        `<div style="font-size:0.75rem;margin-top:0.2rem">Identitaire : ${entry.identity}/10</div>` +
+        `<div style="font-size:0.75rem">Institutionnel : ${entry.institutional}/10</div>` +
+        `<div class="tt-score"><div class="tt-swatch" style="background:${balColor}"></div>Balance : ${bal > 0 ? '+' : ''}${bal}</div>`;
+    } else {
+      tooltip.innerHTML =
+        `<div class="tt-name">${d.name}</div>` +
+        `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
+        statusLine +
+        '<div style="font-size:0.75rem;color:var(--dim)">Pas de données</div>';
+    }
+    tooltip.style.opacity = '1';
+    return;
+  }
+
   let pills = '';
   if (st && indep && splitOk) {
     pills = '<div class="tt-pills">' + DATA.features.map(f => {
@@ -445,12 +523,19 @@ function onHover(ev, d) {
     }).join('') + '</div>';
   }
 
+  // postconflict mode — add post-conflict label
+  let pcLine = '';
+  if (mapMode === 'postconflict' && DATA.post_conflict && DATA.post_conflict[d.name]) {
+    pcLine = `<div style="font-size:0.72rem;color:#555;margin-bottom:0.15rem;font-weight:600">Constitution post-conflit</div>`;
+  }
+
   tooltip.innerHTML =
     `<div class="tt-name">${d.name}</div>` +
     `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
     statusLine +
+    pcLine +
     (indep && splitOk
-      ? `<div class="tt-score"><div class="tt-swatch" style="background:${fillFor(sc, h)}"></div>${sc !== null ? `Score : ${sc.toFixed(2)}/2 (${selDims.size} dim.)` : 'Pas de données'}</div>` +
+      ? `<div class="tt-score"><div class="tt-swatch" style="background:${fillFor(sc, h, d.name)}"></div>${sc !== null ? `Score : ${sc.toFixed(2)}/2 (${selDims.size} dim.)` : 'Pas de données'}</div>` +
         (st ? `<div class="tt-const">${st.name} (${st.date_raw||st.year||'?'})</div>` : '')
       : '') +
     pills;
