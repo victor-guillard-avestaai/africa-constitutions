@@ -261,6 +261,10 @@ LABELS = {
         'radar_title': 'Le profil constitutionnel francophone :\nune reconnaissance sélective',
         'radar_identity_label': '← Dimensions identitaires',
         'radar_institutional_label': 'Dimensions institutionnelles →',
+
+        # Sovereignty vs Identity choropleth
+        'sov_vs_id_choropleth_title': "Souveraineté ou identité :\nla géographie du silence constitutionnel",
+        'sov_vs_id_cbar': "← Institutionnel dominant          Identitaire dominant →",
     },
 
     'en': {
@@ -466,6 +470,10 @@ LABELS = {
         'radar_title': 'The francophone constitutional profile:\nselective recognition',
         'radar_identity_label': '← Identity dimensions',
         'radar_institutional_label': 'Institutional dimensions →',
+
+        # Sovereignty vs Identity choropleth
+        'sov_vs_id_choropleth_title': "Sovereignty or identity:\nthe geography of constitutional silence",
+        'sov_vs_id_cbar': "← Institutional-dominant          Identity-dominant →",
     },
 }
 
