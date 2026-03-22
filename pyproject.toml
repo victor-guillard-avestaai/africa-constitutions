@@ -19,6 +19,7 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "umap-learn>=0.5.11",
     "bertopic>=0.17.4",
+    "geopandas>=1.0",
 ]
 
 [dependency-groups]

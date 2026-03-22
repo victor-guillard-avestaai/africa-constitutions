@@ -246,6 +246,21 @@ LABELS = {
         'kwic_pct_xlabel': "% des occurrences",
         'people_vs_peoples_corpus_note': 'Terme recherché dans le corpus anglais (constituteproject.org)',
         'pc_mechanism_sig_legend': '*** p < 0,001 (Mann-Whitney, effet post-conflit)',
+
+        # Maps + creative visualizations
+        'dual_choropleth_title': "L'héritage colonial détermine la reconnaissance\nidentitaire, pas institutionnelle",
+        'dual_choropleth_identity': 'Dimensions identitaires\n(Drm + Id + Drc + Dpa + PJ)',
+        'dual_choropleth_institutional': 'Dimensions institutionnelles\n(Dc + La + Dis + Dau + F)',
+        'choropleth_cbar': 'Score (0-10)',
+        'overview_choropleth_title': 'Les constitutions post-conflit reconnaissent davantage —\nun effet géographiquement concentré',
+        'overview_choropleth_cbar': 'Score total (0-20)',
+        'overview_choropleth_pc': 'Post-conflit',
+        'overview_choropleth_npc': 'Non post-conflit',
+        'dumbbell_title': 'Le fossé identitaire : les francophones reconnaissent\nmoins sur chaque dimension identitaire',
+        'dumbbell_sig': 'Significativité',
+        'radar_title': 'Le profil constitutionnel francophone :\nune reconnaissance sélective',
+        'radar_identity_label': '← Dimensions identitaires',
+        'radar_institutional_label': 'Dimensions institutionnelles →',
     },
 
     'en': {
@@ -436,6 +451,21 @@ LABELS = {
         'kwic_pct_xlabel': "% of occurrences",
         'people_vs_peoples_corpus_note': 'Search term in the English corpus (constituteproject.org)',
         'pc_mechanism_sig_legend': '*** p < 0.001 (Mann-Whitney, post-conflict effect)',
+
+        # Maps + creative visualizations
+        'dual_choropleth_title': 'Colonial heritage determines identity recognition,\nnot institutional features',
+        'dual_choropleth_identity': 'Identity dimensions\n(Drm + Id + Drc + Dpa + PJ)',
+        'dual_choropleth_institutional': 'Institutional dimensions\n(Dc + La + Dis + Dau + F)',
+        'choropleth_cbar': 'Score (0-10)',
+        'overview_choropleth_title': 'Post-conflict constitutions recognize more —\na geographically concentrated effect',
+        'overview_choropleth_cbar': 'Total score (0-20)',
+        'overview_choropleth_pc': 'Post-conflict',
+        'overview_choropleth_npc': 'Non post-conflict',
+        'dumbbell_title': 'The identity gap: francophone constitutions recognize\nless on every identity dimension',
+        'dumbbell_sig': 'Significance',
+        'radar_title': 'The francophone constitutional profile:\nselective recognition',
+        'radar_identity_label': '← Identity dimensions',
+        'radar_institutional_label': 'Institutional dimensions →',
     },
 }
 
@@ -505,3 +535,50 @@ def load_data(project_dir=None):
     start = raw.index('{')
     end = raw.rindex('}') + 1
     return json.loads(raw[start:end])
+
+
+# ── Map helper ────────────────────────────────────────────
+GEO_PATH = PROJECT_DIR / 'data' / 'ne_50m_admin_0_countries.geojson'
+
+
+def load_africa_gdf(data):
+    """Load GeoJSON, filter to Africa, join with DATA scores. Returns GeoDataFrame."""
+    try:
+        import geopandas as gpd  # noqa: F811
+    except ImportError:
+        raise ImportError("geopandas required for map figures: uv add geopandas")
+
+    gdf = gpd.read_file(GEO_PATH)
+    gdf = gdf[gdf['CONTINENT'] == 'Africa'].copy()
+
+    # Build score lookup by ISO code
+    iso_map = data['name_to_iso']  # {country_name: ISO_A3}
+    fm = data['feature_matrix']
+    features = data['features']
+    heritage = data['colonial_heritage']
+    post_conflict = data['post_conflict']
+
+    rows = []
+    for r in fm:
+        name = r['PAYS']
+        iso = iso_map.get(name)
+        if not iso:
+            continue
+        identity_score = sum(r.get(f, 0) for f in IDENTITY_DIMS)
+        institutional_score = sum(r.get(f, 0) for f in INSTITUTIONAL_DIMS)
+        total = sum(r.get(f, 0) for f in features)
+        rows.append({
+            'ISO_A3': iso,
+            'country': name,
+            'total_score': total,
+            'identity_score': identity_score,
+            'institutional_score': institutional_score,
+            'heritage': heritage.get(name, 'other'),
+            'post_conflict': post_conflict.get(name, False),
+        })
+
+    score_df = pd.DataFrame(rows)
+
+    # Join on ISO_A3
+    merged = gdf.merge(score_df, on='ISO_A3', how='left')
+    return merged
