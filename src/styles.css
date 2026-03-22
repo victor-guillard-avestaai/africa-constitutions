@@ -629,18 +629,46 @@ header .lead {
 /* ─── Scatter ───────────────────────────────────────────── */
 #scatter-container { width: 100%; display: flex; justify-content: center; }
 
-.scatter-dot { cursor: pointer; transition: r 0.12s; }
-.scatter-dot:hover { r: 8; }
+.scatter-dot { cursor: pointer; transition: opacity 0.25s; }
 
-.scatter-legend {
+.scatter-filters {
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 0.5rem;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
 }
 
-.sl-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; color: var(--muted); }
-.sl-dot { width: 10px; height: 10px; border-radius: 50%; }
+.scatter-toggle {
+  font-size: 0.75rem;
+  font-family: var(--font);
+  padding: 0.22rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: none;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+
+/* Heritage toggles — active: filled with heritage color */
+.scatter-toggle.active[data-sh="francophone"] { background: var(--francophone); color: #fff; border-color: var(--francophone); }
+.scatter-toggle.active[data-sh="anglophone"] { background: var(--anglophone); color: #fff; border-color: var(--anglophone); }
+.scatter-toggle.active[data-sh="lusophone"]  { background: var(--lusophone);  color: #fff; border-color: var(--lusophone); }
+.scatter-toggle.active[data-sh="other"]      { background: var(--other-h);    color: #fff; border-color: var(--other-h); }
+
+/* Heritage toggles — inactive: outline only */
+.scatter-toggle[data-sh="francophone"]:not(.active) { color: var(--francophone); border-color: var(--francophone); opacity: 0.5; }
+.scatter-toggle[data-sh="anglophone"]:not(.active) { color: var(--anglophone); border-color: var(--anglophone); opacity: 0.5; }
+.scatter-toggle[data-sh="lusophone"]:not(.active)  { color: var(--lusophone);  border-color: var(--lusophone);  opacity: 0.5; }
+.scatter-toggle[data-sh="other"]:not(.active)      { color: var(--other-h);    border-color: var(--other-h);    opacity: 0.5; }
+
+/* Conflict toggles — active: solid neutral background */
+.scatter-toggle.active[data-sc] { background: var(--muted); color: #fff; border-color: var(--muted); }
+
+/* Conflict toggles — inactive: dimmed outline */
+.scatter-toggle[data-sc]:not(.active) { color: var(--dim); border-color: var(--border); opacity: 0.5; }
+
+.scatter-toggle:hover { opacity: 1; }
 
 /* ─── Footer ────────────────────────────────────────────── */
 footer {
@@ -699,8 +727,8 @@ footer {
   #heatmap-table td:first-child { font-size: 0.7rem; min-width: 120px; }
 
   /* Scatter */
-  .scatter-legend { gap: 0.8rem; flex-wrap: wrap; }
-  .sl-item { font-size: 0.72rem; }
+  .scatter-filters { gap: 0.3rem; }
+  .scatter-toggle { font-size: 0.68rem; padding: 0.18rem 0.4rem; }
 
   /* Clusters */
   .cluster-layout { grid-template-columns: 1fr; }

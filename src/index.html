@@ -187,18 +187,25 @@
       <strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br>
       <strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br>
       <strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br>
-      <strong>Forme</strong> : ● = constitution non-conflit, ◆ = constitution post-conflit.<br>
+      <strong>Couleur</strong> : héritage colonial. <strong>Filtres</strong> : utilisez les boutons ci-dessous pour isoler un héritage ou un type de contexte.<br>
       <strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.
     </div>
-    <div id="scatter-container" role="img" aria-label="Graphique en essaim : traités ratifiés vs score constitutionnel"></div>
-    <div class="scatter-legend">
-      <div class="sl-item"><div class="sl-dot" style="background:var(--francophone)"></div><span data-tr="h_francophone">Francophone</span></div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--anglophone)"></div><span data-tr="h_anglophone">Anglophone</span></div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--lusophone)"></div><span data-tr="h_lusophone">Lusophone</span></div>
-      <div class="sl-item"><div class="sl-dot" style="background:var(--other-h)"></div><span data-tr="h_other">Autre</span></div>
-      <div class="sl-item" style="margin-left:1.5rem"><svg width="12" height="12"><circle cx="6" cy="6" r="5" fill="var(--muted)" opacity="0.6"/></svg> <span data-tr="filter_nonconflict">Non-conflit</span></div>
-      <div class="sl-item"><svg width="12" height="12"><polygon points="6,1 11,6 6,11 1,6" fill="var(--muted)" opacity="0.6"/></svg> <span data-tr="filter_postconflict">Post-conflit</span></div>
+    <div class="scatter-filters">
+      <div class="filter-group">
+        <span class="filter-label" data-tr="heritage_label">Héritage</span>
+        <button class="scatter-toggle active" data-sh="francophone">Francophone</button>
+        <button class="scatter-toggle active" data-sh="anglophone">Anglophone</button>
+        <button class="scatter-toggle active" data-sh="lusophone">Lusophone</button>
+        <button class="scatter-toggle active" data-sh="other" data-tr="h_other">Autre</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label" data-tr="conflit_filter_label">Conflit</span>
+        <button class="scatter-toggle active" data-sc="peace" data-tr="filter_peace">Paix</button>
+        <button class="scatter-toggle active" data-sc="authoritarian" data-tr="filter_auth">Autoritaire</button>
+        <button class="scatter-toggle active" data-sc="non-conflict" data-tr="filter_nonconflict">Non-conflit</button>
+      </div>
     </div>
+    <div id="scatter-container" role="img" aria-label="Graphique en essaim : traités ratifiés vs score constitutionnel"></div>
   </div>
 </div>
 

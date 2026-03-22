@@ -90,7 +90,7 @@ const I18N = {
     // Traites tab
     traites_title: "Ratifier n'est pas reconnaître",
     traites_sub: "Ce graphique confronte deux mesures pour chaque pays : ses engagements internationaux (nombre de traités ratifiés sur 6) et la réalité de sa constitution (score total des 10 dimensions sur 20). La corrélation est nulle (ρ = −0,06, p = 0,68) — ratifier des traités ne prédit pas la reconnaissance constitutionnelle.",
-    traites_explain: "<strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br><strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br><strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br><strong>Forme</strong> : ● = constitution non-conflit, ◆ = constitution post-conflit.<br><strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.",
+    traites_explain: "<strong>Axe horizontal</strong> = nombre de traités internationaux ratifiés (DNUDPA, PIDCP, PIDESC, CERD, C169, CADHP).<br><strong>Axe vertical</strong> = score constitutionnel total (somme des 10 dimensions, 0 = tout absent, 20 = tout reconnu).<br><strong>La ligne horizontale</strong> représente le score moyen. L'absence de pente confirme l'absence de corrélation.<br><strong>Couleur</strong> : héritage colonial. <strong>Filtres</strong> : utilisez les boutons ci-dessous pour isoler un héritage ou un type de contexte.<br><strong>Constat frappant</strong> : presque tous les pays ont ratifié la CADHP (53/54) et la DNUDPA (52/54), mais un seul (la RCA) a ratifié la Convention 169 de l'OIT sur les peuples autochtones — les régimes internationaux ne prédisent pas la réalité constitutionnelle.",
 
     // Post-conflit tab
     conflit_title: "Le moment constitutionnel post-conflit",
@@ -309,7 +309,7 @@ const I18N = {
     // Traites tab
     traites_title: "Ratification does not mean recognition",
     traites_sub: "This chart compares two measures for each country: its international commitments (number of treaties ratified out of 6) and the reality of its constitution (total score of 10 dimensions out of 20). The correlation is null (ρ = −0.06, p = 0.68) — ratifying treaties does not predict constitutional recognition.",
-    traites_explain: "<strong>Horizontal axis</strong> = number of ratified international treaties (UNDRIP, ICCPR, ICESCR, ICERD, ILO 169, ACHPR).<br><strong>Vertical axis</strong> = total constitutional score (sum of 10 dimensions, 0 = all absent, 20 = all recognized).<br><strong>Horizontal line</strong> = column mean score. The flat line confirms the absence of correlation.<br><strong>Shape</strong>: ● = non-conflict constitution, ◆ = post-conflict constitution.<br><strong>Striking finding</strong>: almost all countries ratified the ACHPR (53/54) and UNDRIP (52/54), but only one (CAR) ratified ILO Convention 169 on indigenous peoples — international regimes do not predict constitutional reality.",
+    traites_explain: "<strong>Horizontal axis</strong> = number of ratified international treaties (UNDRIP, ICCPR, ICESCR, ICERD, ILO 169, ACHPR).<br><strong>Vertical axis</strong> = total constitutional score (sum of 10 dimensions, 0 = all absent, 20 = all recognized).<br><strong>Horizontal line</strong> = column mean score. The flat line confirms the absence of correlation.<br><strong>Color</strong>: colonial heritage. <strong>Filters</strong>: use the buttons below to isolate a heritage or context type.<br><strong>Striking finding</strong>: almost all countries ratified the ACHPR (53/54) and UNDRIP (52/54), but only one (CAR) ratified ILO Convention 169 on indigenous peoples — international regimes do not predict constitutional reality.",
 
     // Post-conflit tab
     conflit_title: "The post-conflict constitutional moment",
@@ -569,6 +569,8 @@ let playInt = null;
 let hmSort = { col: '_total', dir: -1 };
 let hmHeritageFilter = 'all';
 let hmConflictFilter = 'all';
+const scatterActiveHeritage = new Set(['francophone','anglophone','lusophone','other']);
+const scatterActiveConflict = new Set(['peace','authoritarian','non-conflict']);
 
 const GROUPS = {
   'identity': ['Drm','La','Drc','Id'],
@@ -1343,6 +1345,51 @@ function renderDivergence() {
 }
 
 // ─── Scatter Plot (Beeswarm) ──────────────────────────────
+function scatterConflictCat(d) {
+  if (!d.postConflict) return 'non-conflict';
+  return (DATA.post_conflict_type && DATA.post_conflict_type[d.name]) || 'peace';
+}
+
+function updateScatterOpacity() {
+  d3.selectAll('circle.scatter-dot')
+    .transition().duration(250)
+    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterActiveConflict.has(scatterConflictCat(d))) ? 0.85 : 0.08);
+}
+
+function initScatterFilters() {
+  document.querySelectorAll('.scatter-toggle[data-sh]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const h = btn.dataset.sh;
+      if (btn.classList.contains('active')) {
+        // Don't allow deactivating the last one
+        if (scatterActiveHeritage.size > 1) {
+          btn.classList.remove('active');
+          scatterActiveHeritage.delete(h);
+        }
+      } else {
+        btn.classList.add('active');
+        scatterActiveHeritage.add(h);
+      }
+      updateScatterOpacity();
+    });
+  });
+  document.querySelectorAll('.scatter-toggle[data-sc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = btn.dataset.sc;
+      if (btn.classList.contains('active')) {
+        if (scatterActiveConflict.size > 1) {
+          btn.classList.remove('active');
+          scatterActiveConflict.delete(c);
+        }
+      } else {
+        btn.classList.add('active');
+        scatterActiveConflict.add(c);
+      }
+      updateScatterOpacity();
+    });
+  });
+}
+
 function renderScatter() {
   const countries = [];
   for (const row of DATA.feature_matrix) {
@@ -1440,20 +1487,16 @@ function renderScatter() {
   // Scatter tooltip
   const scTT = d3.select('#scatter-tooltip');
 
-  // Dots — circles for non-conflict, diamonds for post-conflict
-  const diamond = d3.symbol().type(d3.symbolDiamond).size(R * R * 3.5);
-  const circle = d3.symbol().type(d3.symbolCircle).size(R * R * 3.14);
-
-  g.selectAll('path.scatter-dot').data(countries).join('path')
+  // All dots are circles — heritage color, opacity driven by filters
+  g.selectAll('circle.scatter-dot').data(countries).join('circle')
     .attr('class','scatter-dot')
-    .attr('d', d => d.postConflict ? diamond() : circle())
-    .attr('transform', d => `translate(${d.x},${d.y})`)
+    .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', R)
     .attr('fill', d => HC[d.heritage] || HC.other)
-    .attr('opacity', 0.85)
+    .attr('opacity', d => (scatterActiveHeritage.has(d.heritage) && scatterActiveConflict.has(scatterConflictCat(d))) ? 0.85 : 0.08)
     .attr('stroke','rgba(0,0,0,0.15)').attr('stroke-width',0.5)
     .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
-      d3.select(this).attr('opacity',1).attr('d', d.postConflict ? d3.symbol().type(d3.symbolDiamond).size(R*R*7)() : d3.symbol().type(d3.symbolCircle).size(R*R*7)());
+      d3.select(this).attr('r', R * 1.5);
       scTT.html(
         `<div class="tt-name">${d.name}</div>` +
         `<div style="font-size:0.8rem;margin-top:0.15rem">${tr('constitutional_score')} : <b>${d.totalScore}</b>/20</div>` +
@@ -1463,7 +1506,7 @@ function renderScatter() {
       ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
     })
     .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
-    .on('mouseleave', function(ev, d) { d3.select(this).attr('opacity',0.85).attr('d', d.postConflict ? diamond() : circle()); scTT.style('opacity','0'); })
+    .on('mouseleave', function(ev, d) { d3.select(this).attr('r', R); scTT.style('opacity','0'); })
     .on('click', function(ev, d) { scTT.style('opacity','0'); openBio(d.name); });
 
 }
@@ -2023,4 +2066,5 @@ renderHeatmap();
 initHeatmapFilters();
 renderDivergence();
 renderScatter();
+initScatterFilters();
 renderConflictChart();
