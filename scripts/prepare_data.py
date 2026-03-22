@@ -415,6 +415,7 @@ with open(pc_path, encoding="utf-8") as f:
     pc_raw = json.load(f)
 
 POST_CONFLICT = {}
+POST_CONFLICT_TYPE = {}
 for country, info in pc_raw.items():
     # Map English names to French
     fr_name = None
@@ -422,10 +423,9 @@ for country, info in pc_raw.items():
         if fr.lower() == country.lower() or country.lower() in fr.lower():
             fr_name = fr
             break
-    if fr_name:
-        POST_CONFLICT[fr_name] = info.get("post_conflict", False)
-    else:
-        POST_CONFLICT[country] = info.get("post_conflict", False)
+    name = fr_name or country
+    POST_CONFLICT[name] = info.get("post_conflict", False)
+    POST_CONFLICT_TYPE[name] = info.get("pc_type")  # "peace", "authoritarian", or null
 
 
 # ─── Sovereignty vs Identity scores ──────────────────────────────────────────
@@ -544,6 +544,7 @@ app_data = {
     "independence_dates": INDEPENDENCE_DATES,
     "border_splits": BORDER_SPLITS,
     "post_conflict": POST_CONFLICT,
+    "post_conflict_type": POST_CONFLICT_TYPE,
     "sov_vs_id_scores": sov_vs_id_scores,
     "umap_coords": umap_coords,
     "umap_preamble_coords": umap_preamble_coords,
