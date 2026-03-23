@@ -1689,23 +1689,24 @@ function renderConflictMap(pcCountries) {
   cont.innerHTML = '';
   if (!geoData) return;
 
-  // Mode switch buttons above the map — centered
-  const modeBar = document.createElement('div');
-  modeBar.className = 'conflit-map-modes';
-  ['pc', 'combined', 'score'].forEach(m => {
-    const btn = document.createElement('button');
-    btn.className = 'mode-btn' + (m === conflitMapMode ? ' active' : '');
-    btn.dataset.cmode = m;
-    btn.textContent = tr('conflit_map_mode_' + m);
-    btn.addEventListener('click', () => {
-      conflitMapMode = m;
-      modeBar.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      applyMapMode();
+  // Mode switch buttons in sidebar
+  const modeBar = document.getElementById('conflit-map-modes');
+  if (modeBar) {
+    modeBar.innerHTML = '';
+    ['pc', 'combined', 'score'].forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = 'mode-btn' + (m === conflitMapMode ? ' active' : '');
+      btn.dataset.cmode = m;
+      btn.textContent = tr('conflit_map_mode_' + m);
+      btn.addEventListener('click', () => {
+        conflitMapMode = m;
+        modeBar.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyMapMode();
+      });
+      modeBar.appendChild(btn);
     });
-    modeBar.appendChild(btn);
-  });
-  cont.appendChild(modeBar);
+  }
 
   // Full-width hero map — larger viewBox
   const W = 500, H = 480;
@@ -1740,27 +1741,25 @@ function renderConflictMap(pcCountries) {
 
   function getFill(info) {
     if (!info) return '#eae6df';
-    if (conflitMapMode === 'pc') {
-      if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
-      return nonConflictColor;
-    }
-    // Both 'score' and 'combined' use the warm score gradient;
-    // 'combined' additionally overlays post-conflict border styles
-    return conflitScoreScale(info.total);
+    if (conflitMapMode === 'score') return conflitScoreScale(info.total);
+    // PC and Combined: use TYPE color (red=peace, orange=auth, gray=non)
+    if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
+    return nonConflictColor;
   }
 
   function getOpacity(info) {
-    if (!info) return 0.25;
-    if (conflitMapMode === 'pc') return info.pc ? 1.0 : 0.5;
-    return info.pc ? 1.0 : 0.7;
+    if (!info) return 0.2;
+    if (conflitMapMode === 'score') return 0.85;
+    // PC and Combined: opacity encodes score (higher score = more opaque)
+    if (info.pc) return 0.4 + (info.total / 20) * 0.6; // 0.4 to 1.0
+    return 0.3; // non-conflict faded
   }
 
   function pcBorder(info) {
-    if (!info) return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
-    // In 'pc' and 'combined' modes, show post-conflict borders; in 'score' mode, plain borders
-    if (conflitMapMode !== 'score' && info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 2.0, dash: null };
-    if (conflitMapMode !== 'score' && info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.4, dash: '4,2' };
-    return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
+    // Simple thin borders for everyone — no solid/dashed distinction
+    if (!info) return { stroke: 'white', strokeW: 0.5, dash: null };
+    if (info.pc) return { stroke: 'white', strokeW: 1.0, dash: null };
+    return { stroke: 'white', strokeW: 0.5, dash: null };
   }
 
   const scTT = d3.select('#scatter-tooltip');
@@ -1869,17 +1868,17 @@ function renderConflictMap(pcCountries) {
       legG.append('text').attr('x', 0).attr('y', gradH + 11).attr('font-size', '7.5px').attr('fill', CSS.dim).text('0');
       legG.append('text').attr('x', gradW).attr('y', gradH + 11).attr('text-anchor', 'end').attr('font-size', '7.5px').attr('fill', CSS.dim).text('20');
       legG.append('text').attr('x', gradW / 2).attr('y', gradH + 11).attr('text-anchor', 'middle').attr('font-size', '7.5px').attr('fill', CSS.dim).text(tr('score_label'));
-      // Border legend only for 'combined' mode (score + post-conflict borders)
+      // Color legend for 'combined' mode (type colors with score opacity)
       if (conflitMapMode === 'combined') {
         const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 18})`);
         [
-          { label: tr('conflit_peace_title'), strokeW: 2.0, dash: null },
-          { label: tr('conflit_auth_title'), strokeW: 1.4, dash: '4,2' },
+          { label: tr('conflit_peace_title'), color: pcTypeColors.peace },
+          { label: tr('conflit_auth_title'), color: pcTypeColors.authoritarian },
+          { label: tr('conflit_nonconflict'), color: nonConflictColor },
         ].forEach((d, i) => {
-          const g = bLegG.append('g').attr('transform', `translate(${i * 155}, 0)`);
-          g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 20).attr('y2', 5)
-            .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
-          g.append('text').attr('x', 25).attr('y', 9).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
+          const g = bLegG.append('g').attr('transform', `translate(${i * 135}, 0)`);
+          g.append('rect').attr('width', 11).attr('height', 11).attr('rx', 2).attr('fill', d.color);
+          g.append('text').attr('x', 15).attr('y', 9).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
         });
       }
     }
@@ -1919,12 +1918,17 @@ function renderConflictMap(pcCountries) {
 function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean, npcMean) {
   const cont = document.getElementById('conflit-stats');
   if (!cont) return;
-
-  const sep = ' \u00b7 ';
-  cont.innerHTML =
-    `<b>${pcCountries.length}/54</b> ${tr('conflit_stat_count')}` + sep +
-    `${tr('conflit_mean_pc')} : <b>${pcMean.toFixed(1)}</b> vs ${npcMean.toFixed(1)}` + sep +
-    `\u03B7\u00B2 = <b>63,2 %</b> <span style="font-size:0.7rem">(p = 0,0001)</span>`;
+  cont.innerHTML = `
+    <div><span class="stat-val">${pcCountries.length}/54</span> post-conflit</div>
+    <div style="margin-left:0.3rem;font-size:0.65rem;color:var(--dim)">
+      · ${peaceCountries.length} ${tr('conflit_peace_count')}<br>
+      · ${authCountries.length} ${tr('conflit_auth_count')}
+    </div>
+    <div style="margin-top:0.4rem">Score PC : <span class="stat-val">${pcMean.toFixed(1)}</span>/20</div>
+    <div>Score NC : <span class="stat-val">${npcMean.toFixed(1)}</span>/20</div>
+    <div style="margin-top:0.3rem;font-size:0.65rem">η² = <span class="stat-val">63,2%</span></div>
+    <div style="font-size:0.6rem;color:var(--dim)">p = 0,0001</div>
+  `;
 }
 
 function renderConflictComparison(peaceCountries, authCountries, npcMean) {
@@ -2091,7 +2095,7 @@ function renderConflictLift(allCountries) {
     g.append('rect')
       .attr('x', -M.left + 5).attr('y', firstY - 4)
       .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
-      .attr('fill', '#f0ece5').attr('rx', 4).attr('opacity', 0.5);
+      .attr('fill', '#f0ece5').attr('rx', 4).attr('opacity', 0.5).attr('stroke', 'none');
   }
   if (institutionalItems.length > 0) {
     const firstY = yS(institutionalItems[0].dim);
@@ -2099,7 +2103,7 @@ function renderConflictLift(allCountries) {
     g.append('rect')
       .attr('x', -M.left + 5).attr('y', firstY - 4)
       .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
-      .attr('fill', '#eae8e0').attr('rx', 4).attr('opacity', 0.35);
+      .attr('fill', '#eae8e0').attr('rx', 4).attr('opacity', 0.35).attr('stroke', 'none');
   }
 
   // X axis
@@ -2120,34 +2124,35 @@ function renderConflictLift(allCountries) {
     .text(lang === 'fr' ? 'Effet post-conflit (\u0394 score moyen)' : 'Post-conflict effect (\u0394 mean score)');
 
   const scTT = d3.select('#scatter-tooltip');
-  const sigColor = '#c0392b';
-  const nsColor = CSS.border;
+  // Identity = warm (top), Institutional = cool gray (bottom)
+  const identityColor = '#8a3040';
+  const institutionalColor = '#7a8088';
 
   liftData.forEach(d => {
     const dimLabel = DATA.feature_labels[d.dim];
-    const isSig = d.sig.includes('*');
-    const color = isSig ? sigColor : nsColor;
+    const color = d.isIdentity ? identityColor : institutionalColor;
+    const opacity = d.isIdentity ? 0.85 : 0.55;
     const cy = yS(d.dim) + yS.bandwidth() / 2;
 
     // Dimension label (left)
     g.append('text')
       .attr('x', -10).attr('y', cy)
       .attr('text-anchor', 'end').attr('dominant-baseline', 'middle')
-      .attr('fill', isSig ? CSS.text : CSS.dim)
-      .attr('font-size', '11px').attr('font-weight', isSig ? '600' : '400')
+      .attr('fill', d.isIdentity ? CSS.text : CSS.dim)
+      .attr('font-size', '11px').attr('font-weight', d.isIdentity ? '600' : '400')
       .text(dimLabel + (d.sig !== 'ns' ? ' ' + d.sig : ''));
 
-    // Lollipop stem (thicker line from 0 to value)
+    // Lollipop stem
     g.append('line')
       .attr('x1', xS(0)).attr('x2', xS(d.lift))
       .attr('y1', cy).attr('y2', cy)
       .attr('stroke', color).attr('stroke-width', 2.5)
-      .attr('opacity', isSig ? 0.8 : 0.3);
+      .attr('opacity', opacity);
 
     // Lollipop circle at the end (larger)
     g.append('circle')
       .attr('cx', xS(d.lift)).attr('cy', cy).attr('r', 6)
-      .attr('fill', color).attr('opacity', isSig ? 0.9 : 0.3)
+      .attr('fill', color).attr('opacity', opacity)
       .style('cursor', 'pointer')
       .on('mouseenter', function(ev) {
         d3.select(this).attr('r', 8);

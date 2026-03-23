@@ -222,11 +222,16 @@
     <h2 data-tr="conflit_title">Le moment constitutionnel post-conflit</h2>
     <div class="sub" data-tr="conflit_sub">Les constitutions adoptées après un conflit armé ou une transition politique majeure reconnaissent davantage la diversité — indépendamment de l'héritage colonial.</div>
 
-    <!-- Hero map — full width -->
-    <div id="conflit-map"></div>
-
-    <!-- Stats bar below map -->
-    <div class="conflit-stats-bar" id="conflit-stats"></div>
+    <!-- Map with sidebar -->
+    <div class="conflit-map-row">
+      <div class="conflit-sidebar">
+        <div class="sidebar-label">MODE</div>
+        <div class="conflit-map-modes" id="conflit-map-modes"></div>
+        <div class="conflit-stats-compact" id="conflit-stats"></div>
+        <div id="conflit-map-legend"></div>
+      </div>
+      <div id="conflit-map"></div>
+    </div>
 
     <div class="explainer" id="conflit-explainer" data-tr="conflit_method_result_thesis" data-tr-html="true">
       <strong>Variable</strong> : la <em>constitution actuelle</em> a-t-elle été adoptée dans le cadre d'un processus de paix, d'une transition post-guerre ou d'une construction nationale post-libération ? 13/54 constitutions codées post-conflit.<br>
