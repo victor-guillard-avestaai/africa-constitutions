@@ -590,6 +590,7 @@ const I18N = {
 
 let lang = 'fr';
 function tr(key) { return I18N[lang][key] || I18N.fr[key] || key; }
+function sn(n) { return n.replace('République démocratique du Congo','Rép. dém. du Congo').replace('République centrafricaine','Centrafrique'); }
 
 function switchLang() {
   lang = lang === 'fr' ? 'en' : 'fr';
@@ -1081,7 +1082,7 @@ function onHover(ev, d) {
   }
 
   tooltip.innerHTML =
-    `<div class="tt-name">${d.name}</div>` +
+    `<div class="tt-name">${sn(d.name)}</div>` +
     `<div style="font-size:0.72rem;color:${HC[h]};margin-bottom:0.15rem">${hLabel}</div>` +
     statusLine +
     (indep && splitOk
@@ -1635,7 +1636,7 @@ function renderScatter() {
     .on('mouseenter', function(ev, d) {
       d3.select(this).attr('r', R * 1.5);
       scTT.html(
-        `<div class="tt-name">${d.name}</div>` +
+        `<div class="tt-name">${sn(d.name)}</div>` +
         `<div style="font-size:0.8rem;margin-top:0.15rem">${tr('constitutional_score')} : <b>${d.totalScore}</b>/20</div>` +
         `<div style="font-size:0.8rem">${tr('treaties_ratified')} : <b>${d.treatyCount}</b>/6</div>` +
         `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.15rem">${HL(d.heritage)}${d.postConflict ? ' · ' + tr('postconflict_constitution') : ''}</div>` +
@@ -1736,7 +1737,7 @@ function renderConflictMap(pcCountries) {
     .range(['#f5e6d0', '#d4785a', '#8a2a0a'])
     .interpolate(d3.interpolateRgb.gamma(2.2));
 
-  const pcTypeColors = { peace: '#c0392b', authoritarian: '#e67e22' };
+  const pcTypeColors = { peace: '#2471a3', authoritarian: '#d4760a' };
   const nonConflictColor = '#d5d0c8';
 
   function getFill(info) {
@@ -1744,11 +1745,11 @@ function renderConflictMap(pcCountries) {
     if (conflitMapMode === 'score') return conflitScoreScale(info.total);
     if (conflitMapMode === 'pc') {
       // Pure type colors, no score
-      if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
+      if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
       return nonConflictColor;
     }
     // Combined: type colors for PC countries, score gradient for non-conflict
-    if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
+    if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
     return conflitScoreScale(info.total);
   }
 
@@ -1786,7 +1787,7 @@ function renderConflictMap(pcCountries) {
       : tr('conflit_nonconflict');
     const hColor = HC[info.heritage] || HC.other;
     scTT.html(
-      `<div class="tt-name">${info.name}</div>` +
+      `<div class="tt-name">${sn(info.name)}</div>` +
       `<div style="font-size:0.75rem;color:${hColor};margin-bottom:0.1rem">${HL(info.heritage)}</div>` +
       `<div style="font-size:0.8rem">${tr('total_score')} : <b>${info.total}</b>/20</div>` +
       `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}${info.constitYear ? ' \u00b7 ' + tr('conflit_constitution') + ' ' + info.constitYear : ''}</div>`
@@ -1958,7 +1959,7 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
       card.addEventListener('mouseenter', (ev) => {
         const hColor = HC[heritage] || HC.other;
         scTT.html(
-          `<div class="tt-name">${d.name}</div>` +
+          `<div class="tt-name">${sn(d.name)}</div>` +
           `<div style="font-size:0.75rem;color:${hColor};margin-bottom:0.1rem">${HL(heritage)}</div>` +
           `<div style="font-size:0.8rem">${tr('total_score')} : <b>${d.total}</b>/20</div>` +
           `<div style="font-size:0.72rem;color:var(--dim)">${d.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
@@ -1984,8 +1985,8 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
     cont.appendChild(box);
   }
 
-  renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries, '#c0392b');
-  renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries, '#e67e22');
+  renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries, '#2471a3');
+  renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries, '#d4760a');
 }
 
 // Highlight a country on the conflict mini-map when hovering comparison cards
@@ -2251,13 +2252,14 @@ function renderUMAP() {
         const tt = document.getElementById('tooltip');
         tt.style.display = 'block';
         tt.style.opacity = '1';
-        const scoreStr = totalScore !== undefined ? ` &middot; ${tr('score_label')} : ${totalScore}/20` : '';
-        tt.innerHTML = `<strong>${p.name}</strong><br>${HL(heritage)}${scoreStr}${pc ? ' &middot; ' + tr('postconflict_label') : ''}`;
+        const pcType = DATA.post_conflict_type ? DATA.post_conflict_type[p.name] : null;
+        const pcStr = pc ? (' · ' + (pcType === 'peace' ? tr('conflit_peace_title') : pcType === 'authoritarian' ? tr('conflit_auth_title') : tr('postconflict_label'))) : '';
+        tt.innerHTML = `<strong>${sn(p.name)}</strong><br>${HL(heritage)}${pcStr}`;
       })
       .on('mousemove', (event) => {
         const tt = document.getElementById('tooltip');
-        tt.style.left = (event.pageX + 10) + 'px';
-        tt.style.top = (event.pageY + 10) + 'px';
+        tt.style.left = (event.clientX + 10) + 'px';
+        tt.style.top = (event.clientY - 10) + 'px';
       })
       .on('mouseout', () => {
         const tt = document.getElementById('tooltip');
@@ -2470,8 +2472,8 @@ function renderClusterMap() {
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
-      tt.style.left = (event.pageX + 10) + 'px';
-      tt.style.top = (event.pageY + 10) + 'px';
+      tt.style.left = (event.clientX + 10) + 'px';
+      tt.style.top = (event.clientY - 10) + 'px';
     })
     .on('mouseout', () => {
       const tt = document.getElementById('tooltip');
@@ -2503,12 +2505,12 @@ function renderClusterMap() {
         const tt = document.getElementById('tooltip');
         tt.style.display = 'block';
         tt.style.opacity = '1';
-        tt.innerHTML = `<strong>${d.name}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
+        tt.innerHTML = `<strong>${sn(d.name)}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
       })
       .on('mousemove', (event) => {
         const tt = document.getElementById('tooltip');
-        tt.style.left = (event.pageX + 10) + 'px';
-        tt.style.top = (event.pageY + 10) + 'px';
+        tt.style.left = (event.clientX + 10) + 'px';
+        tt.style.top = (event.clientY - 10) + 'px';
       })
       .on('mouseout', () => {
         const tt = document.getElementById('tooltip');

@@ -736,9 +736,9 @@ footer {
 
 /* ─── Figures Gallery ─────────────────────────────────────── */
 .figures-gallery {
-  column-count: 3;
-  column-gap: 1rem;
-  max-width: 700px;
+  column-count: 2;
+  column-gap: 1.2rem;
+  max-width: 100%;
   margin: 0 auto;
 }
 .figures-gallery h3, .figures-gallery .chapter-desc,
@@ -860,8 +860,8 @@ footer {
 .umap-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  max-width: 700px;
+  gap: 1.5rem;
+  max-width: 100%;
   margin: 0 auto;
 }
 .umap-grid .umap-panel { text-align: center; }
