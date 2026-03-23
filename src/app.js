@@ -1532,7 +1532,7 @@ function renderScatter() {
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w+M.left+M.right} ${h+M.top+M.bottom}`)
-    .style('max-width','700px');
+    .style('max-width','550px').style('display','block').style('margin','0 auto');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
@@ -1692,7 +1692,8 @@ function renderConflictMap(pcCountries) {
   cont.appendChild(modeBar);
 
   const W = 420, H = 400;
-  const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+  const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`)
+    .style('max-width', '380px').style('display', 'block').style('margin', '0 auto');
 
   const proj = d3.geoMercator().fitSize([W, H - 50], geoData);
   const pathGen = d3.geoPath(proj);
@@ -2126,6 +2127,7 @@ function renderUMAP() {
 
     const svg = d3.select(panel).append('svg')
       .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
+      .style('max-width', '400px').style('display', 'block').style('margin', '0 auto')
       .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     const points = Object.entries(ds.coords).map(([name, [x, y]]) => ({name, x, y}));
@@ -2228,6 +2230,7 @@ function renderDendrogram() {
 
   const svg = d3.select(container).append('svg')
     .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
+    .style('max-width', '500px').style('display', 'block').style('margin', '0 auto')
     .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
   // Cluster layout: assigns y positions to leaves evenly spaced
@@ -2354,7 +2357,8 @@ function renderClusterMap() {
   const path = d3.geoPath().projection(projection);
 
   const svg = d3.select(container).append('svg')
-    .attr('viewBox', `-10 -10 ${w} ${h}`);
+    .attr('viewBox', `-10 -10 ${w} ${h}`)
+    .style('max-width', '450px');
 
   clusterMapPaths = svg.selectAll('path')
     .data(africa)
@@ -2625,7 +2629,7 @@ function renderSovereigntyChart() {
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
-    .style('max-width', '700px');
+    .style('max-width', '550px').style('display', 'block').style('margin', '0 auto');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
@@ -2705,7 +2709,7 @@ function renderPeoplesChart() {
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 10}`)
-    .style('max-width', '700px');
+    .style('max-width', '550px').style('display', 'block').style('margin', '0 auto');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
@@ -2833,7 +2837,7 @@ function renderSDPosture() {
 
   const svg = d3.select(cont).append('svg')
     .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 60}`)
-    .style('max-width', '700px');
+    .style('max-width', '550px').style('display', 'block').style('margin', '0 auto');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
