@@ -1301,7 +1301,7 @@ function renderHeatmap() {
 
   rows.forEach(r => {
     const hDot = `<span class="hm-heritage-dot" style="background:${HC[r._heritage]||HC.other}"></span>`;
-    html += `<tr><td data-country="${r.PAYS}">${hDot}${r.PAYS}</td>`;
+    html += `<tr><td data-country="${r.PAYS}">${hDot}${sn(r.PAYS)}</td>`;
     feats.forEach(f => {
       const v = r[f + '_label'];
       const bg = v==='V'?CSS.pillBgV:v==='P'?CSS.pillBgP:CSS.pillBgX;
@@ -1748,9 +1748,9 @@ function renderConflictMap(pcCountries) {
       if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
       return nonConflictColor;
     }
-    // Combined: type colors for PC countries, score gradient for non-conflict
+    // Combined: type colors for PC countries, grey gradient for non-conflict
     if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
-    return conflitScoreScale(info.total);
+    return d3.interpolateGreys(0.15 + (info.total / 20) * 0.45);
   }
 
   function getOpacity(info) {
@@ -1759,9 +1759,9 @@ function renderConflictMap(pcCountries) {
     if (conflitMapMode === 'pc') {
       return info.pc ? 0.9 : 0.3;
     }
-    // Combined: PC countries use score-based opacity, non-conflict lighter
-    if (info.pc) return 0.5 + (info.total / 20) * 0.5; // 0.5 to 1.0
-    return 0.4 + (info.total / 20) * 0.3; // 0.4 to 0.7 (visible but dimmer)
+    // Combined: PC countries use score-based opacity (vivid), non-conflict grey
+    if (info.pc) return 0.6 + (info.total / 20) * 0.4; // 0.6 to 1.0
+    return 0.7; // uniform opacity — grey shade encodes the score
   }
 
   function pcBorder(info) {
@@ -1951,7 +1951,7 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
       const color = HARD_HC[heritage] || '#7a8088';
       card.innerHTML = `
         <span class="cc-dot" style="background:${color}"></span>
-        <span class="cc-name">${d.name}</span>
+        <span class="cc-name">${sn(d.name)}</span>
         <span class="cc-score">${d.total}/20</span>
         <div class="cc-bar-bg"><div class="cc-bar" style="width:${(d.total / 20) * 100}%;background-color:${color}"></div></div>
       `;
@@ -2052,9 +2052,13 @@ function renderConflictLift(allCountries) {
     const pcMean = pcVals.length ? d3.mean(pcVals) : 0;
     const npcMean = npcVals.length ? d3.mean(npcVals) : 0;
     return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns', isIdentity: identityDims.has(dim) };
-  }).sort((a, b) => Math.abs(b.lift) - Math.abs(a.lift));
+  }).sort((a, b) => {
+    // Identity dims at top, institutional at bottom; within each group sort by effect size
+    if (a.isIdentity !== b.isIdentity) return a.isIdentity ? -1 : 1;
+    return Math.abs(b.lift) - Math.abs(a.lift);
+  });
 
-  const M = { top: 30, right: 55, bottom: 50, left: 160 };
+  const M = { top: 30, right: 120, bottom: 50, left: 160 };
   const rowH = 30;
   const chartH = liftData.length * rowH;
   const w = 320;
@@ -2092,6 +2096,21 @@ function renderConflictLift(allCountries) {
   // Identity = warm (top), Institutional = cool gray (bottom)
   const identityColor = '#8a3040';
   const institutionalColor = '#7a8088';
+
+  // Separator line between identity and institutional groups
+  const lastIdentityIdx = liftData.filter(d => d.isIdentity).length - 1;
+  if (lastIdentityIdx >= 0 && lastIdentityIdx < liftData.length - 1) {
+    const sepY = yS(liftData[lastIdentityIdx].dim) + yS.bandwidth() + yS.step() * yS.paddingInner() / 2;
+    g.append('line').attr('x1', -10).attr('x2', w + 10).attr('y1', sepY).attr('y2', sepY)
+      .attr('stroke', CSS.border).attr('stroke-width', 0.8).attr('stroke-dasharray', '4,3');
+    // Group labels
+    g.append('text').attr('x', w + 10).attr('y', sepY - (lastIdentityIdx + 1) * yS.step() / 2 - 2)
+      .attr('text-anchor', 'end').attr('fill', identityColor).attr('font-size', '8px').attr('font-style', 'italic')
+      .text(tr('conflit_identity_dims'));
+    g.append('text').attr('x', w + 10).attr('y', sepY + (liftData.length - lastIdentityIdx - 1) * yS.step() / 2 + 2)
+      .attr('text-anchor', 'end').attr('fill', institutionalColor).attr('font-size', '8px').attr('font-style', 'italic')
+      .text(tr('conflit_institutional_dims'));
+  }
 
   liftData.forEach(d => {
     const dimLabel = DATA.feature_labels[d.dim];
@@ -2215,7 +2234,7 @@ function renderUMAP() {
 
     const svg = d3.select(panel).append('svg')
       .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
-      .style('max-width', '400px').style('display', 'block').style('margin', '0 auto')
+      .style('display', 'block').style('margin', '0 auto')
       .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
     const points = Object.entries(ds.coords).map(([name, [x, y]]) => ({name, x, y}));
@@ -2314,12 +2333,12 @@ function renderDendrogram() {
   const root = buildTreeFromLinkage(DATA.linkage_data);
   const hierarchy = d3.hierarchy(root);
 
-  const margin = {top: 20, right: 30, bottom: 30, left: 180};
-  const w = 400, h = 800;
+  const margin = {top: 20, right: 30, bottom: 30, left: 200};
+  const w = 400, h = 900;
 
   const svg = d3.select(container).append('svg')
     .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
-    .style('max-width', '500px').style('display', 'block').style('margin', '0 auto')
+    .style('max-width', '550px').style('display', 'block').style('margin', '0 auto')
     .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
   // Cluster layout: assigns y positions to leaves evenly spaced
@@ -2349,18 +2368,32 @@ function renderDendrogram() {
 
   // Draw leaf labels
   const leaves = hierarchy.leaves();
+  const dendroTT = d3.select('#scatter-tooltip');
   leaves.forEach(leaf => {
     const name = leaf.data.name;
     const heritage = DATA.colonial_heritage[name] || 'other';
+    const totalScore = DATA.feature_matrix ? (() => { const row = DATA.feature_matrix.find(r => r.PAYS === name); return row ? DATA.features.reduce((s, f) => s + row[f], 0) : null; })() : null;
     svg.append('text')
       .attr('x', -5)
       .attr('y', leaf.x)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
-      .style('font-size', '8px')
+      .style('font-size', '10px')
       .style('fill', HC[heritage] || HC.other)
       .style('font-weight', 'bold')
-      .text(name.replace('République démocratique du Congo','RDC').replace('République centrafricaine','Centrafrique'));
+      .style('cursor', 'pointer')
+      .text(sn(name))
+      .on('mouseenter', function(ev) {
+        d3.select(this).style('text-decoration', 'underline');
+        dendroTT.html(
+          `<div class="tt-name">${sn(name)}</div>` +
+          `<div style="font-size:0.75rem;color:${HC[heritage] || HC.other}">${HL(heritage)}</div>` +
+          (totalScore !== null ? `<div style="font-size:0.8rem">${tr('total_score')} : <b>${totalScore}</b>/20</div>` : '')
+        ).style('opacity','1').style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px');
+      })
+      .on('mousemove', function(ev) { dendroTT.style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px'); })
+      .on('mouseleave', function() { d3.select(this).style('text-decoration', 'none'); dendroTT.style('opacity','0'); })
+      .on('click', function() { openBio(name); });
   });
 
   // Threshold slider line (draggable vertical line)
@@ -2412,9 +2445,16 @@ function renderDendrogram() {
 }
 
 // ─── Companion cluster map ──────────────────────────────────
-function clusterColor(clusterId, totalClusters) {
-  const t = totalClusters <= 1 ? 0.5 : clusterId / (totalClusters - 1);
-  return d3.interpolateRdYlBu(1 - t); // reversed: warm=0, cool=1
+const CLUSTER_PALETTE = [
+  '#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f',
+  '#edc948','#b07aa1','#ff9da7','#9c755f','#bab0ac',
+  '#5a9e6f','#d4a66a','#7a82b8','#c47a6a','#88b5c4',
+  '#a0855b','#c9a5d4','#6ab0a0','#d48f55','#8a6d90',
+  '#7cb870','#c0896e','#5b8fb8','#d9b84a','#a0627a',
+  '#6ba88c','#c7854f','#7a9ab8','#b8a050','#9a7080',
+];
+function clusterColor(clusterId) {
+  return CLUSTER_PALETTE[clusterId % CLUSTER_PALETTE.length];
 }
 let clusterMapPaths = null;
 
@@ -2442,7 +2482,7 @@ function renderClusterMap() {
 
   const africa = geoData.features;
   const w = 520, h = 480;
-  const projection = d3.geoMercator().center([20, 2]).scale((w - 20) * 0.65).translate([w/2, h/2]);
+  const projection = d3.geoMercator().center([18, 2]).scale((w - 20) * 0.60).translate([w/2, h/2]);
   const path = d3.geoPath().projection(projection);
 
   const svg = d3.select(container).append('svg')
@@ -2468,7 +2508,7 @@ function renderClusterMap() {
       const tt = document.getElementById('tooltip');
       tt.style.display = 'block';
       tt.style.opacity = '1';
-      tt.innerHTML = `<strong>${name}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
+      tt.innerHTML = `<strong>${sn(name)}</strong><br>${HL(heritage)} &middot; ${clusterLabel}`;
     })
     .on('mousemove', (event) => {
       const tt = document.getElementById('tooltip');
@@ -2479,6 +2519,11 @@ function renderClusterMap() {
       const tt = document.getElementById('tooltip');
       tt.style.opacity = '0';
       tt.style.display = '';
+    })
+    .on('click', (event, d) => {
+      const iso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+      const entry = Object.entries(DATA.name_to_iso).find(([n, i]) => i === iso);
+      if (entry) openBio(entry[0]);
     });
 
   // Island circles
@@ -2577,18 +2622,27 @@ function updateClusters(threshold) {
       const name = Object.entries(DATA.name_to_iso).find(([n, i]) => i === isoCheck);
       if (!name) return '#eee';
       const clusterId = clusterMap[name[0]];
-      return clusterId !== undefined ? clusterColor(clusterId, totalClusters) : '#eee';
+      return clusterId !== undefined ? clusterColor(clusterId) : '#eee';
     });
     // Update island circles
     d3.selectAll('circle.cluster-island').each(function() {
       const name = d3.select(this).attr('data-country');
       const clusterId = clusterMap[name];
-      d3.select(this).attr('fill', clusterId !== undefined ? clusterColor(clusterId, totalClusters) : '#eee');
+      d3.select(this).attr('fill', clusterId !== undefined ? clusterColor(clusterId) : '#eee');
     });
   }
 
-  // Update dendrogram link colors based on clusters
-  d3.selectAll('.dendro-link').attr('stroke', '#999');
+  // Color dendrogram links: if all leaves under target node share one cluster, use that color
+  d3.selectAll('.dendro-link').each(function(d) {
+    const targetLeaves = d.target.leaves();
+    const clusterIds = new Set(targetLeaves.map(l => clusterMap[l.data.name]));
+    if (clusterIds.size === 1) {
+      const cid = [...clusterIds][0];
+      d3.select(this).attr('stroke', cid !== undefined ? clusterColor(cid) : '#bbb').attr('stroke-width', 1.5);
+    } else {
+      d3.select(this).attr('stroke', '#bbb').attr('stroke-width', 1);
+    }
+  });
 
   // Update cluster composition panel
   const compPanel = document.getElementById('cluster-composition');
@@ -2606,8 +2660,8 @@ function updateClusters(threshold) {
     html += '<div class="cc-groups-grid">';
     sortedIds.forEach((cid, idx) => {
       const members = groups[cid];
-      const colorSwatch = clusterColor(cid, totalClusters);
-      const shortNames = members.map(c => c.replace('République démocratique du Congo','RDC').replace('République centrafricaine','Centrafrique'));
+      const colorSwatch = clusterColor(cid);
+      const shortNames = members.map(c => sn(c));
       const hidden = sortedIds.length > maxVisible && idx >= maxVisible ? ' style="display:none" data-cc-extra' : '';
       html += `<div class="cc-group"${hidden}><span class="cc-group-label" style="color:${colorSwatch}">${tr('clusters_group')} ${cid + 1}</span> (${members.length} ${tr('clusters_countries')}) : <span class="cc-group-countries">${shortNames.join(', ')}</span></div>`;
     });
@@ -2925,7 +2979,7 @@ function renderSDPosture() {
   const w = 500;
 
   const svg = d3.select(cont).append('svg')
-    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 60}`)
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom + 75}`)
     .style('max-width', '550px').style('display', 'block').style('margin', '0 auto');
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
@@ -3016,14 +3070,18 @@ function renderSDPosture() {
     });
   });
 
-  // Legend below chart
+  // Legend below chart — wrapped into rows of 4
   const legY = chartH + 14;
   const legItems = postures.filter(p => {
     return heritages.some(h => counts[h][p] > 0);
   });
-  const legItemW = w / legItems.length;
+  const cols = 4;
+  const legColW = w / cols;
+  const legRowH = 16;
   legItems.forEach((p, i) => {
-    const lg = g.append('g').attr('transform', `translate(${i * legItemW}, ${legY})`);
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const lg = g.append('g').attr('transform', `translate(${col * legColW}, ${legY + row * legRowH})`);
     lg.append('rect').attr('width', 10).attr('height', 10).attr('rx', 2)
       .attr('fill', SD_POSTURE_COLORS[p]).attr('opacity', 0.85);
     lg.append('text').attr('x', 14).attr('y', 8)
