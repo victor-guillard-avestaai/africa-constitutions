@@ -48,21 +48,11 @@
     <h2 data-tr="carte_title">Carte de la reconnaissance constitutionnelle</h2>
     <div class="sub" data-tr="carte_sub" data-tr-html="true">Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. Cliquez sur les dimensions pour les activer ou désactiver.</div>
 
-    <!-- Mode switch + legend above map -->
-    <div class="carte-top-bar">
-      <div class="mode-switch" id="mode-switch">
-        <button class="mode-btn active" data-mode="score" data-tr="mode_score">Score seul</button>
-        <button class="mode-btn" data-mode="combined" data-tr="mode_combined">Combiné</button>
-        <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage</button>
-      </div>
-      <div id="legend-2d"></div>
-    </div>
-
-    <!-- Map row: slim sidebar + map -->
+    <!-- Map row: sidebar + map -->
     <div class="map-row">
-      <div class="map-sidebar">
-        <div>
-          <div class="ctrl-label" data-tr="carte_year">Année</div>
+      <div class="sidebar">
+        <div class="sidebar-label">Année</div>
+        <div class="slider-row">
           <div class="year-row">
             <button id="play-btn" aria-label="Animer le slider temporel" title="Animer">&#9654;</button>
             <input type="range" id="year-slider" aria-label="Année de référence" min="1930" max="2026" value="2026" step="1">
@@ -70,11 +60,18 @@
           <div style="text-align:center"><span id="year-display">2026</span></div>
         </div>
 
-        <div class="dims-section">
-          <div class="ctrl-label" data-tr="carte_dims">Dimensions</div>
-          <div class="grp-pills" id="grp-buttons"></div>
-          <div class="dim-pills" id="dim-buttons"></div>
+        <div class="sidebar-label" data-tr="carte_dims">Dimensions</div>
+        <div class="dim-pills" id="dim-buttons"></div>
+        <div class="grp-row" id="grp-buttons"></div>
+
+        <div class="sidebar-label">Mode</div>
+        <div class="mode-switch" id="mode-switch">
+          <button class="mode-btn active" data-mode="score" data-tr="mode_score">Score seul</button>
+          <button class="mode-btn" data-mode="combined" data-tr="mode_combined">Combiné</button>
+          <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage</button>
         </div>
+
+        <div id="legend-2d"></div>
       </div>
 
       <div>

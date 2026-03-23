@@ -166,38 +166,35 @@ header .lead {
 
 .explainer strong { color: var(--text); }
 
-/* ─── Top bar: mode switch + legend above map ──────────── */
-.carte-top-bar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.carte-top-bar .mode-switch { flex-shrink: 0; margin-bottom: 0; }
-.carte-top-bar #legend-2d { flex: 1; min-width: 0; }
-
 /* ─── Map Layout ────────────────────────────────────────── */
 .map-row {
   display: grid;
-  grid-template-columns: 160px 1fr;
+  grid-template-columns: 210px 1fr;
   gap: 0.5rem;
-  align-items: start;
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-.map-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+.sidebar {
+  font-size: 0.75rem;
 }
 
-.ctrl-label {
-  font-size: 0.68rem;
-  color: var(--dim);
+/* Section labels */
+.sidebar-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.3rem;
+  letter-spacing: 0.5px;
+  margin: 0.4rem 0 0.15rem;
 }
+.sidebar-label:first-child { margin-top: 0; }
+
+/* Year slider compact */
+.slider-row {
+  margin-bottom: 0.4rem;
+}
+.slider-row label { font-size: 0.7rem; }
 
 .year-row { display: flex; align-items: center; gap: 0.4rem; }
 
@@ -206,9 +203,9 @@ header .lead {
   border: 1px solid var(--border);
   border-radius: 5px;
   color: var(--muted);
-  width: 26px; height: 26px;
+  width: 22px; height: 22px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -221,44 +218,50 @@ header .lead {
 #year-slider { flex: 1; accent-color: var(--c2); cursor: pointer; }
 
 #year-display {
-  font-size: 1.35rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--c2);
-  min-width: 48px;
+  min-width: 40px;
   text-align: right;
 }
 
-/* ─── Dimension & Group Pills ──────────────────────────── */
-.dims-section { }
-
+/* ─── Dimension buttons: full names, stacked ─────────────── */
 .dim-pills {
   display: flex;
-  flex-wrap: wrap;
-  gap: 3px;
+  flex-direction: column;
 }
 
 .dim-btn {
-  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.3rem;
+  font-size: 0.68rem;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  color: var(--muted);
-  font-size: 0.65rem;
-  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  background: var(--card);
   cursor: pointer;
-  text-align: center;
+  margin-bottom: 1px;
+  width: 100%;
   font-family: var(--font);
   transition: all 0.12s;
-  white-space: nowrap;
+  color: var(--muted);
+  text-align: left;
 }
 
 .dim-btn:hover { background: var(--hover-light); color: var(--text); }
 
-.dim-btn.active {
-  background: var(--c2);
-  border-color: var(--c2);
-  color: var(--card);
-  font-weight: 600;
+.dim-btn.active { background: var(--score-x); color: var(--text); font-weight: 600; }
+
+.dim-btn .cb {
+  width: 11px; height: 11px;
+  border: 1.5px solid var(--dim);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.5rem;
 }
+.dim-btn.active .cb { background: var(--c2); border-color: var(--c2); color: #fff; }
 
 .dim-btn.shake { animation: shake 0.4s ease; }
 @keyframes shake {
@@ -267,44 +270,45 @@ header .lead {
   40%, 80% { transform: translateX(3px); }
 }
 
-.grp-pills {
+/* Group buttons compact row */
+.grp-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
-  margin-bottom: 0.3rem;
+  gap: 2px;
+  margin: 0.3rem 0;
 }
 
 .grp-btn {
-  font-size: 0.6rem;
-  color: var(--dim);
-  background: none;
+  padding: 0.12rem 0.3rem;
+  font-size: 0.62rem;
+  border-radius: 3px;
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0.15rem 0.35rem;
+  background: var(--card);
   cursor: pointer;
   font-family: var(--font);
+  color: var(--dim);
   white-space: nowrap;
 }
 
 .grp-btn:hover { border-color: var(--muted); color: var(--muted); }
-.grp-btn.active { border-color: var(--c1); color: var(--c1); }
+.grp-btn.active { background: var(--score-x); font-weight: 600; color: var(--text); }
 
-/* Mode switch */
+/* Mode switch compact */
 .mode-switch {
   display: flex;
   gap: 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 0.6rem;
+  margin: 0.3rem 0;
 }
 
 .mode-btn {
   background: transparent;
   border: none;
   color: var(--muted);
-  font-size: 0.68rem;
-  padding: 0.3rem 0.4rem;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.35rem;
   cursor: pointer;
   font-family: var(--font);
   transition: all 0.15s;
@@ -317,20 +321,20 @@ header .lead {
 .mode-btn:hover { background: var(--hover-light); color: var(--text); }
 .mode-btn.active { background: var(--score-x); color: var(--text); font-weight: 600; }
 
-/* 2D legend grid */
-.legend-explain { font-size: 0.68rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.3rem; }
+/* 2D legend grid compact */
+.legend-explain { font-size: 0.6rem; color: var(--muted); line-height: 1.4; margin-bottom: 0.2rem; }
 .legend-grid {
   display: grid;
   grid-template-columns: auto repeat(3, 1fr);
   gap: 2px;
-  font-size: 0.65rem;
-  margin-top: 0.4rem;
+  font-size: 0.55rem;
+  margin-top: 0.2rem;
 }
 
 .legend-grid .lg-header {
   color: var(--dim);
   text-align: center;
-  padding: 0.15rem 0.25rem;
+  padding: 0.1rem 0.2rem;
   font-weight: 600;
 }
 
@@ -338,18 +342,18 @@ header .lead {
   color: var(--muted);
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  padding-right: 0.3rem;
-  font-size: 0.62rem;
+  gap: 0.2rem;
+  padding-right: 0.2rem;
+  font-size: 0.55rem;
 }
 
 .legend-grid .lg-row-label .lg-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
 }
 
 .legend-grid .lg-swatch {
   width: 100%;
-  height: 16px;
+  height: 14px;
   border-radius: 2px;
   border: 1px solid rgba(0,0,0,0.08);
 }
@@ -762,7 +766,7 @@ footer {
 
 @media (max-width: 1000px) {
   .map-row { grid-template-columns: 1fr; }
-  .map-sidebar { flex-direction: row; flex-wrap: wrap; gap: 0.5rem; }
+  .sidebar { flex-direction: row; flex-wrap: wrap; gap: 0.5rem; }
   .div-grid { grid-template-columns: 1fr; }
   .hl-bar { gap: 1rem; flex-wrap: wrap; }
 }
@@ -779,12 +783,9 @@ footer {
   .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding: 0 0.5rem; justify-content: flex-start; }
   .tab-btn { flex-shrink: 0; font-size: 0.7rem; padding: 0.4rem 0.6rem; }
 
-  /* Top bar stacks vertically on mobile */
-  .carte-top-bar { flex-direction: column; align-items: stretch; }
-
   /* Map layout: sidebar above map on mobile */
-  .map-sidebar { order: -1; gap: 0.5rem; }
-  .map-sidebar .ctrl-label { font-size: 0.62rem; }
+  .sidebar { order: -1; gap: 0.5rem; }
+  .sidebar-label { font-size: 0.58rem; }
   #map-container { height: 350px; }
 
   /* Bio panel: full width, static positioning */

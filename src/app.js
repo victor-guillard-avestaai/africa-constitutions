@@ -785,7 +785,9 @@ function buildDimBtns() {
   DATA.features.forEach(f => {
     const b = document.createElement('button');
     b.className = 'dim-btn'; b.dataset.dim = f;
-    b.textContent = HM_SHORT(f);
+    const cb = document.createElement('span'); cb.className = 'cb';
+    b.appendChild(cb);
+    b.appendChild(document.createTextNode(DATA.feature_labels[f]));
     b.title = DATA.feature_labels[f];
     b.addEventListener('click', () => {
       if (selDims.has(f)) {
@@ -801,7 +803,10 @@ function buildDimBtns() {
 
 function syncDims() {
   document.querySelectorAll('.dim-btn').forEach(b => {
-    b.classList.toggle('active', selDims.has(b.dataset.dim));
+    const active = selDims.has(b.dataset.dim);
+    b.classList.toggle('active', active);
+    const cb = b.querySelector('.cb');
+    if (cb) cb.textContent = active ? '\u2713' : '';
   });
   document.querySelectorAll('.grp-btn').forEach(b => {
     const key = b.dataset.grp;
