@@ -950,11 +950,18 @@ footer {
 }
 .conflit-sidebar {
   font-size: 0.72rem;
+  padding: 0.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  align-self: start;
 }
 .conflit-sidebar .sidebar-label {
   font-size: 0.6rem;
-  margin-top: 0.6rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.2rem;
 }
+.conflit-sidebar .sidebar-label:first-child { margin-top: 0; }
 
 /* Map modes — stacked in sidebar */
 .conflit-map-modes {

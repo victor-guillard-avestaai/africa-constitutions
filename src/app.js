@@ -1742,17 +1742,25 @@ function renderConflictMap(pcCountries) {
   function getFill(info) {
     if (!info) return '#eae6df';
     if (conflitMapMode === 'score') return conflitScoreScale(info.total);
-    // PC and Combined: use TYPE color (red=peace, orange=auth, gray=non)
+    if (conflitMapMode === 'pc') {
+      // Pure type colors, no score
+      if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
+      return nonConflictColor;
+    }
+    // Combined: type colors for PC countries, score gradient for non-conflict
     if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
-    return nonConflictColor;
+    return conflitScoreScale(info.total);
   }
 
   function getOpacity(info) {
     if (!info) return 0.2;
     if (conflitMapMode === 'score') return 0.85;
-    // PC and Combined: opacity encodes score (higher score = more opaque)
-    if (info.pc) return 0.4 + (info.total / 20) * 0.6; // 0.4 to 1.0
-    return 0.3; // non-conflict faded
+    if (conflitMapMode === 'pc') {
+      return info.pc ? 0.9 : 0.3;
+    }
+    // Combined: PC countries use score-based opacity, non-conflict lighter
+    if (info.pc) return 0.5 + (info.total / 20) * 0.5; // 0.5 to 1.0
+    return 0.4 + (info.total / 20) * 0.3; // 0.4 to 0.7 (visible but dimmer)
   }
 
   function pcBorder(info) {
@@ -1837,52 +1845,27 @@ function renderConflictMap(pcCountries) {
     islandCircles.push({ circle, info });
   });
 
-  // Legend group
-  const legY = H - 48;
-  const legG = svg.append('g').attr('class', 'conflit-legend').attr('transform', `translate(10,${legY})`);
-
-  function renderLegend() {
-    legG.selectAll('*').remove();
-    svg.select('defs').remove();
-    if (conflitMapMode === 'pc') {
-      const items = [
-        { label: tr('conflit_peace_title'), color: pcTypeColors.peace },
-        { label: tr('conflit_auth_title'), color: pcTypeColors.authoritarian },
-        { label: tr('conflit_nonconflict'), color: nonConflictColor },
-      ];
-      items.forEach((d, i) => {
-        const g = legG.append('g').attr('transform', `translate(${i * 155}, 0)`);
-        g.append('rect').attr('width', 13).attr('height', 13).attr('rx', 2).attr('fill', d.color);
-        g.append('text').attr('x', 18).attr('y', 10).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
-      });
-    } else {
-      // Score gradient (used by both 'score' and 'combined')
-      const gradW = 130, gradH = 9;
-      const gradId = 'conflit-score-grad';
-      const defs = svg.append('defs');
-      const lg = defs.append('linearGradient').attr('id', gradId);
-      lg.append('stop').attr('offset','0%').attr('stop-color', conflitScoreScale(0));
-      lg.append('stop').attr('offset','50%').attr('stop-color', conflitScoreScale(10));
-      lg.append('stop').attr('offset','100%').attr('stop-color', conflitScoreScale(20));
-      legG.append('rect').attr('width', gradW).attr('height', gradH).attr('rx', 2).attr('fill', `url(#${gradId})`);
-      legG.append('text').attr('x', 0).attr('y', gradH + 11).attr('font-size', '7.5px').attr('fill', CSS.dim).text('0');
-      legG.append('text').attr('x', gradW).attr('y', gradH + 11).attr('text-anchor', 'end').attr('font-size', '7.5px').attr('fill', CSS.dim).text('20');
-      legG.append('text').attr('x', gradW / 2).attr('y', gradH + 11).attr('text-anchor', 'middle').attr('font-size', '7.5px').attr('fill', CSS.dim).text(tr('score_label'));
-      // Color legend for 'combined' mode (type colors with score opacity)
-      if (conflitMapMode === 'combined') {
-        const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 18})`);
-        [
-          { label: tr('conflit_peace_title'), color: pcTypeColors.peace },
-          { label: tr('conflit_auth_title'), color: pcTypeColors.authoritarian },
-          { label: tr('conflit_nonconflict'), color: nonConflictColor },
-        ].forEach((d, i) => {
-          const g = bLegG.append('g').attr('transform', `translate(${i * 135}, 0)`);
-          g.append('rect').attr('width', 11).attr('height', 11).attr('rx', 2).attr('fill', d.color);
-          g.append('text').attr('x', 15).attr('y', 9).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
-        });
-      }
-    }
+  // Static legend in sidebar (not SVG — avoids layout shift)
+  const legCont = document.getElementById('conflit-map-legend');
+  if (legCont) {
+    legCont.innerHTML = `
+      <div class="sidebar-label">LÉGENDE</div>
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${pcTypeColors.peace}"></span>
+        <span style="font-size:0.65rem">${tr('conflit_peace_title')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+        <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${pcTypeColors.authoritarian}"></span>
+        <span style="font-size:0.65rem">${tr('conflit_auth_title')}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${nonConflictColor}"></span>
+        <span style="font-size:0.65rem">${tr('conflit_nonconflict')}</span>
+      </div>
+    `;
   }
+
+  function renderLegend() {} // no-op — legend is static in sidebar
 
   function applyMapMode() {
     paths.each(function(d) {
@@ -2059,8 +2042,8 @@ function renderConflictLift(allCountries) {
 
   const sigLevels = { Dpa:'***', Dau:'***', Drc:'***', Drm:'***', Id:'*', La:'ns', PJ:'ns', F:'ns', Dc:'ns', Dis:'ns' };
 
-  // Identity vs institutional classification
-  const identityDims = new Set(['Drm', 'La', 'Drc', 'Id', 'Dpa', 'Dau']);
+  // Identity vs institutional classification (matches THESIS.md)
+  const identityDims = new Set(['Drm', 'Id', 'Drc', 'Dpa', 'PJ']);
 
   const liftData = DATA.features.map(dim => {
     const pcVals = pcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
@@ -2085,26 +2068,7 @@ function renderConflictLift(allCountries) {
   const xS = d3.scaleLinear().domain([-xDomain * 0.15, xDomain]).range([0, w]);
   const yS = d3.scaleBand().domain(liftData.map(d => d.dim)).range([0, chartH]).padding(0.25);
 
-  // Background bands: identity vs institutional
-  const identityItems = liftData.filter(d => d.isIdentity);
-  const institutionalItems = liftData.filter(d => !d.isIdentity);
-
-  if (identityItems.length > 0) {
-    const firstY = yS(identityItems[0].dim);
-    const lastY = yS(identityItems[identityItems.length - 1].dim) + yS.bandwidth();
-    g.append('rect')
-      .attr('x', -M.left + 5).attr('y', firstY - 4)
-      .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
-      .attr('fill', '#f0ece5').attr('rx', 4).attr('opacity', 0.5).attr('stroke', 'none');
-  }
-  if (institutionalItems.length > 0) {
-    const firstY = yS(institutionalItems[0].dim);
-    const lastY = yS(institutionalItems[institutionalItems.length - 1].dim) + yS.bandwidth();
-    g.append('rect')
-      .attr('x', -M.left + 5).attr('y', firstY - 4)
-      .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
-      .attr('fill', '#eae8e0').attr('rx', 4).attr('opacity', 0.35).attr('stroke', 'none');
-  }
+  // No background bands — color distinction (warm/cool) is sufficient
 
   // X axis
   g.append('g').attr('transform', `translate(0,${chartH})`)
