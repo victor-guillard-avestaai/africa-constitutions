@@ -1735,9 +1735,15 @@ function renderConflictMap(pcCountries) {
   const pcTypeColors = { peace: '#2471a3', authoritarian: '#d4760a' };
   const nonConflictColor = '#d5d0c8';
 
-  // Grey scale for score encoding — stronger range (light to near-black)
+  // Grey scale for score encoding — strong range (light grey to near-black)
   function greyFill(total) {
-    return d3.interpolateGreys(0.15 + (total / 20) * 0.65);
+    return d3.interpolateGreys(0.10 + (total / 20) * 0.75);
+  }
+
+  // Mix a base color with white based on score (0=pale, 20=full saturation)
+  function scoreTint(baseColor, total) {
+    const t = total / 20; // 0 to 1
+    return d3.interpolate('#e8e4e0', baseColor)(0.3 + t * 0.7);
   }
 
   function getFill(info) {
@@ -1747,8 +1753,11 @@ function renderConflictMap(pcCountries) {
       if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
       return nonConflictColor;
     }
-    // Combined: type colors for PC countries, grey for non-conflict
-    if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
+    // Combined: PC countries tinted by score, grey for non-conflict
+    if (info.pc) {
+      const base = pcTypeColors[info.pcType] || '#2471a3';
+      return scoreTint(base, info.total);
+    }
     return greyFill(info.total);
   }
 
@@ -1758,8 +1767,7 @@ function renderConflictMap(pcCountries) {
     if (conflitMapMode === 'pc') {
       return info.pc ? 0.9 : 0.3;
     }
-    // Combined: PC countries modulate opacity by score, non-conflict fully opaque (grey encodes score)
-    if (info.pc) return 0.55 + (info.total / 20) * 0.45; // 0.55 to 1.0
+    // Combined: all fully opaque — color encodes both type and score
     return 0.9;
   }
 
@@ -2332,12 +2340,12 @@ function renderDendrogram() {
   const root = buildTreeFromLinkage(DATA.linkage_data);
   const hierarchy = d3.hierarchy(root);
 
-  const margin = {top: 20, right: 30, bottom: 30, left: 200};
-  const w = 400, h = 900;
+  const margin = {top: 20, right: 30, bottom: 30, left: 210};
+  const w = 350, h = 1000;
 
   const svg = d3.select(container).append('svg')
     .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
-    .style('max-width', '550px').style('display', 'block').style('margin', '0 auto')
+    .style('display', 'block').style('margin', '0 auto')
     .append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
   // Cluster layout: assigns y positions to leaves evenly spaced
@@ -2391,9 +2399,9 @@ function renderDendrogram() {
       .attr('y', leaf.x)
       .attr('dy', '0.35em')
       .attr('text-anchor', 'end')
-      .style('font-size', '10px')
+      .style('font-size', '13px')
       .style('fill', HC[heritage] || HC.other)
-      .style('font-weight', 'bold')
+      .style('font-weight', '600')
       .style('cursor', 'pointer')
       .text(sn(name))
       .on('mouseenter', function(ev) {
