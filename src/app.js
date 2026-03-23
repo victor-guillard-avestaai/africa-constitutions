@@ -237,6 +237,11 @@ const I18N = {
     conflit_map_mode_combined: "Combiné",
     conflit_map_mode_score: "Score",
     conflit_eta_note: "part de variance expliquée",
+    conflit_dims_insight: "Les constitutions post-conflit reconnaissent davantage les droits identitaires (en haut), mais pas les dimensions institutionnelles (en bas).",
+    conflit_constitution: "Constitution",
+    conflit_panel_mean: "Moy.",
+    conflit_identity_dims: "Dimensions identitaires",
+    conflit_institutional_dims: "Dimensions institutionnelles",
 
     // Divergence annotations
     div_events: [['Démocratisation'],['UA créée']],
@@ -508,6 +513,11 @@ const I18N = {
     conflit_map_mode_combined: "Combined",
     conflit_map_mode_score: "Score",
     conflit_eta_note: "share of explained variance",
+    conflit_dims_insight: "Post-conflict constitutions recognize identity rights more (top), but not institutional dimensions (bottom).",
+    conflit_constitution: "Constitution",
+    conflit_panel_mean: "Mean",
+    conflit_identity_dims: "Identity dimensions",
+    conflit_institutional_dims: "Institutional dimensions",
 
     // Divergence annotations
     div_events: [['Democratization'],['AU created']],
@@ -1676,7 +1686,7 @@ function renderConflictMap(pcCountries) {
   cont.innerHTML = '';
   if (!geoData) return;
 
-  // Mode switch buttons above the map
+  // Mode switch buttons above the map — centered
   const modeBar = document.createElement('div');
   modeBar.className = 'conflit-map-modes';
   ['pc', 'combined', 'score'].forEach(m => {
@@ -1694,19 +1704,26 @@ function renderConflictMap(pcCountries) {
   });
   cont.appendChild(modeBar);
 
-  const W = 420, H = 400;
-  const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`)
-    .style('max-width', '380px').style('display', 'block').style('margin', '0 auto');
+  // Full-width hero map — larger viewBox
+  const W = 500, H = 480;
+  const svg = d3.select(cont).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
 
-  const proj = d3.geoMercator().fitSize([W, H - 50], geoData);
+  const proj = d3.geoMercator().fitSize([W, H - 55], geoData);
   const pathGen = d3.geoPath(proj);
 
-  // Build lookup for ALL countries
+  // Build lookup for ALL countries (include constitution year)
   const allLookup = {};
   DATA.feature_matrix.forEach(r => {
     const c = r.PAYS;
     const total = DATA.features.reduce((s, f) => s + r[f], 0);
-    allLookup[c] = { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null };
+    // Get latest constitution year from timeline
+    const tl = DATA.country_timelines[c];
+    let constitYear = null;
+    if (tl && tl.length) {
+      const last = tl[tl.length - 1];
+      constitYear = last.year;
+    }
+    allLookup[c] = { name: c, total, heritage: DATA.colonial_heritage[c] || 'other', pc: !!DATA.post_conflict[c], pcType: DATA.post_conflict_type[c] || null, constitYear };
   });
 
   // Color scales
@@ -1725,7 +1742,6 @@ function renderConflictMap(pcCountries) {
       return nonConflictColor;
     }
     if (conflitMapMode === 'score') return conflitScoreScale(info.total);
-    // combined: heritage + score with PC borders
     return (HERITAGE_SCALES[info.heritage] || HERITAGE_SCALES.other)(info.total / 20 * 2);
   }
 
@@ -1737,8 +1753,8 @@ function renderConflictMap(pcCountries) {
 
   function pcBorder(info) {
     if (!info) return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
-    if (info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 1.8, dash: null };
-    if (info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.2, dash: '4,2' };
+    if (info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 2.0, dash: null };
+    if (info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.4, dash: '4,2' };
     return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
   }
 
@@ -1756,11 +1772,13 @@ function renderConflictMap(pcCountries) {
     const typeLabel = info.pc
       ? (info.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title'))
       : tr('conflit_nonconflict');
+    const hColor = HC[info.heritage] || HC.other;
     scTT.html(
       `<div class="tt-name">${info.name}</div>` +
-      `<div style="font-size:0.8rem">${HL(info.heritage)} \u00b7 ${tr('total_score')} : <b>${info.total}</b>/20</div>` +
-      `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}</div>`
-    ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+      `<div style="font-size:0.75rem;color:${hColor};margin-bottom:0.1rem">${HL(info.heritage)}</div>` +
+      `<div style="font-size:0.8rem">${tr('total_score')} : <b>${info.total}</b>/20</div>` +
+      `<div style="font-size:0.72rem;color:var(--dim)">${typeLabel}${info.constitYear ? ' \u00b7 ' + tr('conflit_constitution') + ' ' + info.constitYear : ''}</div>`
+    ).style('opacity','1').style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px');
   }
 
   const paths = svg.selectAll('path.cm-country').data(geoData.features).join('path')
@@ -1769,10 +1787,10 @@ function renderConflictMap(pcCountries) {
     .style('cursor', 'pointer')
     .on('mouseenter', function(ev, d) {
       const info = allLookup[geoToCountry(d)];
-      d3.select(this).attr('stroke', '#333').attr('stroke-width', 1.5);
+      d3.select(this).attr('stroke', '#222').attr('stroke-width', 1.8);
       showTooltip(ev, info);
     })
-    .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+    .on('mousemove', function(ev) { scTT.style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px'); })
     .on('mouseleave', function(ev, d) {
       const info = allLookup[geoToCountry(d)];
       const bdr = pcBorder(info);
@@ -1799,16 +1817,16 @@ function renderConflictMap(pcCountries) {
     const info = allLookup[d.name];
     const circle = svg.append('circle')
       .attr('class', 'cm-island')
-      .attr('cx', d.projected[0]).attr('cy', d.projected[1]).attr('r', 8)
+      .attr('cx', d.projected[0]).attr('cy', d.projected[1]).attr('r', 9)
       .attr('data-country', d.name)
       .style('cursor', 'pointer')
       .on('mouseenter', function(ev) {
-        d3.select(this).attr('r', 10);
+        d3.select(this).attr('r', 11);
         showTooltip(ev, info);
       })
-      .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+      .on('mousemove', function(ev) { scTT.style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px'); })
       .on('mouseleave', function() {
-        d3.select(this).attr('r', 8);
+        d3.select(this).attr('r', 9);
         scTT.style('opacity','0');
       })
       .on('click', function() { if (info) openBio(d.name); });
@@ -1816,8 +1834,8 @@ function renderConflictMap(pcCountries) {
   });
 
   // Legend group
-  const legY = H - 42;
-  const legG = svg.append('g').attr('class', 'conflit-legend').attr('transform', `translate(5,${legY})`);
+  const legY = H - 48;
+  const legG = svg.append('g').attr('class', 'conflit-legend').attr('transform', `translate(10,${legY})`);
 
   function renderLegend() {
     legG.selectAll('*').remove();
@@ -1829,12 +1847,12 @@ function renderConflictMap(pcCountries) {
         { label: tr('conflit_nonconflict'), color: nonConflictColor },
       ];
       items.forEach((d, i) => {
-        const g = legG.append('g').attr('transform', `translate(${i * 140}, 0)`);
-        g.append('rect').attr('width', 12).attr('height', 12).attr('rx', 2).attr('fill', d.color);
-        g.append('text').attr('x', 16).attr('y', 9).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
+        const g = legG.append('g').attr('transform', `translate(${i * 155}, 0)`);
+        g.append('rect').attr('width', 13).attr('height', 13).attr('rx', 2).attr('fill', d.color);
+        g.append('text').attr('x', 18).attr('y', 10).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
       });
     } else {
-      const gradW = 120, gradH = 8;
+      const gradW = 130, gradH = 9;
       const gradId = 'conflit-score-grad';
       const defs = svg.append('defs');
       const lg = defs.append('linearGradient').attr('id', gradId);
@@ -1842,18 +1860,18 @@ function renderConflictMap(pcCountries) {
       lg.append('stop').attr('offset','50%').attr('stop-color', conflitScoreScale(10));
       lg.append('stop').attr('offset','100%').attr('stop-color', conflitScoreScale(20));
       legG.append('rect').attr('width', gradW).attr('height', gradH).attr('rx', 2).attr('fill', `url(#${gradId})`);
-      legG.append('text').attr('x', 0).attr('y', gradH + 10).attr('font-size', '7px').attr('fill', CSS.dim).text('0');
-      legG.append('text').attr('x', gradW).attr('y', gradH + 10).attr('text-anchor', 'end').attr('font-size', '7px').attr('fill', CSS.dim).text('20');
-      legG.append('text').attr('x', gradW / 2).attr('y', gradH + 10).attr('text-anchor', 'middle').attr('font-size', '7px').attr('fill', CSS.dim).text(tr('score_label'));
-      const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 16})`);
+      legG.append('text').attr('x', 0).attr('y', gradH + 11).attr('font-size', '7.5px').attr('fill', CSS.dim).text('0');
+      legG.append('text').attr('x', gradW).attr('y', gradH + 11).attr('text-anchor', 'end').attr('font-size', '7.5px').attr('fill', CSS.dim).text('20');
+      legG.append('text').attr('x', gradW / 2).attr('y', gradH + 11).attr('text-anchor', 'middle').attr('font-size', '7.5px').attr('fill', CSS.dim).text(tr('score_label'));
+      const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 18})`);
       [
-        { label: tr('conflit_peace_title'), strokeW: 1.8, dash: null },
-        { label: tr('conflit_auth_title'), strokeW: 1.2, dash: '4,2' },
+        { label: tr('conflit_peace_title'), strokeW: 2.0, dash: null },
+        { label: tr('conflit_auth_title'), strokeW: 1.4, dash: '4,2' },
       ].forEach((d, i) => {
-        const g = bLegG.append('g').attr('transform', `translate(${i * 140}, 0)`);
-        g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 18).attr('y2', 5)
+        const g = bLegG.append('g').attr('transform', `translate(${i * 155}, 0)`);
+        g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 20).attr('y2', 5)
           .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
-        g.append('text').attr('x', 22).attr('y', 8).attr('font-size', '7.5px').attr('fill', CSS.muted).text(d.label);
+        g.append('text').attr('x', 25).attr('y', 9).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
       });
     }
   }
@@ -1883,6 +1901,9 @@ function renderConflictMap(pcCountries) {
   }
 
   applyMapMode();
+
+  // Store allLookup on the container for cross-component highlighting
+  cont._allLookup = allLookup;
 }
 
 function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean, npcMean) {
@@ -1890,70 +1911,149 @@ function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean,
   if (!cont) return;
 
   cont.innerHTML = `
-    <div class="stat-row">
-      <span class="stat-big">${pcCountries.length}/54</span>
-      <span class="stat-label">${tr('conflit_stat_count')}</span>
+    <div class="conflit-kpi">
+      <div class="conflit-kpi-value">${pcCountries.length}/54</div>
+      <div class="conflit-kpi-label">${tr('conflit_stat_count')}</div>
+      <div class="conflit-kpi-sub">${peaceCountries.length} ${tr('conflit_peace_count')}<br>${authCountries.length} ${tr('conflit_auth_count')}</div>
     </div>
-    <div class="stat-detail">
-      <div class="stat-bullet"><span class="stat-dot" style="background:#d4785a"></span>${peaceCountries.length} ${tr('conflit_peace_count')}</div>
-      <div class="stat-bullet"><span class="stat-dot" style="background:#c4956a"></span>${authCountries.length} ${tr('conflit_auth_count')}</div>
+    <div class="conflit-kpi-divider"></div>
+    <div class="conflit-kpi">
+      <div class="conflit-kpi-value">${pcMean.toFixed(1)}/20</div>
+      <div class="conflit-kpi-label">${tr('conflit_mean_pc')}</div>
     </div>
-    <hr class="stat-divider">
-    <div class="stat-pair"><span class="stat-key">${tr('conflit_mean_pc')}</span><span class="stat-val">${pcMean.toFixed(1)}/20</span></div>
-    <div class="stat-pair"><span class="stat-key">${tr('conflit_mean_npc')}</span><span class="stat-val">${npcMean.toFixed(1)}/20</span></div>
-    <div class="stat-small">${tr('conflit_mannwhitney')} p = 0,0001</div>
-    <hr class="stat-divider">
-    <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_heritage')}</span><span class="stat-val">22,3 %</span></div>
-    <div class="stat-pair"><span class="stat-key">${tr('conflit_eta_combined')}</span><span class="stat-val">63,2 %</span></div>
-    <div class="stat-small" style="margin-top:0.4rem;font-style:italic">(η² = ${tr('conflit_eta_note')})</div>
+    <div class="conflit-kpi-divider"></div>
+    <div class="conflit-kpi">
+      <div class="conflit-kpi-value">${npcMean.toFixed(1)}/20</div>
+      <div class="conflit-kpi-label">${tr('conflit_mean_npc')}</div>
+    </div>
+    <div class="conflit-kpi-divider"></div>
+    <div class="conflit-kpi">
+      <div class="conflit-kpi-value">22,3 %</div>
+      <div class="conflit-kpi-label">${tr('conflit_eta_heritage')}</div>
+    </div>
+    <div class="conflit-kpi-divider"></div>
+    <div class="conflit-kpi">
+      <div class="conflit-kpi-value">63,2 %</div>
+      <div class="conflit-kpi-label">${tr('conflit_eta_combined')}</div>
+      <div class="conflit-kpi-sub">p = 0,0001</div>
+    </div>
   `;
 }
 
 function renderConflictComparison(peaceCountries, authCountries, npcMean) {
   const scTT = d3.select('#scatter-tooltip');
 
-  function renderPanel(containerId, title, countries) {
+  function renderPanel(containerId, title, countries, accentColor) {
     const cont = document.getElementById(containerId);
     if (!cont) return;
     cont.innerHTML = '';
 
     const box = document.createElement('div');
     box.className = 'conflit-panel-box';
-    const h4 = document.createElement('h4');
-    h4.textContent = title;
-    box.appendChild(h4);
+
+    // Header with accent bar, title, and mean score
+    const panelMean = countries.length ? d3.mean(countries, d => d.total) : 0;
+    const header = document.createElement('div');
+    header.className = 'conflit-panel-header';
+    header.style.borderBottomColor = accentColor;
+    header.innerHTML = `
+      <div class="conflit-panel-accent" style="background:${accentColor}"></div>
+      <div class="conflit-panel-title">${title}</div>
+      <div class="conflit-panel-mean">${panelMean.toFixed(1)}/20</div>
+    `;
+    box.appendChild(header);
+
+    // Country list
+    const list = document.createElement('div');
+    list.className = 'conflit-panel-list';
 
     countries.forEach(d => {
       const card = document.createElement('div');
       card.className = 'conflit-country-card';
-      const color = HC[d.heritage] || HC.other;
+      // Heritage color lookup — use DATA.colonial_heritage for robust lookup
+      const heritage = DATA.colonial_heritage[d.name] || d.heritage || 'other';
+      const color = HC[heritage] || HC.other;
       card.innerHTML = `
         <span class="cc-dot" style="background:${color}"></span>
         <span class="cc-name">${d.name}</span>
-        <span class="cc-score">${d.total}</span>
+        <span class="cc-score">${d.total}/20</span>
         <span class="cc-bar-bg"><span class="cc-bar" style="width:${(d.total / 20) * 100}%;background:${color}"></span></span>
       `;
       card.addEventListener('click', () => openBio(d.name));
       card.addEventListener('mouseenter', (ev) => {
+        const hColor = HC[heritage] || HC.other;
         scTT.html(
           `<div class="tt-name">${d.name}</div>` +
+          `<div style="font-size:0.75rem;color:${hColor};margin-bottom:0.1rem">${HL(heritage)}</div>` +
           `<div style="font-size:0.8rem">${tr('total_score')} : <b>${d.total}</b>/20</div>` +
-          `<div style="font-size:0.72rem;color:var(--dim)">${HL(d.heritage)} · ${d.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
-        ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+          `<div style="font-size:0.72rem;color:var(--dim)">${d.pcType === 'peace' ? tr('conflit_peace_title') : tr('conflit_auth_title')}</div>`
+        ).style('opacity','1').style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px');
+
+        // Highlight on map
+        highlightCountryOnConflictMap(d.name, true);
       });
-      card.addEventListener('mouseleave', () => { scTT.style('opacity','0'); });
-      box.appendChild(card);
+      card.addEventListener('mouseleave', () => {
+        scTT.style('opacity','0');
+        highlightCountryOnConflictMap(d.name, false);
+      });
+      list.appendChild(card);
     });
+    box.appendChild(list);
+
+    // Footer with non-conflict reference mean
+    const footer = document.createElement('div');
+    footer.className = 'conflit-panel-footer';
+    footer.textContent = `${tr('conflit_ref_mean')} : ${npcMean.toFixed(1)}/20`;
+    box.appendChild(footer);
 
     cont.appendChild(box);
   }
 
-  renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries);
-  renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries);
+  renderPanel('conflit-peace-panel', tr('conflit_peace_title'), peaceCountries, '#c0392b');
+  renderPanel('conflit-auth-panel', tr('conflit_auth_title'), authCountries, '#e67e22');
+}
 
-  // Single centered reference mean between the two panels
-  const refEl = document.getElementById('conflit-ref-mean');
-  if (refEl) refEl.innerHTML = `${tr('conflit_ref_mean')}<br>${npcMean.toFixed(1)}/20`;
+// Highlight a country on the conflict mini-map when hovering comparison cards
+function highlightCountryOnConflictMap(countryName, highlight) {
+  const cont = document.getElementById('conflit-map');
+  if (!cont || !cont._allLookup) return;
+  const allLookup = cont._allLookup;
+
+  // Find the path for this country
+  const mapSvg = cont.querySelector('svg');
+  if (!mapSvg) return;
+
+  d3.select(mapSvg).selectAll('path.cm-country').each(function(d) {
+    if (!DATA.name_to_iso) return;
+    const geoIso = d.properties.ISO_A3 !== '-99' ? d.properties.ISO_A3 : d.properties.ADM0_A3;
+    const entry = Object.entries(DATA.name_to_iso).find(([n, iso]) => iso === geoIso);
+    const cn = entry ? entry[0] : null;
+    if (cn === countryName) {
+      if (highlight) {
+        d3.select(this).attr('stroke', '#222').attr('stroke-width', 2.5);
+      } else {
+        const info = allLookup[cn];
+        const bdr = info && info.pc && info.pcType === 'peace' ? { stroke: '#333', strokeW: 2.0 } :
+                    info && info.pc && info.pcType === 'authoritarian' ? { stroke: '#333', strokeW: 1.4 } :
+                    { stroke: CSS.strokeDefault, strokeW: 0.3 };
+        d3.select(this).attr('stroke', bdr.stroke).attr('stroke-width', bdr.strokeW);
+      }
+    }
+  });
+
+  // Also check island circles
+  d3.select(mapSvg).selectAll('circle.cm-island').each(function() {
+    if (d3.select(this).attr('data-country') === countryName) {
+      if (highlight) {
+        d3.select(this).attr('r', 13).attr('stroke', '#222').attr('stroke-width', 2.5);
+      } else {
+        d3.select(this).attr('r', 9);
+        const info = allLookup[countryName];
+        const bdr = info && info.pc ? { stroke: '#333', strokeW: info.pcType === 'peace' ? 2.0 : 1.4 } : { stroke: 'white', strokeW: 1 };
+        d3.select(this).attr('stroke', bdr.stroke).attr('stroke-width', bdr.strokeW);
+      }
+    }
+  });
 }
 
 function renderConflictLift(allCountries) {
@@ -1967,29 +2067,52 @@ function renderConflictLift(allCountries) {
 
   const sigLevels = { Dpa:'***', Dau:'***', Drc:'***', Drm:'***', Id:'*', La:'ns', PJ:'ns', F:'ns', Dc:'ns', Dis:'ns' };
 
+  // Identity vs institutional classification
+  const identityDims = new Set(['Drm', 'La', 'Drc', 'Id', 'Dpa', 'Dau']);
+
   const liftData = DATA.features.map(dim => {
     const pcVals = pcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
     const npcVals = npcAll.map(d => { const row = DATA.feature_matrix.find(r => r.PAYS === d.name); return row ? row[dim] : 0; });
     const pcMean = pcVals.length ? d3.mean(pcVals) : 0;
     const npcMean = npcVals.length ? d3.mean(npcVals) : 0;
-    return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns' };
+    return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns', isIdentity: identityDims.has(dim) };
   }).sort((a, b) => Math.abs(b.lift) - Math.abs(a.lift));
 
-  const M = { top: 30, right: 50, bottom: 30, left: 160 };
-  const rowH = 28;
+  const M = { top: 30, right: 55, bottom: 35, left: 160 };
+  const rowH = 30;
   const chartH = liftData.length * rowH;
-  const w = 350;
+  const w = 320;
   const maxAbs = d3.max(liftData, d => Math.abs(d.lift));
   const xDomain = Math.max(maxAbs * 1.3, 0.3);
 
-  // Lollipop chart
+  // Lollipop chart — centered, max-width 500px
   const svg = d3.select(cont).append('svg')
-    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`)
-    .style('max-width', '600px');
+    .attr('viewBox', `0 0 ${w + M.left + M.right} ${chartH + M.top + M.bottom}`);
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`);
 
   const xS = d3.scaleLinear().domain([-xDomain * 0.15, xDomain]).range([0, w]);
-  const yS = d3.scaleBand().domain(liftData.map(d => d.dim)).range([0, chartH]).padding(0.3);
+  const yS = d3.scaleBand().domain(liftData.map(d => d.dim)).range([0, chartH]).padding(0.25);
+
+  // Background bands: identity vs institutional
+  const identityItems = liftData.filter(d => d.isIdentity);
+  const institutionalItems = liftData.filter(d => !d.isIdentity);
+
+  if (identityItems.length > 0) {
+    const firstY = yS(identityItems[0].dim);
+    const lastY = yS(identityItems[identityItems.length - 1].dim) + yS.bandwidth();
+    g.append('rect')
+      .attr('x', -M.left + 5).attr('y', firstY - 4)
+      .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
+      .attr('fill', '#f0ece5').attr('rx', 4).attr('opacity', 0.5);
+  }
+  if (institutionalItems.length > 0) {
+    const firstY = yS(institutionalItems[0].dim);
+    const lastY = yS(institutionalItems[institutionalItems.length - 1].dim) + yS.bandwidth();
+    g.append('rect')
+      .attr('x', -M.left + 5).attr('y', firstY - 4)
+      .attr('width', w + M.left + M.right - 10).attr('height', lastY - firstY + 8)
+      .attr('fill', '#eae8e0').attr('rx', 4).attr('opacity', 0.35);
+  }
 
   // X axis
   g.append('g').attr('transform', `translate(0,${chartH})`)
@@ -2026,44 +2149,48 @@ function renderConflictLift(allCountries) {
       .attr('font-size', '11px').attr('font-weight', isSig ? '600' : '400')
       .text(dimLabel + (d.sig !== 'ns' ? ' ' + d.sig : ''));
 
-    // Lollipop stem (thin line from 0 to value)
+    // Lollipop stem (thicker line from 0 to value)
     g.append('line')
       .attr('x1', xS(0)).attr('x2', xS(d.lift))
       .attr('y1', cy).attr('y2', cy)
-      .attr('stroke', color).attr('stroke-width', 2)
-      .attr('opacity', isSig ? 0.8 : 0.35);
+      .attr('stroke', color).attr('stroke-width', 2.5)
+      .attr('opacity', isSig ? 0.8 : 0.3);
 
-    // Lollipop circle at the end
+    // Lollipop circle at the end (larger)
     g.append('circle')
-      .attr('cx', xS(d.lift)).attr('cy', cy).attr('r', 5)
-      .attr('fill', color).attr('opacity', isSig ? 0.9 : 0.35)
+      .attr('cx', xS(d.lift)).attr('cy', cy).attr('r', 6)
+      .attr('fill', color).attr('opacity', isSig ? 0.9 : 0.3)
       .style('cursor', 'pointer')
       .on('mouseenter', function(ev) {
-        d3.select(this).attr('r', 7);
+        d3.select(this).attr('r', 8);
+        const pLabel = d.sig === 'ns' ? (lang === 'fr' ? 'non significatif' : 'not significant') :
+                       d.sig === '*' ? 'p < 0,05' :
+                       d.sig === '***' ? 'p < 0,001' : d.sig;
         scTT.html(
           `<div class="tt-name">${dimLabel}</div>` +
-          `<div style="font-size:0.8rem">\u0394 = <b>${d.lift >= 0 ? '+' : ''}${d.lift.toFixed(2)}</b> (${d.sig})</div>` +
-          `<div style="font-size:0.72rem;color:var(--dim)">Post-conflit : ${d.pcMean.toFixed(2)} | Non-conflit : ${d.npcMean.toFixed(2)}</div>`
-        ).style('opacity','1').style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px');
+          `<div style="font-size:0.8rem">\u0394 = <b>${d.lift >= 0 ? '+' : ''}${d.lift.toFixed(2)}</b></div>` +
+          `<div style="font-size:0.75rem;color:var(--dim)">${pLabel}</div>` +
+          `<div style="font-size:0.72rem;color:var(--dim);margin-top:0.1rem">${lang === 'fr' ? 'Post-conflit' : 'Post-conflict'} : ${d.pcMean.toFixed(2)} | ${lang === 'fr' ? 'Non-conflit' : 'Non-conflict'} : ${d.npcMean.toFixed(2)}</div>`
+        ).style('opacity','1').style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px');
       })
-      .on('mousemove', function(ev) { scTT.style('left',(ev.clientX+14)+'px').style('top',(ev.clientY-10)+'px'); })
+      .on('mousemove', function(ev) { scTT.style('left',Math.min(ev.clientX+14, window.innerWidth-320)+'px').style('top',(ev.clientY-10)+'px'); })
       .on('mouseleave', function() {
-        d3.select(this).attr('r', 5);
+        d3.select(this).attr('r', 6);
         scTT.style('opacity','0');
       });
 
     // Value label to the right of the circle
-    const labelX = xS(d.lift) + (d.lift >= 0 ? 10 : -10);
+    const labelX = xS(d.lift) + (d.lift >= 0 ? 12 : -12);
     g.append('text')
       .attr('x', labelX).attr('y', cy)
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', d.lift >= 0 ? 'start' : 'end')
-      .attr('fill', isSig ? CSS.text : CSS.dim).attr('font-size', '9px')
+      .attr('fill', isSig ? CSS.text : CSS.dim).attr('font-size', '9.5px')
       .text((d.lift >= 0 ? '+' : '') + d.lift.toFixed(2));
   });
 
   // Significance footnote
-  g.append('text').attr('x', 0).attr('y', chartH + 20).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
+  g.append('text').attr('x', 0).attr('y', chartH + 22).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
     .text(lang === 'fr' ? '*** p < 0,001 (Mann-Whitney) | * p < 0,05 | ns = non significatif' : '*** p < 0.001 (Mann-Whitney) | * p < 0.05 | ns = not significant');
 }
 
