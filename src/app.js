@@ -81,7 +81,7 @@ const I18N = {
     filter_peace_long: "Paix (processus de paix négocié)",
     filter_auth_long: "Autoritaire (transition post-guerre ou post-libération)",
     filter_nonconflict_long: "Non-conflit (constitution hors contexte de conflit)",
-    filter_note: "Paix = processus négocié · Autoritaire = transition post-guerre/libération · Non-conflit = hors contexte de conflit",
+    filter_note: "<b>Paix</b> = constitution issue d'un accord de paix négocié entre parties au conflit (ex. : Kenya 2010 après les violences post-électorales, Afrique du Sud 1996 après l'apartheid). <b>Autoritaire</b> = constitution adoptée après une guerre ou une libération, sans processus pluraliste de négociation (ex. : Angola 2010 après 27 ans de guerre civile, Rwanda 2003 après le génocide). <b>Non-conflit</b> = constitution adoptée dans un contexte politique stable, sans conflit armé préalable.",
 
     // Heritage tab
     heritage_title: "Divergence par héritage colonial",
@@ -352,7 +352,7 @@ const I18N = {
     filter_peace_long: "Peace (negotiated peace process)",
     filter_auth_long: "Authoritarian (post-war or post-liberation transition)",
     filter_nonconflict_long: "Non-conflict (constitution outside conflict context)",
-    filter_note: "Peace = negotiated process · Authoritarian = post-war/liberation transition · Non-conflict = outside conflict context",
+    filter_note: "<b>Peace</b> = constitution resulting from a negotiated peace agreement between conflict parties (e.g., Kenya 2010 after post-election violence, South Africa 1996 after apartheid). <b>Authoritarian</b> = constitution adopted after a war or liberation, without a pluralist negotiation process (e.g., Angola 2010 after 27 years of civil war, Rwanda 2003 after the genocide). <b>Non-conflict</b> = constitution adopted in a stable political context, without prior armed conflict.",
 
     // Heritage tab
     heritage_title: "Divergence by colonial heritage",
