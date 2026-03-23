@@ -1,0 +1,40 @@
+# Large/binary data
+data/constitution_corpus/
+data/preamble_corpus/
+data/embeddings/
+data/figures/
+data/constitutions/
+data/sources/
+data/appendix/
+data/*.xlsx
+data/*.geojson
+
+# Dependencies
+node_modules/
+.venv/
+
+# Build/cache
+__pycache__/
+*.py[oc]
+build/
+dist/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Jupyter notebooks (large outputs)
+notebooks/
+
+# Temp
+tmp/
+
+# Lock files
+uv.lock
+package-lock.json
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
