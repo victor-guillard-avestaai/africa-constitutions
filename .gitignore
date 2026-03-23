@@ -44,3 +44,6 @@ Thumbs.db
 .ipynb_checkpoints/
 data/figures/
 data/embeddings/
+node_modules/
+package.json
+package-lock.json
