@@ -1662,8 +1662,11 @@ function renderConflictTab() {
   const npcCountries = allCountries.filter(d => !d.pc);
   const peaceCountries = pcCountries.filter(d => d.pcType === 'peace').sort((a, b) => b.total - a.total);
   const authCountries = pcCountries.filter(d => d.pcType === 'authoritarian').sort((a, b) => b.total - a.total);
+  // Tier 1 (francophone + anglophone, n=42) for statistical comparison per THESIS.md
+  const tier1Heritages = new Set(['francophone', 'anglophone']);
   const pcMean = pcCountries.length ? d3.mean(pcCountries, d => d.total) : 0;
-  const npcMean = npcCountries.length ? d3.mean(npcCountries, d => d.total) : 0;
+  const npcTier1 = npcCountries.filter(d => tier1Heritages.has(d.heritage));
+  const npcMean = npcTier1.length ? d3.mean(npcTier1, d => d.total) : 0;
 
   // ── 1. Mini-map ────────────────────────────────────────
   renderConflictMap(pcCountries);
@@ -1741,8 +1744,9 @@ function renderConflictMap(pcCountries) {
       if (info.pc) return pcTypeColors[info.pcType] || '#c0392b';
       return nonConflictColor;
     }
-    if (conflitMapMode === 'score') return conflitScoreScale(info.total);
-    return (HERITAGE_SCALES[info.heritage] || HERITAGE_SCALES.other)(info.total / 20 * 2);
+    // Both 'score' and 'combined' use the warm score gradient;
+    // 'combined' additionally overlays post-conflict border styles
+    return conflitScoreScale(info.total);
   }
 
   function getOpacity(info) {
@@ -1753,8 +1757,9 @@ function renderConflictMap(pcCountries) {
 
   function pcBorder(info) {
     if (!info) return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
-    if (info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 2.0, dash: null };
-    if (info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.4, dash: '4,2' };
+    // In 'pc' and 'combined' modes, show post-conflict borders; in 'score' mode, plain borders
+    if (conflitMapMode !== 'score' && info.pc && info.pcType === 'peace') return { stroke: '#333', strokeW: 2.0, dash: null };
+    if (conflitMapMode !== 'score' && info.pc && info.pcType === 'authoritarian') return { stroke: '#333', strokeW: 1.4, dash: '4,2' };
     return { stroke: CSS.strokeDefault, strokeW: 0.3, dash: null };
   }
 
@@ -1852,6 +1857,7 @@ function renderConflictMap(pcCountries) {
         g.append('text').attr('x', 18).attr('y', 10).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
       });
     } else {
+      // Score gradient (used by both 'score' and 'combined')
       const gradW = 130, gradH = 9;
       const gradId = 'conflit-score-grad';
       const defs = svg.append('defs');
@@ -1863,16 +1869,19 @@ function renderConflictMap(pcCountries) {
       legG.append('text').attr('x', 0).attr('y', gradH + 11).attr('font-size', '7.5px').attr('fill', CSS.dim).text('0');
       legG.append('text').attr('x', gradW).attr('y', gradH + 11).attr('text-anchor', 'end').attr('font-size', '7.5px').attr('fill', CSS.dim).text('20');
       legG.append('text').attr('x', gradW / 2).attr('y', gradH + 11).attr('text-anchor', 'middle').attr('font-size', '7.5px').attr('fill', CSS.dim).text(tr('score_label'));
-      const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 18})`);
-      [
-        { label: tr('conflit_peace_title'), strokeW: 2.0, dash: null },
-        { label: tr('conflit_auth_title'), strokeW: 1.4, dash: '4,2' },
-      ].forEach((d, i) => {
-        const g = bLegG.append('g').attr('transform', `translate(${i * 155}, 0)`);
-        g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 20).attr('y2', 5)
-          .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
-        g.append('text').attr('x', 25).attr('y', 9).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
-      });
+      // Border legend only for 'combined' mode (score + post-conflict borders)
+      if (conflitMapMode === 'combined') {
+        const bLegG = legG.append('g').attr('transform', `translate(0, ${gradH + 18})`);
+        [
+          { label: tr('conflit_peace_title'), strokeW: 2.0, dash: null },
+          { label: tr('conflit_auth_title'), strokeW: 1.4, dash: '4,2' },
+        ].forEach((d, i) => {
+          const g = bLegG.append('g').attr('transform', `translate(${i * 155}, 0)`);
+          g.append('line').attr('x1', 0).attr('y1', 5).attr('x2', 20).attr('y2', 5)
+            .attr('stroke', '#333').attr('stroke-width', d.strokeW).attr('stroke-dasharray', d.dash);
+          g.append('text').attr('x', 25).attr('y', 9).attr('font-size', '8px').attr('fill', CSS.muted).text(d.label);
+        });
+      }
     }
   }
 
@@ -1890,11 +1899,12 @@ function renderConflictMap(pcCountries) {
     });
     islandCircles.forEach(({ circle, info }) => {
       const bdr = pcBorder(info);
+      const showPcStroke = conflitMapMode !== 'score' && info && info.pc;
       circle
         .attr('fill', getFill(info))
         .attr('opacity', getOpacity(info))
-        .attr('stroke', info && info.pc ? '#333' : 'white')
-        .attr('stroke-width', info && info.pc ? bdr.strokeW : 1)
+        .attr('stroke', showPcStroke ? '#333' : 'white')
+        .attr('stroke-width', showPcStroke ? bdr.strokeW : 1)
         .attr('stroke-dasharray', bdr.dash);
     });
     renderLegend();
@@ -1910,34 +1920,11 @@ function renderConflictStats(pcCountries, peaceCountries, authCountries, pcMean,
   const cont = document.getElementById('conflit-stats');
   if (!cont) return;
 
-  cont.innerHTML = `
-    <div class="conflit-kpi">
-      <div class="conflit-kpi-value">${pcCountries.length}/54</div>
-      <div class="conflit-kpi-label">${tr('conflit_stat_count')}</div>
-      <div class="conflit-kpi-sub">${peaceCountries.length} ${tr('conflit_peace_count')}<br>${authCountries.length} ${tr('conflit_auth_count')}</div>
-    </div>
-    <div class="conflit-kpi-divider"></div>
-    <div class="conflit-kpi">
-      <div class="conflit-kpi-value">${pcMean.toFixed(1)}/20</div>
-      <div class="conflit-kpi-label">${tr('conflit_mean_pc')}</div>
-    </div>
-    <div class="conflit-kpi-divider"></div>
-    <div class="conflit-kpi">
-      <div class="conflit-kpi-value">${npcMean.toFixed(1)}/20</div>
-      <div class="conflit-kpi-label">${tr('conflit_mean_npc')}</div>
-    </div>
-    <div class="conflit-kpi-divider"></div>
-    <div class="conflit-kpi">
-      <div class="conflit-kpi-value">22,3 %</div>
-      <div class="conflit-kpi-label">${tr('conflit_eta_heritage')}</div>
-    </div>
-    <div class="conflit-kpi-divider"></div>
-    <div class="conflit-kpi">
-      <div class="conflit-kpi-value">63,2 %</div>
-      <div class="conflit-kpi-label">${tr('conflit_eta_combined')}</div>
-      <div class="conflit-kpi-sub">p = 0,0001</div>
-    </div>
-  `;
+  const sep = ' \u00b7 ';
+  cont.innerHTML =
+    `<b>${pcCountries.length}/54</b> ${tr('conflit_stat_count')}` + sep +
+    `${tr('conflit_mean_pc')} : <b>${pcMean.toFixed(1)}</b> vs ${npcMean.toFixed(1)}` + sep +
+    `\u03B7\u00B2 = <b>63,2 %</b> <span style="font-size:0.7rem">(p = 0,0001)</span>`;
 }
 
 function renderConflictComparison(peaceCountries, authCountries, npcMean) {
@@ -1970,9 +1957,10 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
     countries.forEach(d => {
       const card = document.createElement('div');
       card.className = 'conflit-country-card';
-      // Heritage color lookup — use DATA.colonial_heritage for robust lookup
+      // Heritage color lookup — hardcoded fallback to guarantee color renders
       const heritage = DATA.colonial_heritage[d.name] || d.heritage || 'other';
-      const color = HC[heritage] || HC.other;
+      const HARD_HC = {francophone:'#4a5a9a',anglophone:'#9a3a4a',lusophone:'#2a7a5a',other:'#7a8088',mixed:'#7a8088'};
+      const color = HARD_HC[heritage] || '#7a8088';
       card.innerHTML = `
         <span class="cc-dot" style="background:${color}"></span>
         <span class="cc-name">${d.name}</span>
@@ -2078,7 +2066,7 @@ function renderConflictLift(allCountries) {
     return { dim, lift: pcMean - npcMean, pcMean, npcMean, sig: sigLevels[dim] || 'ns', isIdentity: identityDims.has(dim) };
   }).sort((a, b) => Math.abs(b.lift) - Math.abs(a.lift));
 
-  const M = { top: 30, right: 55, bottom: 35, left: 160 };
+  const M = { top: 30, right: 55, bottom: 50, left: 160 };
   const rowH = 30;
   const chartH = liftData.length * rowH;
   const w = 320;
@@ -2190,7 +2178,7 @@ function renderConflictLift(allCountries) {
   });
 
   // Significance footnote
-  g.append('text').attr('x', 0).attr('y', chartH + 22).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
+  g.append('text').attr('x', 0).attr('y', chartH + 38).attr('font-size', '8px').attr('fill', CSS.dim).attr('font-style', 'italic')
     .text(lang === 'fr' ? '*** p < 0,001 (Mann-Whitney) | * p < 0,05 | ns = non significatif' : '*** p < 0.001 (Mann-Whitney) | * p < 0.05 | ns = not significant');
 }
 
