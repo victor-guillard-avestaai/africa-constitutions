@@ -1969,7 +1969,7 @@ function renderConflictComparison(peaceCountries, authCountries, npcMean) {
         <span class="cc-dot" style="background:${color}"></span>
         <span class="cc-name">${d.name}</span>
         <span class="cc-score">${d.total}/20</span>
-        <span class="cc-bar-bg"><span class="cc-bar" style="width:${(d.total / 20) * 100}%;background:${color}"></span></span>
+        <div class="cc-bar-bg"><div class="cc-bar" style="width:${(d.total / 20) * 100}%;background-color:${color}"></div></div>
       `;
       card.addEventListener('click', () => openBio(d.name));
       card.addEventListener('mouseenter', (ev) => {
