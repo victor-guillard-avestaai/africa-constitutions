@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Screenshot tool using Windows Chrome from WSL.
+ * Screenshot + evaluation tool for dashboard.
+ * Takes screenshots of all tabs, saves to tmp/screenshots/
  * Usage: node scripts/screenshot.js [tab_name]
  */
 
@@ -15,22 +16,18 @@ const OUT_DIR = path.join(__dirname, '..', 'tmp', 'screenshots');
 async function run(targetTab) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
-  // Use Windows Chrome from WSL
+  // Use Playwright's built-in Chromium (not Windows Chrome)
   const browser = await chromium.launch({
     headless: true,
-    executablePath: '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
-    args: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu'],
   });
 
   const page = await browser.newPage();
   await page.setViewportSize({ width: 1440, height: 900 });
 
-  // Convert WSL path to Windows file:// URL
-  const wslPath = path.join(SRC_DIR, 'index.html');
-  const winPath = wslPath.replace('/home/victo/', '\\\\wsl$\\Ubuntu\\home\\victo\\').replace(/\//g, '\\');
-  const fileUrl = `file:///${winPath}`;
-
+  const fileUrl = `file://${path.resolve(SRC_DIR, 'index.html')}`;
   console.log(`Loading: ${fileUrl}`);
+
   await page.goto(fileUrl, { waitUntil: 'networkidle', timeout: 30000 });
   await page.waitForTimeout(4000);
 
@@ -42,11 +39,11 @@ async function run(targetTab) {
     await btn.click();
     await page.waitForTimeout(2000);
 
-    // Viewport screenshot (what the user sees at 100% zoom)
+    // Viewport screenshot
     await page.screenshot({ path: path.join(OUT_DIR, `${tab}_viewport.png`) });
     console.log(`✓ ${tab}_viewport.png`);
 
-    // Full page screenshot of the tab panel
+    // Full tab content
     const panel = await page.$(`#tab-${tab}`);
     if (panel) {
       await panel.screenshot({ path: path.join(OUT_DIR, `${tab}_full.png`) });
@@ -54,7 +51,7 @@ async function run(targetTab) {
     }
   }
 
-  // Post-conflit modes
+  // Post-conflit mode variations
   if (!targetTab || targetTab === 'conflit') {
     await page.click('[data-tab="conflit"]');
     await page.waitForTimeout(1500);
@@ -70,7 +67,7 @@ async function run(targetTab) {
   }
 
   await browser.close();
-  console.log(`\nDone: ${OUT_DIR}`);
+  console.log(`\nScreenshots saved to ${OUT_DIR}`);
 }
 
 run(process.argv[2]).catch(e => { console.error(e.message); process.exit(1); });
