@@ -2142,7 +2142,7 @@ function renderConflictLift(allCountries) {
       .attr('x', labelX).attr('y', cy)
       .attr('dominant-baseline', 'middle')
       .attr('text-anchor', d.lift >= 0 ? 'start' : 'end')
-      .attr('fill', isSig ? CSS.text : CSS.dim).attr('font-size', '9.5px')
+      .attr('fill', d.isIdentity ? CSS.text : CSS.dim).attr('font-size', '9.5px')
       .text((d.lift >= 0 ? '+' : '') + d.lift.toFixed(2));
   });
 
