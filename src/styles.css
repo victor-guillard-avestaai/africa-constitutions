@@ -166,18 +166,29 @@ header .lead {
 
 .explainer strong { color: var(--text); }
 
+/* ─── Top bar: mode switch + legend above map ──────────── */
+.carte-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.carte-top-bar .mode-switch { flex-shrink: 0; margin-bottom: 0; }
+.carte-top-bar #legend-2d { flex: 1; min-width: 0; }
+
 /* ─── Map Layout ────────────────────────────────────────── */
 .map-row {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 1rem;
+  grid-template-columns: 160px 1fr;
+  gap: 0.5rem;
   align-items: start;
 }
 
 .map-sidebar {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .ctrl-label {
@@ -217,39 +228,37 @@ header .lead {
   text-align: right;
 }
 
-.dim-buttons { display: flex; flex-direction: column; gap: 0.2rem; }
+/* ─── Dimension & Group Pills ──────────────────────────── */
+.dims-section { }
+
+.dim-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
 
 .dim-btn {
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 5px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   color: var(--muted);
-  font-size: 0.76rem;
-  padding: 0.25rem 0.45rem;
+  font-size: 0.65rem;
+  padding: 0.2rem 0.4rem;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   font-family: var(--font);
   transition: all 0.12s;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+  white-space: nowrap;
 }
 
 .dim-btn:hover { background: var(--hover-light); color: var(--text); }
 
-.dim-btn .cb {
-  width: 13px; height: 13px;
-  border: 1.5px solid var(--dim);
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 0.6rem;
-  transition: all 0.12s;
+.dim-btn.active {
+  background: var(--c2);
+  border-color: var(--c2);
+  color: var(--card);
+  font-weight: 600;
 }
-
-.dim-btn.active .cb { background: var(--c2); border-color: var(--c2); color: var(--card); }
 
 .dim-btn.shake { animation: shake 0.4s ease; }
 @keyframes shake {
@@ -257,58 +266,24 @@ header .lead {
   20%, 60% { transform: translateX(-3px); }
   40%, 80% { transform: translateX(3px); }
 }
-.dim-btn.active { color: var(--text); font-weight: 500; }
 
-
-
-/* Collapsible dimension section */
-.dims-collapsible { }
-
-.sidebar-toggle {
+.grp-pills {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: none;
-  border: none;
-  font-family: var(--font);
-  font-size: 0.68rem;
-  color: var(--dim);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  padding: 0;
+  flex-wrap: wrap;
+  gap: 3px;
   margin-bottom: 0.3rem;
 }
 
-.sidebar-toggle .toggle-arrow {
-  font-size: 0.55rem;
-  transition: transform 0.2s;
-}
-
-.dims-collapsible.collapsed .toggle-arrow { transform: rotate(-90deg); }
-
-.dims-collapsible-body {
-  overflow: hidden;
-  max-height: 500px;
-  transition: max-height 0.25s ease;
-}
-
-.dims-collapsible.collapsed .dims-collapsible-body {
-  max-height: 0;
-}
-
-.grp-row { display: flex; flex-wrap: wrap; gap: 0.2rem; margin-bottom: 0.3rem; }
-
 .grp-btn {
-  font-size: 0.7rem;
+  font-size: 0.6rem;
   color: var(--dim);
   background: none;
   border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 0.2rem 0.4rem;
+  border-radius: 10px;
+  padding: 0.15rem 0.35rem;
   cursor: pointer;
   font-family: var(--font);
+  white-space: nowrap;
 }
 
 .grp-btn:hover { border-color: var(--muted); color: var(--muted); }
@@ -787,7 +762,7 @@ footer {
 
 @media (max-width: 1000px) {
   .map-row { grid-template-columns: 1fr; }
-  .map-sidebar { flex-direction: row; flex-wrap: wrap; }
+  .map-sidebar { flex-direction: row; flex-wrap: wrap; gap: 0.5rem; }
   .div-grid { grid-template-columns: 1fr; }
   .hl-bar { gap: 1rem; flex-wrap: wrap; }
 }
@@ -803,6 +778,9 @@ footer {
   /* Tab bar: horizontally scrollable */
   .tab-bar { overflow-x: auto; -webkit-overflow-scrolling: touch; flex-wrap: nowrap; padding: 0 0.5rem; justify-content: flex-start; }
   .tab-btn { flex-shrink: 0; font-size: 0.7rem; padding: 0.4rem 0.6rem; }
+
+  /* Top bar stacks vertically on mobile */
+  .carte-top-bar { flex-direction: column; align-items: stretch; }
 
   /* Map layout: sidebar above map on mobile */
   .map-sidebar { order: -1; gap: 0.5rem; }
@@ -840,10 +818,9 @@ footer {
   .section { padding: 0.5rem; }
   .card { padding: 0.7rem 0.8rem; }
 
-  /* Dimension buttons: horizontal scroll instead of wrapping */
-  .dim-buttons { flex-direction: row; flex-wrap: wrap; gap: 0.15rem; }
-  .dim-btn { font-size: 0.68rem; padding: 0.2rem 0.35rem; }
-  .grp-btn { font-size: 0.66rem; padding: 0.18rem 0.35rem; }
+  /* Dimension pills: tighter on small screens */
+  .dim-btn { font-size: 0.6rem; padding: 0.15rem 0.3rem; }
+  .grp-btn { font-size: 0.56rem; padding: 0.12rem 0.3rem; }
 
   /* Mode switch: allow wrapping on narrow screens */
   .mode-switch { flex-wrap: wrap; }

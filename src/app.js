@@ -785,9 +785,9 @@ function buildDimBtns() {
   DATA.features.forEach(f => {
     const b = document.createElement('button');
     b.className = 'dim-btn'; b.dataset.dim = f;
-    b.innerHTML = `<span class="cb"></span>${DATA.feature_labels[f]}`;
+    b.textContent = HM_SHORT(f);
+    b.title = DATA.feature_labels[f];
     b.addEventListener('click', () => {
-      // Simple click toggles dimension on/off
       if (selDims.has(f)) {
         if (selDims.size > 1) selDims.delete(f);
         else { b.classList.add('shake'); setTimeout(() => b.classList.remove('shake'), 400); return; }
@@ -801,9 +801,7 @@ function buildDimBtns() {
 
 function syncDims() {
   document.querySelectorAll('.dim-btn').forEach(b => {
-    const d = b.dataset.dim;
-    b.classList.toggle('active', selDims.has(d));
-    b.querySelector('.cb').textContent = selDims.has(d) ? '✓' : '';
+    b.classList.toggle('active', selDims.has(b.dataset.dim));
   });
   document.querySelectorAll('.grp-btn').forEach(b => {
     const key = b.dataset.grp;
@@ -3187,11 +3185,6 @@ function renderFigures() {
 // ─── Init ──────────────────────────────────────────────────
 renderScale();
 buildDimBtns();
-// Collapse dimensions by default on mobile
-if (window.innerWidth <= 600) {
-  const dc = document.querySelector('.dims-collapsible');
-  if (dc) dc.classList.add('collapsed');
-}
 buildModeSwitch();
 initSlider();
 initMap().then(() => {

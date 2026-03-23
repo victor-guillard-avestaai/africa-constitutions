@@ -48,6 +48,17 @@
     <h2 data-tr="carte_title">Carte de la reconnaissance constitutionnelle</h2>
     <div class="sub" data-tr="carte_sub" data-tr-html="true">Chaque pays est coloré selon le score moyen des dimensions sélectionnées, pour l'année choisie. Cliquez sur un pays pour explorer son histoire constitutionnelle. Cliquez sur les dimensions pour les activer ou désactiver.</div>
 
+    <!-- Mode switch + legend above map -->
+    <div class="carte-top-bar">
+      <div class="mode-switch" id="mode-switch">
+        <button class="mode-btn active" data-mode="score" data-tr="mode_score">Score seul</button>
+        <button class="mode-btn" data-mode="combined" data-tr="mode_combined">Combiné</button>
+        <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage</button>
+      </div>
+      <div id="legend-2d"></div>
+    </div>
+
+    <!-- Map row: slim sidebar + map -->
     <div class="map-row">
       <div class="map-sidebar">
         <div>
@@ -59,22 +70,10 @@
           <div style="text-align:center"><span id="year-display">2026</span></div>
         </div>
 
-        <div class="dims-collapsible">
-          <button class="sidebar-toggle" onclick="this.parentElement.classList.toggle('collapsed')"><span data-tr="carte_dims">Dimensions</span> <span class="toggle-arrow">&#9660;</span></button>
-          <div class="dims-collapsible-body">
-            <div class="grp-row" id="grp-buttons"></div>
-            <div class="dim-buttons" id="dim-buttons"></div>
-          </div>
-        </div>
-
-        <div>
-          <div class="ctrl-label" data-tr="carte_mode">Mode d'affichage</div>
-          <div class="mode-switch" id="mode-switch">
-            <button class="mode-btn active" data-mode="score" data-tr="mode_score">Score seul</button>
-            <button class="mode-btn" data-mode="combined" data-tr="mode_combined">Combiné</button>
-            <button class="mode-btn" data-mode="heritage" data-tr="mode_heritage">Héritage</button>
-          </div>
-          <div id="legend-2d"></div>
+        <div class="dims-section">
+          <div class="ctrl-label" data-tr="carte_dims">Dimensions</div>
+          <div class="grp-pills" id="grp-buttons"></div>
+          <div class="dim-pills" id="dim-buttons"></div>
         </div>
       </div>
 
