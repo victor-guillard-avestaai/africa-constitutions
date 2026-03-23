@@ -237,7 +237,7 @@ const I18N = {
     conflit_map_mode_combined: "Combiné",
     conflit_map_mode_score: "Score",
     conflit_eta_note: "part de variance expliquée",
-    conflit_dims_insight: "Les constitutions post-conflit reconnaissent davantage les droits identitaires (en haut), mais pas les dimensions institutionnelles (en bas).",
+    conflit_dims_insight: "L'effet post-conflit se concentre sur les dimensions identitaires (en rouge, significatives). Les dimensions institutionnelles (en gris) ne montrent pas de différence significative.",
     conflit_constitution: "Constitution",
     conflit_panel_mean: "Moy.",
     conflit_identity_dims: "Dimensions identitaires",
@@ -513,7 +513,7 @@ const I18N = {
     conflit_map_mode_combined: "Combined",
     conflit_map_mode_score: "Score",
     conflit_eta_note: "share of explained variance",
-    conflit_dims_insight: "Post-conflict constitutions recognize identity rights more (top), but not institutional dimensions (bottom).",
+    conflit_dims_insight: "The post-conflict effect is concentrated in identity dimensions (red, significant). Institutional dimensions (grey) show no significant difference.",
     conflit_constitution: "Constitution",
     conflit_panel_mean: "Mean",
     conflit_identity_dims: "Identity dimensions",
@@ -1732,36 +1732,35 @@ function renderConflictMap(pcCountries) {
   });
 
   // Color scales
-  const conflitScoreScale = d3.scaleLinear()
-    .domain([0, 10, 20])
-    .range(['#f5e6d0', '#d4785a', '#8a2a0a'])
-    .interpolate(d3.interpolateRgb.gamma(2.2));
-
   const pcTypeColors = { peace: '#2471a3', authoritarian: '#d4760a' };
   const nonConflictColor = '#d5d0c8';
 
+  // Grey scale for score encoding — stronger range (light to near-black)
+  function greyFill(total) {
+    return d3.interpolateGreys(0.15 + (total / 20) * 0.65);
+  }
+
   function getFill(info) {
     if (!info) return '#eae6df';
-    if (conflitMapMode === 'score') return conflitScoreScale(info.total);
+    if (conflitMapMode === 'score') return greyFill(info.total);
     if (conflitMapMode === 'pc') {
-      // Pure type colors, no score
       if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
       return nonConflictColor;
     }
-    // Combined: type colors for PC countries, grey gradient for non-conflict
+    // Combined: type colors for PC countries, grey for non-conflict
     if (info.pc) return pcTypeColors[info.pcType] || '#2471a3';
-    return d3.interpolateGreys(0.15 + (info.total / 20) * 0.45);
+    return greyFill(info.total);
   }
 
   function getOpacity(info) {
     if (!info) return 0.2;
-    if (conflitMapMode === 'score') return 0.85;
+    if (conflitMapMode === 'score') return 0.9;
     if (conflitMapMode === 'pc') {
       return info.pc ? 0.9 : 0.3;
     }
-    // Combined: PC countries use score-based opacity (vivid), non-conflict grey
-    if (info.pc) return 0.6 + (info.total / 20) * 0.4; // 0.6 to 1.0
-    return 0.7; // uniform opacity — grey shade encodes the score
+    // Combined: PC countries modulate opacity by score, non-conflict fully opaque (grey encodes score)
+    if (info.pc) return 0.55 + (info.total / 20) * 0.45; // 0.55 to 1.0
+    return 0.9;
   }
 
   function pcBorder(info) {
@@ -2230,7 +2229,7 @@ function renderUMAP() {
     grid.appendChild(panel);
 
     const margin = {top: 15, right: 15, bottom: 35, left: 35};
-    const w = 350, h = 300;
+    const w = 420, h = 360;
 
     const svg = d3.select(panel).append('svg')
       .attr('viewBox', `0 0 ${w + margin.left + margin.right} ${h + margin.top + margin.bottom}`)
@@ -2349,7 +2348,8 @@ function renderDendrogram() {
   const maxDist = root.height;
   const xScale = d3.scaleLinear().domain([0, maxDist]).range([0, w]);
 
-  // Draw links as elbow connectors
+  // Draw links as proper dendrogram elbows:
+  // For each link: horizontal line from source height at target's y, then to target
   const links = hierarchy.links();
   svg.selectAll('.dendro-link')
     .data(links)
@@ -2357,14 +2357,27 @@ function renderDendrogram() {
     .attr('class', 'dendro-link')
     .attr('d', d => {
       const sx = xScale(d.source.data.height);
-      const sy = d.source.x;
       const tx = xScale(d.target.data.height);
       const ty = d.target.x;
-      return `M${sx},${sy} H${tx} V${ty}`;
+      // Horizontal from source height to target height, at target's y position
+      return `M${sx},${ty} H${tx}`;
     })
     .attr('fill', 'none')
     .attr('stroke', '#999')
     .attr('stroke-width', 1);
+
+  // Vertical connectors: for each internal node, draw a vertical line
+  // spanning from its first child's y to its last child's y, at the node's height
+  const internalNodes = [];
+  hierarchy.each(node => { if (node.children) internalNodes.push(node); });
+  svg.selectAll('.dendro-vlink')
+    .data(internalNodes)
+    .enter().append('line')
+    .attr('class', 'dendro-link dendro-vlink')
+    .attr('x1', d => xScale(d.data.height)).attr('x2', d => xScale(d.data.height))
+    .attr('y1', d => Math.min(...d.children.map(c => c.x)))
+    .attr('y2', d => Math.max(...d.children.map(c => c.x)))
+    .attr('stroke', '#999').attr('stroke-width', 1);
 
   // Draw leaf labels
   const leaves = hierarchy.leaves();
@@ -2632,10 +2645,24 @@ function updateClusters(threshold) {
     });
   }
 
-  // Color dendrogram links: if all leaves under target node share one cluster, use that color
-  d3.selectAll('.dendro-link').each(function(d) {
+  // Color dendrogram links by cluster
+  // Horizontal links: color if all leaves under target share one cluster
+  d3.selectAll('.dendro-link:not(.dendro-vlink)').each(function(d) {
+    if (!d || !d.target) return;
     const targetLeaves = d.target.leaves();
     const clusterIds = new Set(targetLeaves.map(l => clusterMap[l.data.name]));
+    if (clusterIds.size === 1) {
+      const cid = [...clusterIds][0];
+      d3.select(this).attr('stroke', cid !== undefined ? clusterColor(cid) : '#bbb').attr('stroke-width', 1.5);
+    } else {
+      d3.select(this).attr('stroke', '#bbb').attr('stroke-width', 1);
+    }
+  });
+  // Vertical links: color if all leaves under this node share one cluster
+  d3.selectAll('.dendro-vlink').each(function(d) {
+    if (!d || !d.leaves) return;
+    const nodeLeaves = d.leaves();
+    const clusterIds = new Set(nodeLeaves.map(l => clusterMap[l.data.name]));
     if (clusterIds.size === 1) {
       const cid = [...clusterIds][0];
       d3.select(this).attr('stroke', cid !== undefined ? clusterColor(cid) : '#bbb').attr('stroke-width', 1.5);
